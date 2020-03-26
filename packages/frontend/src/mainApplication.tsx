@@ -1,7 +1,42 @@
 import * as React from "react";
+import { IVirusData, getMockCoronaDataService } from "@corona/api";
+import styles from "./mainApplication.module.scss";
 
-export class MainApplication extends React.PureComponent {
+interface IState {
+    data: IVirusData | undefined;
+}
+
+export class MainApplication extends React.PureComponent<{}, IState> {
+    public state: IState = {
+        data: undefined,
+    };
+
+    public async componentDidMount() {
+        const data = await getMockCoronaDataService.getUnitedStatesData();
+        this.setState({ data });
+    }
+
     public render() {
-        return <div>Hello World!</div>;
+        const { data } = this.state;
+        return (
+            <div>
+                Total cases: {data?.total}
+                {this.maybeRenderList()}
+            </div>
+        );
+    }
+
+    private maybeRenderList() {
+        const { data } = this.state;
+        return (
+            <div className={styles.valueContainer}>
+                {Object.keys(data?.breakdown ?? {}).map(state => (
+                    <span>
+                        {state}
+                        {data?.breakdown[state]}
+                    </span>
+                ))}
+            </div>
+        );
     }
 }

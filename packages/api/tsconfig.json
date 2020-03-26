@@ -1,17 +1,16 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "./dist",
+    "rootDir": "./src",
     "module": "es6",
-    "strict": true,
-    "moduleResolution": "node",
+    "outDir": "./dist",
     "skipLibCheck": true,
   },
   "include": [
-    "src/**/*"
+    "./src/**/*"
   ],
   "exclude": [
-    "dist",
-    "node_modules",
+    "./dist/*",
+    "./node_modules/*"
   ]
 }
