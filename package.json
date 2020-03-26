@@ -1,33 +1,47 @@
 {
-  "name": "corona-backend",
+  "name": "corona",
   "version": "0.1.0",
-  "description": "The backend to a corona dashboard",
-  "main": "dist/index.js",
-  "repository": "https://github.com/kadhirvelm/corona-backend",
-  "author": "Kadhir Mani <kadhirvelm@gmail.com>",
-  "license": "MIT",
-  "private": false,
-  "type": "module",
-  "dependencies": {
-    "express": "^4.17.1"
+  "description": "A dashboard that lets you analyze corona data.",
+  "dependencies": {},
+  "private": true,
+  "devDependencies": {
+    "@types/node": "^12.12.6",
+    "@typescript-eslint/eslint-plugin": "^2.7.0",
+    "@typescript-eslint/parser": "^2.14.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-typescript": "^6.3.1",
+    "eslint-config-prettier": "^6.9.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-prettier": "^3.1.2",
+    "eslint-plugin-react": "^7.15.1",
+    "eslint-plugin-react-hooks": "^2.0.0",
+    "lerna": "^3.20.1",
+    "prettier": "^1.19.1",
+    "typescript": "^3.7.2"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "resolutions": {
+    "redux": "4.0.1"
   },
   "scripts": {
-    "build": "tsc",
-    "build:watch": "tsc --watch",
-    "start": "node dist/index.js",
-    "start:watch": "nodemon dist/index.js",
-    "dev": "yarn build:watch & yarn start:watch"
+    "build": "lerna run build",
+    "clean": "node scripts/cleanPackages",
+    "clean:lock": "npx yarn-deduplicate yarn.lock",
+    "dev": "lerna run dev --parallel",
+    "lint": "lerna run lint --parallel",
+    "update-version": "lerna publish --skip-git --skip-npm --force-publish '*'"
   },
-  "devDependencies": {
-    "@types/express": "^4.17.3",
-    "@types/node": "^12.12.31",
-    "@typescript-eslint/eslint-plugin": "^2.25.0",
-    "@typescript-eslint/parser": "^2.25.0",
-    "eslint": "^6.8.0",
-    "eslint-config-prettier": "^6.10.1",
-    "eslint-plugin-prettier": "^3.1.2",
-    "nodemon": "^2.0.2",
-    "prettier": "^2.0.2",
-    "typescript": "^3.8.3"
-  }
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kadhirvelm/corona.git"
+  },
+  "author": "kadhirvelm",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kadhirvelm/corona/issues"
+  },
+  "homepage": "https://github.com/kadhirvelm/corona#readme"
 }

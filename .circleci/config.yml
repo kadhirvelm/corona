@@ -1,0 +1,76 @@
+# Javascript Node CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-javascript/ for more details
+#
+version: 2
+jobs:
+    setup:
+        docker:
+            - image: circleci/node:10.19.0
+        steps:
+            - checkout
+            - restore_cache:
+                keys:
+                    - v1-dependencies-{{ checksum "package.json" }}
+                    - v1-dependencies-
+            - run:
+                name: Install dependencies
+                command: NODE_ENV=development yarn
+            - save_cache:
+                paths:
+                    - node_modules
+                key: v1-dependencies-{{ checksum "package.json" }}
+    build:
+        docker:
+            - image: circleci/node:10.19.0
+        steps:
+            - checkout
+            - restore_cache:
+                keys:
+                    - v1-dependencies-{{ checksum "package.json" }}
+                    - v1-dependencies-
+            - run:
+                name: Install dependencies
+                command: NODE_ENV=development yarn
+            - run:
+                name: Build
+                command: NODE_ENV=production yarn build
+    lint:
+        docker:
+            - image: circleci/node:10.19.0
+        steps:
+            - checkout
+            - restore_cache:
+                keys:
+                    - v1-dependencies-{{ checksum "package.json" }}
+                    - v1-dependencies-
+            - run:
+                name: Install dependencies
+                command: NODE_ENV=development yarn
+            - run:
+                name: Build
+                command: NODE_ENV=production yarn build
+            - run:
+                name: Lint
+                command: NODE_ENV=development yarn lint
+    clean-lock:
+        docker:
+            - image: circleci/node:10.19.0
+        steps:
+            - checkout
+            - run:
+                name: Clean yarn.lock
+                command: NODE_ENV=development node ./scripts/cleanLock.js
+workflows:
+    version: 2
+    build_and_lint:
+        jobs:
+            - setup
+            - clean-lock
+            - build:
+                requires:
+                    - setup
+            - lint:
+                requires:
+                    - setup
+                    - build
