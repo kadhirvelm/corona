@@ -1,3 +1,3 @@
-export * from "./backend";
-export * from "./definitions";
-export * from "./frontend";
+export * from "./backend/index";
+export * from "./definitions/index";
+export * from "./frontend/index";

@@ -1,4 +1,4 @@
-import { IGetCoronaDataEndpoints, STATE } from "../definitions";
+import { IGetCoronaDataEndpoints, STATE } from "../definitions/coronaData";
 
 export const PORT = 3000;
 

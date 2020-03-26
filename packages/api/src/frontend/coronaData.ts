@@ -1,5 +1,5 @@
 import { IGetCoronaData, IVirusData, STATE } from "../definitions/coronaData";
-import { CORONA_ENDPOINTS, PORT } from "../backend";
+import { CORONA_ENDPOINTS, PORT } from "../backend/constants";
 
 export const getCoronaDataService: IGetCoronaData = {
     getUnitedStatesData: () => {

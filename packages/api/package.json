@@ -10,7 +10,7 @@
   "dependencies": {},
   "scripts": {
     "build": "tsc -d",
-    "build:watch": "tsc -d --watch",
+    "dev": "tsc -d --watch",
     "lint": "eslint . --ext .ts,.tsx"
   },
   "devDependencies": {
