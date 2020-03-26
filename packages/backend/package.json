@@ -15,7 +15,8 @@
     "build:watch": "tsc --watch",
     "start": "node dist/index.js",
     "start:watch": "nodemon dist/index.js",
-    "dev": "yarn build:watch & yarn start:watch",
+    "watch:all": "yarn build:watch & yarn start:watch",
+    "dev": "yarn build && yarn watch:all",
     "lint": "eslint . --ext .ts,.tsx"
   },
   "devDependencies": {
