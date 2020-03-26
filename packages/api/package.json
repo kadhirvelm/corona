@@ -1,0 +1,20 @@
+{
+  "name": "@corona/api",
+  "version": "0.1.0",
+  "description": "The API to a corona dashboard",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "repository": "https://github.com/kadhirvelm/corona",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {},
+  "scripts": {
+    "build": "tsc -d",
+    "build:watch": "tsc -d --watch",
+    "lint": "eslint . --ext .ts,.tsx"
+  },
+  "devDependencies": {
+    "@types/node": "^12.12.31",
+    "typescript": "^3.8.3"
+  }
+}
