@@ -1,3 +1,10 @@
+import {
+    backendEndpointImplementation,
+    frontendEndpointImplementation,
+    IEndpointDefiniton,
+    IService,
+} from "../common/index";
+
 export interface IVirusData {
     total: number;
     breakdown: {
@@ -61,12 +68,25 @@ export enum STATE {
     WYOMING = "Wyoming",
 }
 
-export interface IGetCoronaData {
-    getUnitedStatesData: () => Promise<IVirusData>;
-    getStateData: (state: STATE) => Promise<IVirusData>;
+/**
+ * Hosts the endpoints necessary to retrieve corona data.
+ */
+interface ICoronaEndpoints extends IService {
+    getUnitedStatesData: IEndpointDefiniton<{}, IVirusData>;
+    getStateData: IEndpointDefiniton<STATE, IVirusData>;
 }
 
-export interface IGetCoronaDataEndpoints {
-    getUnitedStatesData: () => string;
-    getStateData: (state: STATE | ":state") => string;
-}
+export const CoronaService: ICoronaEndpoints = {
+    getUnitedStatesData: {
+        backend: backendEndpointImplementation<{}, IVirusData>(),
+        endpoint: "/data/united-states/all",
+        frontend: frontendEndpointImplementation("/data/united-states/all"),
+        method: "get",
+    },
+    getStateData: {
+        backend: backendEndpointImplementation<STATE, IVirusData>(),
+        endpoint: "/data/united-states/:state",
+        frontend: frontendEndpointImplementation("/data/united-states"),
+        method: "get",
+    },
+};

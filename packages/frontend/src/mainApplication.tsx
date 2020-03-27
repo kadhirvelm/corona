@@ -1,5 +1,5 @@
 import * as React from "react";
-import { IVirusData, getMockCoronaDataService } from "@corona/api";
+import { IVirusData, CoronaService, STATE } from "@corona/api";
 import styles from "./mainApplication.module.scss";
 
 interface IState {
@@ -12,7 +12,8 @@ export class MainApplication extends React.PureComponent<{}, IState> {
     };
 
     public async componentDidMount() {
-        const data = await getMockCoronaDataService.getUnitedStatesData();
+        await CoronaService.getStateData.frontend(STATE.CALIFORNIA);
+        const data = await CoronaService.getUnitedStatesData.frontend({});
         this.setState({ data });
     }
 
