@@ -1,9 +1,9 @@
 import { CoronaService } from "@corona/api";
-import Express from "express";
+import { Express } from "express";
 import { getStateCoronaData, getUSCoronaData } from "../coronaData/getCoronaData";
 import { isValidState } from "../utils/isValidState";
 
-export function setCoronaRoutes(app: Express.Express) {
+export function setCoronaRoutes(app: Express) {
     app[CoronaService.getUnitedStatesData.method](CoronaService.getUnitedStatesData.endpoint, (_, response) => {
         CoronaService.getUnitedStatesData.backend({}, response, getUSCoronaData);
     });

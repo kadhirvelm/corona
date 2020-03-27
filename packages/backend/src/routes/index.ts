@@ -1,5 +1,6 @@
 import Express from "express";
-import { setCoronaRoutes } from "./setCoronaRoutes";
+import { setCoronaRoutes } from "./corona";
+import { setCoronaDataRoutes } from "./coronaData";
 
 export function setRoutes(app: Express.Express) {
     app.get("/", (_, res) => {
@@ -7,4 +8,5 @@ export function setRoutes(app: Express.Express) {
     });
 
     setCoronaRoutes(app);
+    setCoronaDataRoutes(app);
 }

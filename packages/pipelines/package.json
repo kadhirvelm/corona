@@ -1,0 +1,24 @@
+{
+  "name": "@corona/pipeline",
+  "version": "0.1.0",
+  "description": "Scripts to get data",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "repository": "https://github.com/kadhirvelm/corona",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@corona/api": "^0.1.0",
+    "node-fetch": "^2.6.0"
+  },
+  "scripts": {
+    "build": "tsc -d",
+    "dev": "tsc -d --watch",
+    "lint": "eslint . --ext .ts,.tsx"
+  },
+  "devDependencies": {
+    "@types/node": "^12.12.31",
+    "@types/node-fetch": "^2.5.5",
+    "typescript": "^3.8.3"
+  }
+}
