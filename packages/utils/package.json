@@ -1,0 +1,22 @@
+{
+  "name": "@corona/utils",
+  "version": "0.1.0",
+  "description": "The utilities package",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "repository": "https://github.com/kadhirvelm/corona",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@corona/api": "^0.1.0"
+  },
+  "scripts": {
+    "build": "tsc -d",
+    "dev": "tsc -d --watch",
+    "lint": "eslint . --ext .ts,.tsx"
+  },
+  "devDependencies": {
+    "@types/node": "^12.12.31",
+    "typescript": "^3.8.3"
+  }
+}

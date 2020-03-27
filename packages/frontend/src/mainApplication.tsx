@@ -1,43 +1,44 @@
+import { CoronaService, STATE } from "@corona/api";
 import * as React from "react";
-import { IVirusData, CoronaService, STATE } from "@corona/api";
-import styles from "./mainApplication.module.scss";
+import { isValidState } from "@corona/utils";
+import { VirusDataRenderer } from "./components/virusDataRenderer";
 
 interface IState {
-    data: IVirusData | undefined;
+    selectedState: STATE | undefined;
 }
 
 export class MainApplication extends React.PureComponent<{}, IState> {
     public state: IState = {
-        data: undefined,
+        selectedState: undefined,
     };
 
-    public async componentDidMount() {
-        await CoronaService.getStateData.frontend(STATE.CALIFORNIA);
-        const data = await CoronaService.getUnitedStatesData.frontend({});
-        this.setState({ data });
-    }
-
     public render() {
-        const { data } = this.state;
+        const { selectedState } = this.state;
+
         return (
-            <div>
-                Total cases: {data?.total}
-                {this.maybeRenderList()}
-            </div>
+            <VirusDataRenderer
+                getData={this.getDataSource}
+                key={selectedState ?? "USA"}
+                onItemClick={this.handleItemClick}
+            />
         );
     }
 
-    private maybeRenderList() {
-        const { data } = this.state;
-        return (
-            <div className={styles.valueContainer}>
-                {Object.keys(data?.breakdown ?? {}).map(state => (
-                    <span>
-                        {state}
-                        {data?.breakdown[state]}
-                    </span>
-                ))}
-            </div>
-        );
-    }
+    private getDataSource = () => {
+        const { selectedState } = this.state;
+        if (selectedState === undefined) {
+            return CoronaService.getUnitedStatesData.frontend({});
+        }
+
+        return CoronaService.getStateData.frontend(selectedState);
+    };
+
+    private handleItemClick = (item: string) => {
+        if (!isValidState(item)) {
+            this.setState({ selectedState: undefined });
+            return;
+        }
+
+        this.setState({ selectedState: item });
+    };
 }

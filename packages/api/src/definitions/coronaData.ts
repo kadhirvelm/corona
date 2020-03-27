@@ -5,10 +5,18 @@ import {
     IService,
 } from "../common/index";
 
+export interface IBreakdown {
+    url: string;
+    cases: number;
+    coordinates: number[];
+    deaths: number;
+    duplicates: IBreakdown[];
+}
+
 export interface IVirusData {
     total: number;
     breakdown: {
-        [key: string]: number;
+        [key: string]: IBreakdown;
     };
 }
 

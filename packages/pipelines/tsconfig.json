@@ -5,7 +5,7 @@
     "module": "es6",
     "outDir": "./dist",
     "moduleResolution": "node",
-    "skipLibCheck": true,
+    "skipLibCheck": true
   },
   "include": [
     "./src/**/*"

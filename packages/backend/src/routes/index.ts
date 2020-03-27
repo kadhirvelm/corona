@@ -1,5 +1,5 @@
 import Express from "express";
-import { setCoronaRoutes } from "./setCoronaRoutes";
+import { setCoronaRoutes } from "./corona";
 
 export function setRoutes(app: Express.Express) {
     app.get("/", (_, res) => {
