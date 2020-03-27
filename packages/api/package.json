@@ -7,13 +7,16 @@
   "repository": "https://github.com/kadhirvelm/corona",
   "license": "MIT",
   "type": "module",
-  "dependencies": {},
+  "dependencies": {
+    "express": "^4.17.1"
+  },
   "scripts": {
     "build": "tsc -d",
     "dev": "tsc -d --watch",
     "lint": "eslint . --ext .ts,.tsx"
   },
   "devDependencies": {
+    "@types/express": "^4.17.3",
     "@types/node": "^12.12.31",
     "typescript": "^3.8.3"
   }
