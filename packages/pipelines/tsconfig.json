@@ -4,6 +4,7 @@
     "rootDir": "./src",
     "module": "es6",
     "outDir": "./dist",
+    "moduleResolution": "node",
     "skipLibCheck": true
   },
   "include": [

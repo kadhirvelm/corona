@@ -25,10 +25,6 @@ interface IStateBreakdown {
     [key: string]: IVirusData;
 }
 
-interface ICountryBreakdown {
-    [key: string]: IVirusData;
-}
-
 function keyData(filteredToUs: IBasicCoronaData[]): IKeyedState {
     const aggregateByState: IKeyedState = {};
 
@@ -88,33 +84,21 @@ function furtherBreakDownStates(keyedStates: IKeyedState): IStateBreakdown {
 }
 
 function getCountryBreakdown(furtherBrokenDownStates: IStateBreakdown) {
-    const countryBreakdown: ICountryBreakdown = {};
+    let total = 0;
+    const breakdown: { [key: string]: IBreakdown } = {};
 
     Object.keys(furtherBrokenDownStates).forEach(state => {
-        const stateBreakdown = furtherBrokenDownStates[state].breakdown[state];
-
-        countryBreakdown[state] = {
-            total: stateBreakdown.cases,
-            breakdown: stateBreakdown,
-        };
+        total += furtherBrokenDownStates[state].breakdown[state].cases;
+        breakdown[state] = furtherBrokenDownStates[state].breakdown[state];
     });
 
-    return countryBreakdown;
-}
-
-function convertToVirusData(breakdown: IStateBreakdown | ICountryBreakdown) {
     return {
-        total: Object.keys(breakdown).reduce((previous, next) => {
-            if (next !== "USA") {
-                return previous + breakdown[next].total;
-            }
-            return previous;
-        }, 0),
+        total,
         breakdown,
     };
 }
 
-export async function getUSCoronaData(): Promise<{ states: IStateBreakdown; country: ICountryBreakdown }> {
+export async function getUSCoronaData(): Promise<{ states: IStateBreakdown; country: IVirusData }> {
     const rawData = await fetch("https://coronadatascraper.com/data.json");
     const json = (await rawData.json()) as IBasicCoronaData[];
 
@@ -125,7 +109,7 @@ export async function getUSCoronaData(): Promise<{ states: IStateBreakdown; coun
     const furtherBrokenDownStates = furtherBreakDownStates(aggregateByState);
 
     return {
-        states: convertToVirusData(furtherBrokenDownStates),
-        country: convertToVirusData(getCountryBreakdown(furtherBrokenDownStates)),
+        states: furtherBrokenDownStates,
+        country: getCountryBreakdown(furtherBrokenDownStates),
     };
 }

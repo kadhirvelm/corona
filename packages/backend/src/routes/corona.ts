@@ -1,11 +1,11 @@
 import { CoronaService } from "@corona/api";
 import { Express } from "express";
-import { getStateCoronaData, getUSCoronaData } from "../coronaData/getCoronaData";
-import { isValidState } from "../utils/isValidState";
+import { isValidState } from "@corona/utils";
+import { getStateCoronaData, getCountryCoronaData } from "../coronaData/getCoronaData";
 
 export function setCoronaRoutes(app: Express) {
     app[CoronaService.getUnitedStatesData.method](CoronaService.getUnitedStatesData.endpoint, (_, response) => {
-        CoronaService.getUnitedStatesData.backend({}, response, getUSCoronaData);
+        CoronaService.getUnitedStatesData.backend({}, response, getCountryCoronaData);
     });
 
     app[CoronaService.getStateData.method](CoronaService.getStateData.endpoint, (request, response) => {

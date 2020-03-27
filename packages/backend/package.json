@@ -10,6 +10,7 @@
   "dependencies": {
     "@corona/api": "^0.1.0",
     "@corona/pipeline": "^0.1.0",
+    "@corona/utils": "^0.1.0",
     "cors": "^2.8.5",
     "express": "^4.17.1"
   },
@@ -17,7 +18,7 @@
     "build": "tsc",
     "build:watch": "tsc --watch",
     "start": "node --experimental-modules --es-module-specifier-resolution=node dist/index.js",
-    "start:watch": "nodemon --experimental-modules --es-module-specifier-resolution=node dist/index.js --watch . --watch ../api/* --watch ../pipelines/*",
+    "start:watch": "nodemon --experimental-modules --es-module-specifier-resolution=node dist/index.js --watch . --watch ../api/* --watch ../utils/* --watch ../pipelines/*",
     "watch:all": "yarn build:watch & yarn start:watch",
     "dev": "yarn build && yarn watch:all",
     "lint": "eslint . --ext .ts,.tsx"
