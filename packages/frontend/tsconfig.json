@@ -9,6 +9,7 @@
         "types": [
             "webpack-env"
         ],
+        "resolveJsonModule": true,
         "moduleResolution": "node"
     },
     "include": [

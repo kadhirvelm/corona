@@ -18,11 +18,21 @@ export class MainApplication extends React.PureComponent<{}, IState> {
         return (
             <VirusDataRenderer
                 getData={this.getDataSource}
+                geography={this.getGeography()}
                 key={selectedState ?? "USA"}
                 onItemClick={this.handleItemClick}
             />
         );
     }
+
+    private getGeography = () => {
+        const { selectedState } = this.state;
+        if (selectedState === undefined) {
+            return "/us-state-topology.json";
+        }
+
+        return "/us-county-topology.json";
+    };
 
     private getDataSource = () => {
         const { selectedState } = this.state;

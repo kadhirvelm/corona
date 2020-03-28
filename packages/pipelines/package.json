@@ -9,6 +9,7 @@
   "type": "module",
   "dependencies": {
     "@corona/api": "^0.1.0",
+    "@corona/utils": "^0.1.0",
     "node-fetch": "^2.6.0"
   },
   "scripts": {
