@@ -1,7 +1,7 @@
 import { CoronaService, STATE } from "@corona/api";
 import * as React from "react";
 import { isValidState } from "@corona/utils";
-import { VirusDataRenderer } from "./components/virusDataRenderer";
+import { VirusDataRenderer } from "./components/virusData";
 
 interface IState {
     selectedState: STATE | undefined;
@@ -28,10 +28,10 @@ export class MainApplication extends React.PureComponent<{}, IState> {
     private getGeography = () => {
         const { selectedState } = this.state;
         if (selectedState === undefined) {
-            return "/us-state-topology.json";
+            return "states";
         }
 
-        return "/us-county-topology.json";
+        return "counties";
     };
 
     private getDataSource = () => {

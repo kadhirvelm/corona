@@ -1,72 +1,85 @@
 import { IVirusData } from "@corona/api";
+import { geoAlbersUsa, geoPath, GeoPath, GeoPermissibleObjects } from "d3-geo";
 import * as React from "react";
-import { ComposableMap, Geographies, Geography } from "react-simple-maps";
+import GeoJSON from "geojson";
+import { Spinner } from "@blueprintjs/core";
+import { select, Selection, BaseType } from "d3-selection";
+import { json } from "d3-fetch";
+import classNames from "classnames";
+import styles from "./usMap.module.scss";
+import { IGeography } from "../../typings/map";
 
-import "../static/us-state-topology.json";
-import "../static/us-county-topology.json";
-
-export interface IUSMap {
+interface IProps {
     data: IVirusData;
-    geography: string;
+    geography: IGeography;
     onClick: (name: string) => void;
 }
 
-export class USMap extends React.PureComponent<IUSMap> {
+interface IState {
+    isLoading: boolean;
+}
+
+export class USMap extends React.PureComponent<IProps, IState> {
+    public state: IState = {
+        isLoading: false,
+    };
+
+    public componentDidMount() {
+        this.setupMap();
+    }
+
     public render() {
-        const { geography } = this.props;
         return (
-            <ComposableMap
-                projectionConfig={{ scale: 1000 }}
-                projection="geoAlbersUsa"
-                width={window.innerWidth}
-                height={window.innerHeight}
-                style={{
-                    width: "100%",
-                    height: "auto",
-                }}
-            >
-                <Geographies geography={geography}>
-                    {data => data.geographies.map(this.renderSingleGeography)}
-                </Geographies>
-            </ComposableMap>
+            <>
+                {this.maybeRenderLoadingIndicator()}
+                <svg id="map" width={window.innerWidth} height={window.innerHeight} />
+            </>
         );
     }
 
-    private renderSingleGeography = (geography: any) => {
-        const { data } = this.props;
-        const hasData = data.breakdown[geography.id] !== undefined;
+    private maybeRenderLoadingIndicator() {
+        const { isLoading } = this.state;
+        if (!isLoading) {
+            return null;
+        }
 
-        return (
-            <Geography
-                geography={geography}
-                key={geography.id}
-                onClick={this.handleSelection(geography.properties.name)}
-                style={{
-                    default: {
-                        fill: hasData ? "#FADBD8" : "#FDFEFE",
-                        stroke: "#607D8B",
-                        strokeWidth: 0.75,
-                        outline: "none",
-                    },
-                    hover: {
-                        fill: "#CFD8DC",
-                        stroke: "#607D8B",
-                        strokeWidth: 1,
-                        outline: "none",
-                    },
-                    pressed: {
-                        fill: "#FF5722",
-                        stroke: "#607D8B",
-                        strokeWidth: 1,
-                        outline: "none",
-                    },
-                }}
-            />
-        );
-    };
+        return <Spinner />;
+    }
 
-    private handleSelection = (name: string) => () => {
-        const { onClick } = this.props;
-        onClick(name);
+    private async setupMap() {
+        const { geography } = this.props;
+
+        const svg = select("#map");
+        const projection = geoAlbersUsa()
+            .scale(2000)
+            .translate([window.innerWidth / 2, window.innerHeight / 2]);
+
+        const path = geoPath().projection(projection);
+        const usTopology = await json(geography.topologyLocation);
+        const features = geography.extractFeatures(usTopology);
+
+        this.renderMap(svg, features, path);
+    }
+
+    private renderMap = (
+        svg: Selection<BaseType, unknown, HTMLElement, any>,
+        features: GeoJSON.Feature[],
+        path: GeoPath<any, GeoPermissibleObjects>,
+    ) => {
+        const { data, onClick } = this.props;
+
+        svg.selectAll("path")
+            .data(features)
+            .enter()
+            .append("path")
+            .attr("class", feature => {
+                return classNames(styles.state, {
+                    [styles.stateNoData]: data.breakdown[feature.id ?? ""] === undefined,
+                });
+            })
+            .on("click", feature => {
+                onClick(feature.properties?.name ?? feature.id);
+            })
+            .attr("d", path);
     };
 }
