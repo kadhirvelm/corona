@@ -1,6 +1,6 @@
-import fetch from "node-fetch";
-import { IVirusData, IBreakdown } from "@corona/api";
+import { IBreakdown, IVirusData } from "@corona/api";
 import { convertStateToTwoLetterCode, twoLetterCodeToFips, twoLetterCodeWithCountyToFips } from "@corona/utils";
+import fetch from "node-fetch";
 
 interface IBasicCoronaData {
     maintainers: string[];
@@ -42,11 +42,7 @@ function keyData(filteredToUs: IBasicCoronaData[]): IKeyedState {
 }
 
 function getId(dataPoint: IBasicCoronaData): string {
-    if (dataPoint.state === undefined) {
-        return `Unknown ID: ${Math.random() * 100}`;
-    }
-
-    const twoLetterCode = convertStateToTwoLetterCode(dataPoint.state);
+    const twoLetterCode = convertStateToTwoLetterCode(dataPoint.state ?? "USA");
     if (dataPoint.county === undefined) {
         return twoLetterCodeToFips(twoLetterCode);
     }
@@ -107,9 +103,11 @@ function getCountryBreakdown(furtherBrokenDownStates: IStateBreakdown) {
     const breakdown: { [key: string]: IBreakdown } = {};
 
     Object.keys(furtherBrokenDownStates).forEach(state => {
-        const id = twoLetterCodeToFips(state);
-        total += furtherBrokenDownStates[state].breakdown[state].cases;
-        breakdown[id] = furtherBrokenDownStates[state].breakdown[state];
+        const key = state ?? "undefined";
+        const stateBreakdown = furtherBrokenDownStates[key].breakdown[key];
+
+        total += stateBreakdown.cases ?? 0;
+        breakdown[key] = stateBreakdown;
     });
 
     return {

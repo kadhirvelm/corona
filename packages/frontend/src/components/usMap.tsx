@@ -35,7 +35,7 @@ export class USMap extends React.PureComponent<IUSMap> {
     private renderSingleGeography = (geography: any) => {
         const { data } = this.props;
         const hasData = data.breakdown[geography.id] !== undefined;
-        console.log(geography, data.breakdown);
+
         return (
             <Geography
                 geography={geography}

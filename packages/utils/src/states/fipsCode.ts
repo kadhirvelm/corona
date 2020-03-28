@@ -64,6 +64,7 @@ const TWO_LETTER_STATE_TO_FIPS = {
     WV: "54",
     WI: "55",
     WY: "56",
+    USA: "999",
 };
 
 const TWO_LETTER_STATE_WITH_COUNTY_FIPS = {
