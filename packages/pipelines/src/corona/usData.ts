@@ -1,5 +1,6 @@
+import { IBreakdown, IVirusData } from "@corona/api";
+import { convertStateToTwoLetterCode, twoLetterCodeToFips, twoLetterCodeWithCountyToFips } from "@corona/utils";
 import fetch from "node-fetch";
-import { IVirusData, IBreakdown } from "@corona/api";
 
 interface IBasicCoronaData {
     maintainers: string[];
@@ -13,7 +14,7 @@ interface IBasicCoronaData {
     rating: number;
     state?: string;
     tz: string[];
-    featureId: number;
+    featureId?: number;
     population: number;
 }
 
@@ -40,12 +41,24 @@ function keyData(filteredToUs: IBasicCoronaData[]): IKeyedState {
     return aggregateByState;
 }
 
+function getId(dataPoint: IBasicCoronaData): string {
+    const twoLetterCode = convertStateToTwoLetterCode(dataPoint.state ?? "USA");
+    if (dataPoint.county === undefined) {
+        return twoLetterCodeToFips(twoLetterCode);
+    }
+
+    const cleanCountyName = dataPoint.county.replace(/County/g, "").trim();
+
+    return twoLetterCodeWithCountyToFips(`${twoLetterCode}_${cleanCountyName}`);
+}
+
 function getDatapoint(dataPoint: IBasicCoronaData): IBreakdown {
     return {
         cases: dataPoint.cases,
         coordinates: dataPoint.coordinates,
         deaths: dataPoint.deaths,
         duplicates: [],
+        id: getId(dataPoint),
         url: dataPoint.url,
     };
 }
@@ -60,7 +73,9 @@ function furtherBreakDownStates(keyedStates: IKeyedState): IStateBreakdown {
         const breakdown: { [county: string]: IBreakdown } = {};
 
         keyedStates[state].forEach(dataPoint => {
-            const key = dataPoint.county ?? state;
+            const breakdownDatapoint = getDatapoint(dataPoint);
+            const key = breakdownDatapoint.id;
+
             if (breakdown[key] === undefined && key !== state) {
                 total += dataPoint.cases;
             } else if (breakdown[key] === undefined && key === state) {
@@ -68,13 +83,13 @@ function furtherBreakDownStates(keyedStates: IKeyedState): IStateBreakdown {
             }
 
             if (breakdown[key] !== undefined) {
-                breakdown[key].duplicates.push(getDatapoint(dataPoint));
+                breakdown[key].duplicates.push(breakdownDatapoint);
             } else {
-                breakdown[key] = getDatapoint(dataPoint);
+                breakdown[key] = breakdownDatapoint;
             }
         });
 
-        stateBreakdown[state] = {
+        stateBreakdown[twoLetterCodeToFips(state)] = {
             total: total || defaultTotal,
             breakdown,
         };
@@ -88,8 +103,11 @@ function getCountryBreakdown(furtherBrokenDownStates: IStateBreakdown) {
     const breakdown: { [key: string]: IBreakdown } = {};
 
     Object.keys(furtherBrokenDownStates).forEach(state => {
-        total += furtherBrokenDownStates[state].breakdown[state].cases;
-        breakdown[state] = furtherBrokenDownStates[state].breakdown[state];
+        const key = state ?? "undefined";
+        const stateBreakdown = furtherBrokenDownStates[key].breakdown[key];
+
+        total += stateBreakdown.cases ?? 0;
+        breakdown[key] = stateBreakdown;
     });
 
     return {

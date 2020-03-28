@@ -6,6 +6,7 @@ import {
 } from "../common/index";
 
 export interface IBreakdown {
+    id: string;
     url: string;
     cases: number;
     coordinates: number[];

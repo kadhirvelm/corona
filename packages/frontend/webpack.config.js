@@ -93,6 +93,17 @@ module.exports = {
                     }
                 ]
             },
+            {
+                type: "javascript/auto",
+                test: /\.json$/,
+                include: path.resolve(__dirname, "src"),
+                exclude: /node_modules/,
+                loader: "file-loader",
+                options: {
+                    name: "[name].[ext]",
+                    publicPath: "/assets"
+                }
+            }
         ]
     },
 
@@ -108,7 +119,7 @@ module.exports = {
     ],
 
     resolve: {
-        extensions: [".js", ".ts", ".tsx", ".scss"],
+        extensions: [".js", ".ts", ".tsx", ".scss", ".json"],
     },
 
     externals: {
