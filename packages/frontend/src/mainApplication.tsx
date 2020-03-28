@@ -2,53 +2,26 @@ import { CoronaService, STATE } from "@corona/api";
 import * as React from "react";
 import { isValidState } from "@corona/utils";
 import { VirusDataRenderer } from "./components/virusData";
+import { IGeographyKind } from "../typings/map";
 
-interface IState {
-    selectedState: STATE | undefined;
-}
+export function MainApplication() {
+    const [selectedState, setState] = React.useState<STATE | undefined>(undefined);
 
-export class MainApplication extends React.PureComponent<{}, IState> {
-    public state: IState = {
-        selectedState: undefined,
-    };
+    const getDataSource = () =>
+        selectedState === undefined
+            ? CoronaService.getUnitedStatesData.frontend({})
+            : CoronaService.getStateData.frontend(selectedState);
 
-    public render() {
-        const { selectedState } = this.state;
+    const getGeography = (): IGeographyKind => (selectedState === undefined ? "states" : "counties");
 
-        return (
-            <VirusDataRenderer
-                getData={this.getDataSource}
-                geography={this.getGeography()}
-                key={selectedState ?? "USA"}
-                onItemClick={this.handleItemClick}
-            />
-        );
-    }
+    const handleItemClick = (item: string) => setState(isValidState(item) ? item : undefined);
 
-    private getGeography = () => {
-        const { selectedState } = this.state;
-        if (selectedState === undefined) {
-            return "states";
-        }
-
-        return "counties";
-    };
-
-    private getDataSource = () => {
-        const { selectedState } = this.state;
-        if (selectedState === undefined) {
-            return CoronaService.getUnitedStatesData.frontend({});
-        }
-
-        return CoronaService.getStateData.frontend(selectedState);
-    };
-
-    private handleItemClick = (item: string) => {
-        if (!isValidState(item)) {
-            this.setState({ selectedState: undefined });
-            return;
-        }
-
-        this.setState({ selectedState: item });
-    };
+    return (
+        <VirusDataRenderer
+            getData={getDataSource}
+            geography={getGeography()}
+            key={selectedState ?? "USA"}
+            onItemClick={handleItemClick}
+        />
+    );
 }
