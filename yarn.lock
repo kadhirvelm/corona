@@ -911,6 +911,11 @@
     "@types/connect" "*"
     "@types/node" "*"
 
+"@types/classnames@^2.2.10":
+  version "2.2.10"
+  resolved "https://registry.yarnpkg.com/@types/classnames/-/classnames-2.2.10.tgz#cc658ca319b6355399efc1f5b9e818f1a24bf999"
+  integrity sha512-1UzDldn9GfYYEsWWnn/P4wkTlkZDH7lDb0wBMGbtIQc9zXEQq7FlKBdZUn6OBqD8sKZZ2RQO2mAjGpXiDGoRmQ==
+
 "@types/connect@*":
   version "3.4.33"
   resolved "https://registry.yarnpkg.com/@types/connect/-/connect-3.4.33.tgz#31610c901eca573b8713c3330abc6e6b9f588546"
@@ -925,12 +930,29 @@
   dependencies:
     "@types/express" "*"
 
-"@types/d3-geo@*":
+"@types/d3-dsv@*":
+  version "1.0.36"
+  resolved "https://registry.yarnpkg.com/@types/d3-dsv/-/d3-dsv-1.0.36.tgz#e91129d7c02b1b814838d001e921e8b9a67153d0"
+  integrity sha512-jbIWQ27QJcBNMZbQv0NSQMHnBDCmxghAxePxgyiPH1XPCRkOsTBei7jcdi3fDrUCGpCV3lKrSZFSlOkhUQVClA==
+
+"@types/d3-fetch@^1.1.5":
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/@types/d3-fetch/-/d3-fetch-1.1.5.tgz#51601f79dd4653b5d84e6a3176d78145e065db5e"
+  integrity sha512-o9c0ItT5/Gl3wbNuVpzRnYX1t3RghzeWAjHUVLuyZJudiTxC4f/fC0ZPFWLQ2lVY8pAMmxpV8TJ6ETYCgPeI3A==
+  dependencies:
+    "@types/d3-dsv" "*"
+
+"@types/d3-geo@^1.11.1":
   version "1.11.1"
   resolved "https://registry.yarnpkg.com/@types/d3-geo/-/d3-geo-1.11.1.tgz#e96ec91f16221d87507fec66b2cc889f52d2493e"
   integrity sha512-Ox8WWOG3igDRoep/dNsGbOiSJYdUG3ew/6z0ETvHyAtXZVBjOE0S96zSSmzgl0gqQ3RdZjn2eeJOj9oRcMZPkQ==
   dependencies:
     "@types/geojson" "*"
+
+"@types/d3-selection@^1.4.1":
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/@types/d3-selection/-/d3-selection-1.4.1.tgz#fa1f8710a6b5d7cfe5c6caa61d161be7cae4a022"
+  integrity sha512-bv8IfFYo/xG6dxri9OwDnK3yCagYPeRIjTlrcdYJSx+FDWlCeBDepIHUpqROmhPtZ53jyna0aUajZRk0I3rXNA==
 
 "@types/dom4@^2.0.1":
   version "2.0.1"
@@ -964,7 +986,7 @@
     "@types/express-serve-static-core" "*"
     "@types/serve-static" "*"
 
-"@types/geojson@*":
+"@types/geojson@*", "@types/geojson@^7946.0.7":
   version "7946.0.7"
   resolved "https://registry.yarnpkg.com/@types/geojson/-/geojson-7946.0.7.tgz#c8fa532b60a0042219cdf173ca21a975ef0666ad"
   integrity sha512-wE2v81i4C4Ol09RtsWFAqg3BUitWbHSpSlIo+bNdsCJijO9sjme+zm+73ZMCa/qMC8UEERxzGbvmr1cffo2SiQ==
@@ -1046,15 +1068,6 @@
     hoist-non-react-statics "^3.3.0"
     redux "^4.0.0"
 
-"@types/react-simple-maps@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@types/react-simple-maps/-/react-simple-maps-1.0.1.tgz#cdb6a489d2aec13b194aaaddc6ba543017f23131"
-  integrity sha512-yovfUSFzerkDqQpDuljQIQCjjR5ogb2Gag6U7pIX9TFx7skNmto2Xg0enLhOZltqVMiZBwQXNIlh4u03EQUaow==
-  dependencies:
-    "@types/d3-geo" "*"
-    "@types/geojson" "*"
-    "@types/react" "*"
-
 "@types/react@*", "@types/react@^16.9.17":
   version "16.9.17"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-16.9.17.tgz#58f0cc0e9ec2425d1441dd7b623421a867aa253e"
@@ -1070,6 +1083,21 @@
   dependencies:
     "@types/express-serve-static-core" "*"
     "@types/mime" "*"
+
+"@types/topojson-client@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@types/topojson-client/-/topojson-client-3.0.0.tgz#2517fae5abbdd3052eb191747c7d0bc268d69918"
+  integrity sha512-HZH6E8XMhjkDEkkpe3HuIg95COuvjdnyy0EKrh8rAi1f6o/V6P3ly1kGyU2E8bpAffXDd2r+Rk5ceMX4XkqHnA==
+  dependencies:
+    "@types/geojson" "*"
+    "@types/topojson-specification" "*"
+
+"@types/topojson-specification@*":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@types/topojson-specification/-/topojson-specification-1.0.1.tgz#a80cb294290b79f2d674d3f5938c544ed2bd9d80"
+  integrity sha512-ZZYZUgkmUls9Uhxx2WZNt9f/h2+H3abUUjOVmq+AaaDFckC5oAwd+MDp95kBirk+XCXrYj0hfpI6DSUiJMrpYQ==
+  dependencies:
+    "@types/geojson" "*"
 
 "@types/webpack-env@^1.15.0":
   version "1.15.0"
@@ -1350,17 +1378,7 @@ ajv-keywords@^3.1.0, ajv-keywords@^3.4.1:
   resolved "https://registry.yarnpkg.com/ajv-keywords/-/ajv-keywords-3.4.1.tgz#ef916e271c64ac12171fd8384eaae6b2345854da"
   integrity sha512-RO1ibKvd27e6FEShVFfPALuHI3WjSVNeK5FIsmme/LYRNxjKuNj+Dt7bucLa6NdSv3JcVTyMlm9kGR84z1XpaQ==
 
-ajv@^6.1.0, ajv@^6.10.0, ajv@^6.10.2, ajv@^6.5.5:
-  version "6.10.2"
-  resolved "https://registry.yarnpkg.com/ajv/-/ajv-6.10.2.tgz#d3cea04d6b017b2894ad69040fec8b623eb4bd52"
-  integrity sha512-TXtUUEYHuaTEbLZWIKUr5pmBuhDLy+8KYtPYdcV8qC+pOZL+NKqYwvWSRrVXHn+ZmRRAu8vJTAznH7Oag6RVRw==
-  dependencies:
-    fast-deep-equal "^2.0.1"
-    fast-json-stable-stringify "^2.0.0"
-    json-schema-traverse "^0.4.1"
-    uri-js "^4.2.2"
-
-ajv@^6.12.0:
+ajv@^6.1.0, ajv@^6.10.0, ajv@^6.10.2, ajv@^6.12.0, ajv@^6.5.5:
   version "6.12.0"
   resolved "https://registry.yarnpkg.com/ajv/-/ajv-6.12.0.tgz#06d60b96d87b8454a5adaba86e7854da629db4b7"
   integrity sha512-D6gFiFA0RRLyUbvijN74DWAjXSFxWKaWP7mldxkVhyhAV3+SWA9HEJPHQ2c9soIeTFJqcSdFDGFgdqs1iUU2Hw==
@@ -2176,7 +2194,7 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
-classnames@^2.2:
+classnames@^2.2, classnames@^2.2.6:
   version "2.2.6"
   resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.2.6.tgz#43935bffdd291f326dad0a205309b38d00f650ce"
   integrity sha512-JR/iSQOSt+LQIWwrwEzJ9uk0xfN3mTVYMwt1Ir5mUcSN6pU+V4zQFFaJsclJbPuAUQH+yfWef6tm7l1quW3C8Q==
@@ -2727,28 +2745,21 @@ d3-array@1:
   resolved "https://registry.yarnpkg.com/d3-array/-/d3-array-1.2.4.tgz#635ce4d5eea759f6f605863dbcfc30edc737f71f"
   integrity sha512-KHW6M86R+FUPYGb3R5XiYjXPq7VzwxZ22buHhAEVG5ztoEcZZMLov530mmccaqA1GghZArjQV46fuc8kUqhhHw==
 
-d3-color@1:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/d3-color/-/d3-color-1.4.0.tgz#89c45a995ed773b13314f06460df26d60ba0ecaf"
-  integrity sha512-TzNPeJy2+iEepfiL92LAAB7fvnp/dV2YwANPVHdDWmYMm23qIJBYww3qT8I8C1wXrmrg4UWs7BKc2tKIgyjzHg==
-
-d3-dispatch@1:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/d3-dispatch/-/d3-dispatch-1.0.6.tgz#00d37bcee4dd8cd97729dd893a0ac29caaba5d58"
-  integrity sha512-fVjoElzjhCEy+Hbn8KygnmMS7Or0a9sI2UzGwoB7cCtvI1XpVN9GpoYlnb3xt2YV66oXYb1fLJ8GMvP4hdU1RA==
-
-d3-drag@1:
-  version "1.2.5"
-  resolved "https://registry.yarnpkg.com/d3-drag/-/d3-drag-1.2.5.tgz#2537f451acd39d31406677b7dc77c82f7d988f70"
-  integrity sha512-rD1ohlkKQwMZYkQlYVCrSFxsWPzI97+W+PaEIBNTMxRuxz9RF0Hi5nJWHGVJ3Om9d2fRTe1yOBINJyy/ahV95w==
+d3-dsv@1:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/d3-dsv/-/d3-dsv-1.2.0.tgz#9d5f75c3a5f8abd611f74d3f5847b0d4338b885c"
+  integrity sha512-9yVlqvZcSOMhCYzniHE7EVUws7Fa1zgw+/EAV2BxJoG3ME19V6BQFBwI855XQDsxyOuG7NibqRMTtiF/Qup46g==
   dependencies:
-    d3-dispatch "1"
-    d3-selection "1"
+    commander "2"
+    iconv-lite "0.4"
+    rw "1"
 
-d3-ease@1:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/d3-ease/-/d3-ease-1.0.6.tgz#ebdb6da22dfac0a22222f2d4da06f66c416a0ec0"
-  integrity sha512-SZ/lVU7LRXafqp7XtIcBdxnWl8yyLpgOmzAk0mWBI9gXNzLDx5ybZgnRbH9dN/yY5tzVBqCQ9avltSnqVwessQ==
+d3-fetch@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/d3-fetch/-/d3-fetch-1.1.2.tgz#957c8fbc6d4480599ba191b1b2518bf86b3e1be2"
+  integrity sha512-S2loaQCV/ZeyTyIF2oP8D1K9Z4QizUzW7cWeAOAS4U88qOt3Ucf6GsmgthuYSdyB2HyEm4CeGvkQxWsmInsIVA==
+  dependencies:
+    d3-dsv "1"
 
 d3-geo@^1.11.9:
   version "1.11.9"
@@ -2757,45 +2768,10 @@ d3-geo@^1.11.9:
   dependencies:
     d3-array "1"
 
-d3-interpolate@1:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/d3-interpolate/-/d3-interpolate-1.4.0.tgz#526e79e2d80daa383f9e0c1c1c7dcc0f0583e987"
-  integrity sha512-V9znK0zc3jOPV4VD2zZn0sDhZU3WAE2bmlxdIwwQPPzPjvyLkd8B3JUVdS1IDUFDkWZ72c9qnv1GK2ZagTZ8EA==
-  dependencies:
-    d3-color "1"
-
-d3-selection@1, d3-selection@^1.1.0, d3-selection@^1.4.1:
+d3-selection@^1.4.1:
   version "1.4.1"
   resolved "https://registry.yarnpkg.com/d3-selection/-/d3-selection-1.4.1.tgz#98eedbbe085fbda5bafa2f9e3f3a2f4d7d622a98"
   integrity sha512-BTIbRjv/m5rcVTfBs4AMBLKs4x8XaaLkwm28KWu9S2vKNqXkXt2AH2Qf0sdPZHjFxcWg/YL53zcqAz+3g4/7PA==
-
-d3-timer@1:
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/d3-timer/-/d3-timer-1.0.10.tgz#dfe76b8a91748831b13b6d9c793ffbd508dd9de5"
-  integrity sha512-B1JDm0XDaQC+uvo4DT79H0XmBskgS3l6Ve+1SBCfxgmtIb1AVrPIoqd+nPSv+loMX8szQ0sVUhGngL7D5QPiXw==
-
-d3-transition@1:
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/d3-transition/-/d3-transition-1.3.2.tgz#a98ef2151be8d8600543434c1ca80140ae23b398"
-  integrity sha512-sc0gRU4PFqZ47lPVHloMn9tlPcv8jxgOQg+0zjhfZXMQuvppjG6YuwdMBE0TuqCZjeJkLecku/l9R0JPcRhaDA==
-  dependencies:
-    d3-color "1"
-    d3-dispatch "1"
-    d3-ease "1"
-    d3-interpolate "1"
-    d3-selection "^1.1.0"
-    d3-timer "1"
-
-d3-zoom@^1.8.3:
-  version "1.8.3"
-  resolved "https://registry.yarnpkg.com/d3-zoom/-/d3-zoom-1.8.3.tgz#b6a3dbe738c7763121cd05b8a7795ffe17f4fc0a"
-  integrity sha512-VoLXTK4wvy1a0JpH2Il+F2CiOhVu7VRXWF5M/LroMIh3/zBAC3WAt7QoIvPibOavVo20hN6/37vwAsdBejLyKQ==
-  dependencies:
-    d3-dispatch "1"
-    d3-drag "1"
-    d3-interpolate "1"
-    d3-selection "1"
-    d3-transition "1"
 
 damerau-levenshtein@^1.0.4:
   version "1.0.5"
@@ -3741,11 +3717,6 @@ extsprintf@1.3.0, extsprintf@^1.2.0:
   resolved "https://registry.yarnpkg.com/extsprintf/-/extsprintf-1.3.0.tgz#96918440e3041a7a414f8c52e3c574eb3c3e1e05"
   integrity sha1-lpGEQOMEGnpBT4xS48V06zw+HgU=
 
-fast-deep-equal@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/fast-deep-equal/-/fast-deep-equal-2.0.1.tgz#7b05218ddf9667bf7f370bf7fdb2cb15fdd0aa49"
-  integrity sha1-ewUhjd+WZ79/Nwv3/bLLFf3Qqkk=
-
 fast-deep-equal@^3.1.1:
   version "3.1.1"
   resolved "https://registry.yarnpkg.com/fast-deep-equal/-/fast-deep-equal-3.1.1.tgz#545145077c501491e33b15ec408c294376e94ae4"
@@ -4073,6 +4044,11 @@ genfun@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/genfun/-/genfun-5.0.0.tgz#9dd9710a06900a5c4a5bf57aca5da4e52fe76537"
   integrity sha512-KGDOARWVga7+rnB3z9Sd2Letx515owfk0hSxHGuqjANb1M+x2bGZGqHLiozPsYMdM2OubeMni/Hpwmjq6qIUhA==
+
+geojson@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/geojson/-/geojson-0.5.0.tgz#3cd6c96399be65b56ee55596116fe9191ce701c0"
+  integrity sha1-PNbJY5m+ZbVu5VWWEW/pGRznAcA=
 
 get-caller-file@^1.0.1:
   version "1.0.3"
@@ -4628,7 +4604,7 @@ humanize-ms@^1.2.1:
   dependencies:
     ms "^2.0.0"
 
-iconv-lite@0.4.24, iconv-lite@^0.4.24, iconv-lite@~0.4.13:
+iconv-lite@0.4, iconv-lite@0.4.24, iconv-lite@^0.4.24, iconv-lite@~0.4.13:
   version "0.4.24"
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.24.tgz#2022b4b25fbddc21d2f524974a474aafe733908b"
   integrity sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==
@@ -7234,16 +7210,6 @@ react-redux@^7.2.0:
     prop-types "^15.7.2"
     react-is "^16.9.0"
 
-react-simple-maps@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/react-simple-maps/-/react-simple-maps-2.0.0.tgz#877e27b15a95ef1602b7e3e24185bb7f095ac4a2"
-  integrity sha512-xi1y3citL7g9aB1LWddx2/XSmnsvXEyoN8zBf4BKxq+BPyjwC1sn7HJkFW5BYr70Ltrw2dhOfJvyi1EThejGNQ==
-  dependencies:
-    d3-geo "^1.11.9"
-    d3-selection "^1.4.1"
-    d3-zoom "^1.8.3"
-    topojson-client "^3.0.0"
-
 react-transition-group@^2.9.0:
   version "2.9.0"
   resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-2.9.0.tgz#df9cdb025796211151a436c69a8f3b97b5b07c8d"
@@ -7667,6 +7633,11 @@ run-queue@^1.0.0, run-queue@^1.0.3:
   dependencies:
     aproba "^1.1.1"
 
+rw@1:
+  version "1.3.3"
+  resolved "https://registry.yarnpkg.com/rw/-/rw-1.3.3.tgz#3f862dfa91ab766b14885ef4d01124bfda074fb4"
+  integrity sha1-P4Yt+pGrdmsUiF700BEkv9oHT7Q=
+
 rxjs@^6.4.0, rxjs@^6.5.3:
   version "6.5.4"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-6.5.4.tgz#e0777fe0d184cec7872df147f303572d414e211c"
@@ -7741,15 +7712,7 @@ schema-utils@^1.0.0:
     ajv-errors "^1.0.0"
     ajv-keywords "^3.1.0"
 
-schema-utils@^2.0.1, schema-utils@^2.6.0, schema-utils@^2.6.1:
-  version "2.6.4"
-  resolved "https://registry.yarnpkg.com/schema-utils/-/schema-utils-2.6.4.tgz#a27efbf6e4e78689d91872ee3ccfa57d7bdd0f53"
-  integrity sha512-VNjcaUxVnEeun6B2fiiUDjXXBtD4ZSH7pdbfIu1pOFwgptDPLMo/z9jr4sUfsjFVPqDCEin/F7IYlq7/E6yDbQ==
-  dependencies:
-    ajv "^6.10.2"
-    ajv-keywords "^3.4.1"
-
-schema-utils@^2.6.5:
+schema-utils@^2.0.1, schema-utils@^2.6.0, schema-utils@^2.6.1, schema-utils@^2.6.5:
   version "2.6.5"
   resolved "https://registry.yarnpkg.com/schema-utils/-/schema-utils-2.6.5.tgz#c758f0a7e624263073d396e29cd40aa101152d8a"
   integrity sha512-5KXuwKziQrTVHh8j/Uxz+QUbxkaLW9X/86NBlx/gnKgtsZA2GIVMUn17qWhRFwF8jdYb3Dig5hRO/W5mZqy6SQ==
@@ -8582,7 +8545,7 @@ toidentifier@1.0.0:
   resolved "https://registry.yarnpkg.com/toidentifier/-/toidentifier-1.0.0.tgz#7e1be3470f1e77948bc43d94a3c8f4d7752ba553"
   integrity sha512-yaOH/Pk/VEhBWWTlhI+qXxDFXlejDGcQipMlyxda9nthulaxLZUNcUqFxokp0vcYnvteJln5FNQDRrxj3YcbVw==
 
-topojson-client@^3.0.0:
+topojson-client@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/topojson-client/-/topojson-client-3.1.0.tgz#22e8b1ed08a2b922feeb4af6f53b6ef09a467b99"
   integrity sha512-605uxS6bcYxGXw9qi62XyrV6Q3xwbndjachmNxu8HWTtVPxZfEJN9fd/SZS1Q54Sn2y0TMyMxFj/cJINqGHrKw==
