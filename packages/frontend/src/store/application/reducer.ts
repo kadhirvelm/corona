@@ -3,17 +3,21 @@ import { IVirusData } from "@corona/api";
 import { ADD_DATA } from "./actions";
 
 export interface IApplicationState {
-    data: {
+    /**
+     * The cached data from all the network calls made to the backend. This is
+     * mostly to help keep the load off the backend given that the data is quite light.
+     */
+    cachedData: {
         [typeOfData: string]: IVirusData;
     };
 }
 
 export const EMPTY_APPLICATION_STATE: IApplicationState = {
-    data: {},
+    cachedData: {},
 };
 
 export const applicationReducer = TypedReducer.builder<IApplicationState>()
     .withHandler(ADD_DATA.TYPE, (state, newData) =>
-        setWith(state, { data: { ...state.data, [newData.key]: newData.data } }),
+        setWith(state, { cachedData: { ...state.cachedData, [newData.key]: newData.data } }),
     )
     .build();

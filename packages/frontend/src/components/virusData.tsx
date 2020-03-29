@@ -1,19 +1,13 @@
-import { IVirusData, CoronaService } from "@corona/api";
+import { CoronaService, IVirusData } from "@corona/api";
+import { isValidState } from "@corona/utils";
 import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
-import * as topology from "topojson-client";
-import { isValidState } from "@corona/utils";
-import { Transitioner } from "../common/transitioner";
-import usCounties from "../static/us-county-topology.json";
-import usStates from "../static/us-state-topology.json";
-import { IStoreState } from "../store";
-import { ADD_DATA } from "../store/application/actions";
+import { IGeography, IDataEntry } from "../typings";
+import { DEFAULT_DATA_KEY, Transitioner } from "../common";
 import { USMap } from "./usMap";
-import { IDataEntry } from "../typings/data";
-import { DEFAULT_DATA_KEY } from "../common/constants";
-import { IGeography } from "../typings/geography";
-import { IMapTopology } from "../typings/map";
+import { nationTopology, stateTopology } from "../utils";
+import { IStoreState, ADD_DATA, UPDATE_GEOGRAPHY } from "../store";
 
 interface IStateProps {
     cachedData: { [key: string]: IVirusData };
@@ -22,45 +16,10 @@ interface IStateProps {
 
 interface IDispatchProps {
     addData: (newData: { key: string; data: IVirusData }) => void;
+    updateGeography: (geography: IGeography) => void;
 }
 
 type IProps = IStateProps & IDispatchProps;
-
-function nationTopology(): IMapTopology {
-    return {
-        // NOTE: in production, the JSON import gets turned into a location string
-        topologyLocation: (usStates as unknown) as string,
-        extractFeatures: json => {
-            return [
-                ...(topology.feature(json, json.objects.nation) as any).features,
-                ...(topology.feature(json, json.objects.states) as any).features,
-            ];
-        },
-    };
-}
-
-function stateTopology(geography: IGeography): IMapTopology {
-    if (IGeography.isNationGeography(geography)) {
-        return nationTopology();
-    }
-
-    return {
-        // NOTE: in production, the JSON import gets turned into a location string
-        topologyLocation: (usCounties as unknown) as string,
-        extractFeatures: json => {
-            const state = (topology.feature(json, json.objects.states) as any).features.find(
-                (feature: any) => feature.id === geography.stateFipsCode,
-            );
-
-            return [
-                state,
-                ...(topology.feature(json, json.objects.counties) as any).features.filter((feature: any) =>
-                    feature.id.startsWith(geography.stateFipsCode),
-                ),
-            ];
-        },
-    };
-}
 
 async function getDataForState(stateName: string, addData: (dataEntry: IDataEntry) => void) {
     if (!isValidState(stateName)) {
@@ -72,7 +31,7 @@ async function getDataForState(stateName: string, addData: (dataEntry: IDataEntr
 }
 
 function UnconnectedVirusDataRenderer(props: IProps) {
-    const { geography, cachedData } = props;
+    const { geography, cachedData, updateGeography } = props;
 
     React.useEffect(() => {
         const { addData } = props;
@@ -83,16 +42,34 @@ function UnconnectedVirusDataRenderer(props: IProps) {
         getDataForState(geography.name, addData);
     }, [geography]);
 
+    const onFeatureSelect = (feature: GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>) => {
+        if (isValidState(feature.properties?.name)) {
+            updateGeography(
+                IGeography.stateGeography({
+                    stateFipsCode: feature.id?.toString() ?? "",
+                    name: feature.properties?.name ?? "",
+                }),
+            );
+        } else {
+            updateGeography(IGeography.nationGeography());
+        }
+    };
+
     const keyForData = IGeography.isStateGeography(geography) ? geography.name : DEFAULT_DATA_KEY;
     const data = cachedData[keyForData];
 
     return (
         <>
             <Transitioner show={IGeography.isNationGeography(geography) && data !== undefined}>
-                <USMap id="nation" mapTopology={nationTopology()} data={data} />
+                <USMap id="nation" mapTopology={nationTopology()} data={data} onFeatureSelect={onFeatureSelect} />
             </Transitioner>
             <Transitioner show={IGeography.isStateGeography(geography) && data !== undefined}>
-                <USMap id="state" mapTopology={stateTopology(geography)} data={data} />
+                <USMap
+                    id="state"
+                    mapTopology={stateTopology(geography)}
+                    data={data}
+                    onFeatureSelect={onFeatureSelect}
+                />
             </Transitioner>
         </>
     );
@@ -100,7 +77,7 @@ function UnconnectedVirusDataRenderer(props: IProps) {
 
 function mapStateToProps(state: IStoreState): IStateProps {
     return {
-        cachedData: state.application.data,
+        cachedData: state.application.cachedData,
         geography: state.interface.geography,
     };
 }
@@ -109,6 +86,7 @@ function mapDispatchToProps(dispatch: Dispatch): IDispatchProps {
     return bindActionCreators(
         {
             addData: ADD_DATA.create,
+            updateGeography: UPDATE_GEOGRAPHY.create,
         },
         dispatch,
     );

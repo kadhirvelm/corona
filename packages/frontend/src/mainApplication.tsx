@@ -4,8 +4,8 @@ import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 import { VirusDataRenderer } from "./components/virusData";
 import { ADD_DATA } from "./store";
-import { IDataEntry } from "./typings/data";
-import { DEFAULT_DATA_KEY } from "./common/constants";
+import { IDataEntry } from "./typings";
+import { DEFAULT_DATA_KEY } from "./common";
 
 interface IDispatchProps {
     addData: (dataEntry: IDataEntry) => void;
@@ -14,7 +14,6 @@ interface IDispatchProps {
 type IProps = IDispatchProps;
 
 async function getUnitedStatesData(addData: (dataEntry: IDataEntry) => void) {
-    console.log("FETCHIN US DATA");
     const data = await CoronaService.getUnitedStatesData.frontend({});
     addData({ key: DEFAULT_DATA_KEY, data });
 }

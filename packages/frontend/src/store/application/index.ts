@@ -1,2 +1,2 @@
-export { applicationReducer } from "./reducer";
 export * from "./actions";
+export { applicationReducer } from "./reducer";

@@ -3,6 +3,9 @@ import { UPDATE_GEOGRAPHY } from "./actions";
 import { IGeography } from "../../typings/geography";
 
 export interface IInterfaceState {
+    /**
+     * The current geography to render on the USMap. See IGeography for more information.
+     */
     geography: IGeography;
 }
 

@@ -5,27 +5,33 @@ import { geoAlbersUsa, geoPath, GeoPath, GeoPermissibleObjects } from "d3-geo";
 import { BaseType, select, Selection } from "d3-selection";
 import GeoJSON from "geojson";
 import * as React from "react";
-import { Dispatch, bindActionCreators } from "redux";
-import { connect } from "react-redux";
-import { isValidState } from "@corona/utils";
 import styles from "./usMap.module.scss";
-import { IMapTopology } from "../typings/map";
-import { IGeography } from "../typings/geography";
-import { UPDATE_GEOGRAPHY } from "../store/interface/actions";
+import { IMapTopology } from "../typings";
 
 const PADDING = 100;
 
 interface IOwnProps {
+    /**
+     * The unique identifier given to the svg for the map. If there are multiple d3-geo maps on the page, they
+     * must have different identifiers to prevent them from rendering over one another.
+     */
     id: string;
+    /**
+     * The corona virus data to render on top of the topology data.
+     */
     data: IVirusData;
+    /**
+     * Provides information related to how to render this map with d3-geo, specifically where to get the topology from
+     * and how to extract the features from said topology.
+     */
     mapTopology: IMapTopology;
+    /**
+     * Callback when a feature is clicked on.
+     */
+    onFeatureSelect: (feature: GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>) => void;
 }
 
-interface IDispatchProps {
-    updateGeography: (selection: IGeography) => void;
-}
-
-type IProps = IOwnProps & IDispatchProps;
+type IProps = IOwnProps;
 
 function renderMap(
     props: IProps,
@@ -33,7 +39,7 @@ function renderMap(
     features: GeoJSON.Feature[],
     path: GeoPath<any, GeoPermissibleObjects>,
 ) {
-    const { data, updateGeography } = props;
+    const { data, onFeatureSelect } = props;
 
     svg.selectAll("path")
         .data(features)
@@ -44,18 +50,7 @@ function renderMap(
                 [styles.stateNoData]: data.breakdown[feature.id ?? ""] === undefined,
             });
         })
-        .on("click", feature => {
-            if (isValidState(feature.properties?.name)) {
-                updateGeography(
-                    IGeography.stateGeography({
-                        stateFipsCode: feature.id?.toString() ?? "",
-                        name: feature.properties?.name ?? "",
-                    }),
-                );
-            } else {
-                updateGeography(IGeography.nationGeography());
-            }
-        })
+        .on("click", onFeatureSelect)
         .attr("d", path);
 }
 
@@ -76,7 +71,7 @@ async function setupMap(props: IProps) {
     renderMap(props, svg, features, path);
 }
 
-function UnconnectedUSMap(props: IProps) {
+export function USMap(props: IProps) {
     const { id } = props;
 
     React.useEffect(() => {
@@ -85,9 +80,3 @@ function UnconnectedUSMap(props: IProps) {
 
     return <svg className={styles.svgMap} id={id} width={window.innerWidth - 5} height={window.innerHeight - 5} />;
 }
-
-function mapDispatchToProps(dispatch: Dispatch): IDispatchProps {
-    return bindActionCreators({ updateGeography: UPDATE_GEOGRAPHY.create }, dispatch);
-}
-
-export const USMap = connect(undefined, mapDispatchToProps)(UnconnectedUSMap);
