@@ -60,6 +60,7 @@ function getDatapoint(dataPoint: IBasicCoronaData): IBreakdown {
         duplicates: [],
         id: getId(dataPoint),
         url: dataPoint.url,
+        name: dataPoint.county ?? dataPoint.state ?? dataPoint.country ?? "USA",
     };
 }
 

@@ -2,7 +2,7 @@ import { CoronaService } from "@corona/api";
 import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
-import { VirusDataRenderer } from "./components/virusData";
+import { VirusDataRenderer, StatsPanel } from "./components";
 import { ADD_DATA } from "./store";
 import { IDataEntry } from "./typings";
 import { DEFAULT_DATA_KEY } from "./common";
@@ -24,7 +24,12 @@ function UnconnectedMainApplication(props: IProps) {
         getUnitedStatesData(addData);
     }, []);
 
-    return <VirusDataRenderer />;
+    return (
+        <>
+            <StatsPanel />
+            <VirusDataRenderer />
+        </>
+    );
 }
 
 function mapDispatchToProps(dispatch: Dispatch): IDispatchProps {
