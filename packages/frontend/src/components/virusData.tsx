@@ -18,7 +18,12 @@ function stateGeography(): IGeography {
     return {
         // NOTE: in production, the JSON import gets turned into a location string
         topologyLocation: (usStates as unknown) as string,
-        extractFeatures: json => (topology.feature(json, json.objects.states) as any).features,
+        extractFeatures: json => {
+            return [
+                ...(topology.feature(json, json.objects.nation) as any).features,
+                ...(topology.feature(json, json.objects.states) as any).features,
+            ];
+        },
     };
 }
 
@@ -31,9 +36,16 @@ function countyGeography(geographyType: IGeographyKind): IGeography {
         // NOTE: in production, the JSON import gets turned into a location string
         topologyLocation: (usCounties as unknown) as string,
         extractFeatures: json => {
-            return (topology.feature(json, json.objects.counties) as any).features.filter((feature: any) =>
-                feature.id.startsWith(geographyType.stateFipsCode),
+            const state = (topology.feature(json, json.objects.states) as any).features.find(
+                (feature: any) => feature.id === geographyType.stateFipsCode,
             );
+
+            return [
+                state,
+                ...(topology.feature(json, json.objects.counties) as any).features.filter((feature: any) =>
+                    feature.id.startsWith(geographyType.stateFipsCode),
+                ),
+            ];
         },
     };
 }
@@ -61,10 +73,10 @@ export function VirusDataRenderer(props: IProps) {
     return (
         <>
             <Transitioner show={isStateGeography(geography) && data.typeOfDataLoaded === "states"}>
-                <USMap id="states" geography={stateGeography()} scale={2000} {...sharedProps} />
+                <USMap id="states" geography={stateGeography()} {...sharedProps} />
             </Transitioner>
             <Transitioner show={isCountyGeography(geography) && data.typeOfDataLoaded === "counties"}>
-                <USMap id="counties" geography={countyGeography(geography)} scale={3000} {...sharedProps} />
+                <USMap id="counties" geography={countyGeography(geography)} {...sharedProps} />
             </Transitioner>
         </>
     );

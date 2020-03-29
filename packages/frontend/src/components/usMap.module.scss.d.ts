@@ -3,6 +3,7 @@ declare namespace UsMapModuleScssModule {
     export interface IUsMapModuleScss {
         state: string;
         stateNoData: string;
+        svgMap: string;
     }
 }
 
