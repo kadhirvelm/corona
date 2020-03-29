@@ -5,8 +5,6 @@ export interface IGeography {
     extractFeatures: (json: any) => GeoJSON.Feature[];
 }
 
-export type IGeographyKind = "states" | "counties";
-
 export interface IFeature {
     type: "Feature";
     id: string;
@@ -17,4 +15,9 @@ export interface IFeature {
         type: string;
         coorindates: Array<number[]>;
     };
+}
+
+export interface IFeatureSeletion {
+    fipsCode: string;
+    name: string;
 }

@@ -1,0 +1,31 @@
+.fade-in {
+    position: absolute;
+    animation: fade-in 1000ms ease-out;
+}
+
+.fade-out {
+    position: absolute;
+    z-index: 1;
+    animation: fade-out 500ms ease-out;
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes fade-out {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
