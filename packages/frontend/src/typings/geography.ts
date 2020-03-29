@@ -1,36 +1,44 @@
+// eslint-disable-next-line max-classes-per-file
+export type IGeographyTypes = "nation" | "state";
+
 interface IGenericGeography {
     type: IGeographyTypes;
 }
 
+export interface INationGeography extends IGenericGeography {
+    type: "nation";
+}
+
 export interface IStateGeography extends IGenericGeography {
-    type: "states";
-}
-
-export interface ICountyGeography extends IGenericGeography {
-    type: "counties";
+    type: "state";
     stateFipsCode: string;
+    name: string;
 }
 
-export type IGeographyTypes = "states" | "counties";
-export type IGeographyKind = IStateGeography | ICountyGeography;
+export type IGeography = INationGeography | IStateGeography;
 
-export function isStateGeography(geography: IGeographyKind): geography is IStateGeography {
-    return geography.type === "states";
-}
-
-export function isCountyGeography(geography: IGeographyKind): geography is ICountyGeography {
-    return geography.type === "counties";
-}
-
-export function stateGeography(): IStateGeography {
-    return {
-        type: "states",
+export namespace IGeography {
+    export const nationGeography = (): INationGeography => {
+        return {
+            type: "nation",
+        };
     };
-}
 
-export function countyGeography(stateFipsCode: string): ICountyGeography {
-    return {
-        type: "counties",
-        stateFipsCode,
+    export const stateGeography = (entry: { stateFipsCode: string; name: string }): IStateGeography => {
+        const { name, stateFipsCode } = entry;
+
+        return {
+            name,
+            stateFipsCode,
+            type: "state",
+        };
+    };
+
+    export const isNationGeography = (geography: IGeography): geography is INationGeography => {
+        return geography.type === "nation";
+    };
+
+    export const isStateGeography = (geography: IGeography): geography is IStateGeography => {
+        return geography.type === "state";
     };
 }

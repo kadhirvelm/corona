@@ -5,17 +5,27 @@ import { geoAlbersUsa, geoPath, GeoPath, GeoPermissibleObjects } from "d3-geo";
 import { BaseType, select, Selection } from "d3-selection";
 import GeoJSON from "geojson";
 import * as React from "react";
-import { IFeatureSeletion, IGeography } from "../typings/map";
+import { Dispatch, bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import { isValidState } from "@corona/utils";
 import styles from "./usMap.module.scss";
+import { IMapTopology } from "../typings/map";
+import { IGeography } from "../typings/geography";
+import { UPDATE_GEOGRAPHY } from "../store/interface/actions";
 
 const PADDING = 100;
 
-interface IProps {
+interface IOwnProps {
     id: string;
     data: IVirusData;
-    geography: IGeography;
-    onClick: (selection: IFeatureSeletion) => void;
+    mapTopology: IMapTopology;
 }
+
+interface IDispatchProps {
+    updateGeography: (selection: IGeography) => void;
+}
+
+type IProps = IOwnProps & IDispatchProps;
 
 function renderMap(
     props: IProps,
@@ -23,7 +33,7 @@ function renderMap(
     features: GeoJSON.Feature[],
     path: GeoPath<any, GeoPermissibleObjects>,
 ) {
-    const { data, onClick } = props;
+    const { data, updateGeography } = props;
 
     svg.selectAll("path")
         .data(features)
@@ -35,18 +45,27 @@ function renderMap(
             });
         })
         .on("click", feature => {
-            onClick({ fipsCode: feature.id?.toString() ?? "", name: feature.properties?.name ?? "" });
+            if (isValidState(feature.properties?.name)) {
+                updateGeography(
+                    IGeography.stateGeography({
+                        stateFipsCode: feature.id?.toString() ?? "",
+                        name: feature.properties?.name ?? "",
+                    }),
+                );
+            } else {
+                updateGeography(IGeography.nationGeography());
+            }
         })
         .attr("d", path);
 }
 
 async function setupMap(props: IProps) {
-    const { geography, id } = props;
+    const { mapTopology, id } = props;
 
     const svg = select(`#${id}`);
 
-    const usTopology = await json(geography.topologyLocation);
-    const features = geography.extractFeatures(usTopology);
+    const usTopology = await json(mapTopology.topologyLocation);
+    const features = mapTopology.extractFeatures(usTopology);
 
     const projection = geoAlbersUsa().fitSize(
         [window.innerWidth - PADDING * 2, window.innerHeight - PADDING * 2],
@@ -57,7 +76,7 @@ async function setupMap(props: IProps) {
     renderMap(props, svg, features, path);
 }
 
-export function USMap(props: IProps) {
+function UnconnectedUSMap(props: IProps) {
     const { id } = props;
 
     React.useEffect(() => {
@@ -66,3 +85,9 @@ export function USMap(props: IProps) {
 
     return <svg className={styles.svgMap} id={id} width={window.innerWidth - 5} height={window.innerHeight - 5} />;
 }
+
+function mapDispatchToProps(dispatch: Dispatch): IDispatchProps {
+    return bindActionCreators({ updateGeography: UPDATE_GEOGRAPHY.create }, dispatch);
+}
+
+export const USMap = connect(undefined, mapDispatchToProps)(UnconnectedUSMap);

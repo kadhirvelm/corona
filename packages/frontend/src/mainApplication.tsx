@@ -1,32 +1,35 @@
-import { CoronaService, STATE } from "@corona/api";
+import { CoronaService } from "@corona/api";
 import * as React from "react";
-import { isValidState } from "@corona/utils";
+import { connect } from "react-redux";
+import { bindActionCreators, Dispatch } from "redux";
 import { VirusDataRenderer } from "./components/virusData";
-import { IFeatureSeletion } from "./typings/map";
-import { IGeographyKind, stateGeography, countyGeography } from "./typings/geography";
+import { ADD_DATA } from "./store";
+import { IDataEntry } from "./typings/data";
+import { DEFAULT_DATA_KEY } from "./common/constants";
 
-interface IStateFeatureSelection extends IFeatureSeletion {
-    name: STATE;
+interface IDispatchProps {
+    addData: (dataEntry: IDataEntry) => void;
 }
 
-function isStateFeatureSelection(selection: IFeatureSeletion): selection is IStateFeatureSelection {
-    return isValidState(selection.name);
+type IProps = IDispatchProps;
+
+async function getUnitedStatesData(addData: (dataEntry: IDataEntry) => void) {
+    console.log("FETCHIN US DATA");
+    const data = await CoronaService.getUnitedStatesData.frontend({});
+    addData({ key: DEFAULT_DATA_KEY, data });
 }
 
-export function MainApplication() {
-    const [selectedState, setState] = React.useState<IStateFeatureSelection | undefined>(undefined);
+function UnconnectedMainApplication(props: IProps) {
+    React.useEffect(() => {
+        const { addData } = props;
+        getUnitedStatesData(addData);
+    }, []);
 
-    const getDataSource = () =>
-        selectedState === undefined
-            ? CoronaService.getUnitedStatesData.frontend({})
-            : CoronaService.getStateData.frontend(selectedState.name);
-
-    const getGeography = (): IGeographyKind =>
-        selectedState === undefined ? stateGeography() : countyGeography(selectedState.fipsCode);
-
-    const handleItemClick = (seletion: IFeatureSeletion) => {
-        setState(isStateFeatureSelection(seletion) ? seletion : undefined);
-    };
-
-    return <VirusDataRenderer getData={getDataSource} geography={getGeography()} onItemClick={handleItemClick} />;
+    return <VirusDataRenderer />;
 }
+
+function mapDispatchToProps(dispatch: Dispatch): IDispatchProps {
+    return bindActionCreators({ addData: ADD_DATA.create }, dispatch);
+}
+
+export const MainApplication = connect(undefined, mapDispatchToProps)(UnconnectedMainApplication);

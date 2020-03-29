@@ -1,6 +1,6 @@
 import GeoJSON from "geojson";
 
-export interface IGeography {
+export interface IMapTopology {
     topologyLocation: string;
     extractFeatures: (json: any) => GeoJSON.Feature[];
 }
@@ -15,9 +15,4 @@ export interface IFeature {
         type: string;
         coorindates: Array<number[]>;
     };
-}
-
-export interface IFeatureSeletion {
-    fipsCode: string;
-    name: string;
 }

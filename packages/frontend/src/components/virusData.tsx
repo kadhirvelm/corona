@@ -1,20 +1,32 @@
-import { IVirusData } from "@corona/api";
+import { IVirusData, CoronaService } from "@corona/api";
 import * as React from "react";
+import { connect } from "react-redux";
+import { bindActionCreators, Dispatch } from "redux";
 import * as topology from "topojson-client";
-import { IGeography, IFeatureSeletion } from "../typings/map";
+import { isValidState } from "@corona/utils";
 import { Transitioner } from "../common/transitioner";
 import usCounties from "../static/us-county-topology.json";
 import usStates from "../static/us-state-topology.json";
+import { IStoreState } from "../store";
+import { ADD_DATA } from "../store/application/actions";
 import { USMap } from "./usMap";
-import { IGeographyKind, isStateGeography, IGeographyTypes, isCountyGeography } from "../typings/geography";
+import { IDataEntry } from "../typings/data";
+import { DEFAULT_DATA_KEY } from "../common/constants";
+import { IGeography } from "../typings/geography";
+import { IMapTopology } from "../typings/map";
 
-interface IProps {
-    getData: () => Promise<IVirusData>;
-    onItemClick: (selection: IFeatureSeletion) => void;
-    geography: IGeographyKind;
+interface IStateProps {
+    cachedData: { [key: string]: IVirusData };
+    geography: IGeography;
 }
 
-function stateGeography(): IGeography {
+interface IDispatchProps {
+    addData: (newData: { key: string; data: IVirusData }) => void;
+}
+
+type IProps = IStateProps & IDispatchProps;
+
+function nationTopology(): IMapTopology {
     return {
         // NOTE: in production, the JSON import gets turned into a location string
         topologyLocation: (usStates as unknown) as string,
@@ -27,9 +39,9 @@ function stateGeography(): IGeography {
     };
 }
 
-function countyGeography(geographyType: IGeographyKind): IGeography {
-    if (isStateGeography(geographyType)) {
-        return stateGeography();
+function stateTopology(geography: IGeography): IMapTopology {
+    if (IGeography.isNationGeography(geography)) {
+        return nationTopology();
     }
 
     return {
@@ -37,47 +49,69 @@ function countyGeography(geographyType: IGeographyKind): IGeography {
         topologyLocation: (usCounties as unknown) as string,
         extractFeatures: json => {
             const state = (topology.feature(json, json.objects.states) as any).features.find(
-                (feature: any) => feature.id === geographyType.stateFipsCode,
+                (feature: any) => feature.id === geography.stateFipsCode,
             );
 
             return [
                 state,
                 ...(topology.feature(json, json.objects.counties) as any).features.filter((feature: any) =>
-                    feature.id.startsWith(geographyType.stateFipsCode),
+                    feature.id.startsWith(geography.stateFipsCode),
                 ),
             ];
         },
     };
 }
 
-export function VirusDataRenderer(props: IProps) {
-    const [data, setData] = React.useState<{ typeOfDataLoaded: IGeographyTypes; virusData: IVirusData } | undefined>(
-        undefined,
-    );
-    const { geography, onItemClick } = props;
-
-    React.useEffect(() => {
-        const { getData } = props;
-        getData().then(virusData => setData({ typeOfDataLoaded: geography.type, virusData }));
-    }, [geography]);
-
-    if (data === undefined) {
-        return null;
+async function getDataForState(stateName: string, addData: (dataEntry: IDataEntry) => void) {
+    if (!isValidState(stateName)) {
+        throw new Error(`Attempted to fetch data for an invalid state: ${stateName}`);
     }
 
-    const sharedProps = {
-        data: data.virusData,
-        onClick: onItemClick,
-    };
+    const data = await CoronaService.getStateData.frontend(stateName);
+    addData({ key: stateName, data });
+}
+
+function UnconnectedVirusDataRenderer(props: IProps) {
+    const { geography, cachedData } = props;
+
+    React.useEffect(() => {
+        const { addData } = props;
+        if (IGeography.isNationGeography(geography) || cachedData[geography.name] !== undefined) {
+            return;
+        }
+
+        getDataForState(geography.name, addData);
+    }, [geography]);
+
+    const keyForData = IGeography.isStateGeography(geography) ? geography.name : DEFAULT_DATA_KEY;
+    const data = cachedData[keyForData];
 
     return (
         <>
-            <Transitioner show={isStateGeography(geography) && data.typeOfDataLoaded === "states"}>
-                <USMap id="states" geography={stateGeography()} {...sharedProps} />
+            <Transitioner show={IGeography.isNationGeography(geography) && data !== undefined}>
+                <USMap id="nation" mapTopology={nationTopology()} data={data} />
             </Transitioner>
-            <Transitioner show={isCountyGeography(geography) && data.typeOfDataLoaded === "counties"}>
-                <USMap id="counties" geography={countyGeography(geography)} {...sharedProps} />
+            <Transitioner show={IGeography.isStateGeography(geography) && data !== undefined}>
+                <USMap id="state" mapTopology={stateTopology(geography)} data={data} />
             </Transitioner>
         </>
     );
 }
+
+function mapStateToProps(state: IStoreState): IStateProps {
+    return {
+        cachedData: state.application.data,
+        geography: state.interface.geography,
+    };
+}
+
+function mapDispatchToProps(dispatch: Dispatch): IDispatchProps {
+    return bindActionCreators(
+        {
+            addData: ADD_DATA.create,
+        },
+        dispatch,
+    );
+}
+
+export const VirusDataRenderer = connect(mapStateToProps, mapDispatchToProps)(UnconnectedVirusDataRenderer);
