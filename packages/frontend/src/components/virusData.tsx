@@ -30,7 +30,11 @@ function countyGeography(geographyType: IGeographyKind): IGeography {
     return {
         // NOTE: in production, the JSON import gets turned into a location string
         topologyLocation: (usCounties as unknown) as string,
-        extractFeatures: json => (topology.feature(json, json.objects.counties) as any).features,
+        extractFeatures: json => {
+            return (topology.feature(json, json.objects.counties) as any).features.filter((feature: any) =>
+                feature.id.startsWith(geographyType.stateFipsCode),
+            );
+        },
     };
 }
 
@@ -57,10 +61,10 @@ export function VirusDataRenderer(props: IProps) {
     return (
         <>
             <Transitioner show={isStateGeography(geography) && data.typeOfDataLoaded === "states"}>
-                <USMap id="states" geography={stateGeography()} {...sharedProps} />
+                <USMap id="states" geography={stateGeography()} scale={2000} {...sharedProps} />
             </Transitioner>
             <Transitioner show={isCountyGeography(geography) && data.typeOfDataLoaded === "counties"}>
-                <USMap id="counties" geography={countyGeography(geography)} {...sharedProps} />
+                <USMap id="counties" geography={countyGeography(geography)} scale={3000} {...sharedProps} />
             </Transitioner>
         </>
     );

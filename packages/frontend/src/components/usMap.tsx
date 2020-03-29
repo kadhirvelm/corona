@@ -11,6 +11,7 @@ import styles from "./usMap.module.scss";
 interface IProps {
     id: string;
     data: IVirusData;
+    scale: number;
     geography: IGeography;
     onClick: (selection: IFeatureSeletion) => void;
 }
@@ -39,11 +40,11 @@ function renderMap(
 }
 
 async function setupMap(props: IProps) {
-    const { geography, id } = props;
+    const { geography, id, scale } = props;
 
     const svg = select(`#${id}`);
     const projection = geoAlbersUsa()
-        .scale(2000)
+        .scale(scale)
         .translate([window.innerWidth / 2, window.innerHeight / 2]);
 
     const path = geoPath().projection(projection);
