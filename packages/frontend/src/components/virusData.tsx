@@ -1,18 +1,12 @@
 import { IVirusData } from "@corona/api";
 import * as React from "react";
 import * as topology from "topojson-client";
-import {
-    IGeography,
-    IFeatureSeletion,
-    IGeographyKind,
-    isStateGeography,
-    IGeographyTypes,
-    isCountyGeography,
-} from "../../typings/map";
+import { IGeography, IFeatureSeletion } from "../typings/map";
 import { Transitioner } from "../common/transitioner";
 import usCounties from "../static/us-county-topology.json";
 import usStates from "../static/us-state-topology.json";
 import { USMap } from "./usMap";
+import { IGeographyKind, isStateGeography, IGeographyTypes, isCountyGeography } from "../typings/geography";
 
 interface IProps {
     getData: () => Promise<IVirusData>;
@@ -62,11 +56,11 @@ export function VirusDataRenderer(props: IProps) {
 
     return (
         <>
-            <Transitioner show={isStateGeography(geography) && data.typeOfDataLoaded === "counties"}>
-                <USMap id="counties" geography={countyGeography(geography)} {...sharedProps} />
-            </Transitioner>
-            <Transitioner show={isCountyGeography(geography) && data.typeOfDataLoaded === "states"}>
+            <Transitioner show={isStateGeography(geography) && data.typeOfDataLoaded === "states"}>
                 <USMap id="states" geography={stateGeography()} {...sharedProps} />
+            </Transitioner>
+            <Transitioner show={isCountyGeography(geography) && data.typeOfDataLoaded === "counties"}>
+                <USMap id="counties" geography={countyGeography(geography)} {...sharedProps} />
             </Transitioner>
         </>
     );

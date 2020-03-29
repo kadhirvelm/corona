@@ -2,7 +2,8 @@ import { CoronaService, STATE } from "@corona/api";
 import * as React from "react";
 import { isValidState } from "@corona/utils";
 import { VirusDataRenderer } from "./components/virusData";
-import { IFeatureSeletion, IGeographyKind, stateGeography, countyGeography } from "../typings/map";
+import { IFeatureSeletion } from "./typings/map";
+import { IGeographyKind, stateGeography, countyGeography } from "./typings/geography";
 
 interface IStateFeatureSelection extends IFeatureSeletion {
     name: STATE;

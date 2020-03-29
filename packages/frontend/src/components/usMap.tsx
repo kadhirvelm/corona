@@ -5,7 +5,7 @@ import { geoAlbersUsa, geoPath, GeoPath, GeoPermissibleObjects } from "d3-geo";
 import { BaseType, select, Selection } from "d3-selection";
 import GeoJSON from "geojson";
 import * as React from "react";
-import { IGeography, IFeatureSeletion } from "../../typings/map";
+import { IGeography, IFeatureSeletion } from "../typings/map";
 import styles from "./usMap.module.scss";
 
 interface IProps {
