@@ -5,17 +5,33 @@ import { geoAlbersUsa, geoPath, GeoPath, GeoPermissibleObjects } from "d3-geo";
 import { BaseType, select, Selection } from "d3-selection";
 import GeoJSON from "geojson";
 import * as React from "react";
-import { IFeatureSeletion, IGeography } from "../typings/map";
 import styles from "./usMap.module.scss";
+import { IMapTopology } from "../typings";
 
 const PADDING = 100;
 
-interface IProps {
+interface IOwnProps {
+    /**
+     * The unique identifier given to the svg for the map. If there are multiple d3-geo maps on the page, they
+     * must have different identifiers to prevent them from rendering over one another.
+     */
     id: string;
+    /**
+     * The corona virus data to render on top of the topology data.
+     */
     data: IVirusData;
-    geography: IGeography;
-    onClick: (selection: IFeatureSeletion) => void;
+    /**
+     * Provides information related to how to render this map with d3-geo, specifically where to get the topology from
+     * and how to extract the features from said topology.
+     */
+    mapTopology: IMapTopology;
+    /**
+     * Callback when a feature is clicked on.
+     */
+    onFeatureSelect: (feature: GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>) => void;
 }
+
+type IProps = IOwnProps;
 
 function renderMap(
     props: IProps,
@@ -23,7 +39,7 @@ function renderMap(
     features: GeoJSON.Feature[],
     path: GeoPath<any, GeoPermissibleObjects>,
 ) {
-    const { data, onClick } = props;
+    const { data, onFeatureSelect } = props;
 
     svg.selectAll("path")
         .data(features)
@@ -34,19 +50,17 @@ function renderMap(
                 [styles.stateNoData]: data.breakdown[feature.id ?? ""] === undefined,
             });
         })
-        .on("click", feature => {
-            onClick({ fipsCode: feature.id?.toString() ?? "", name: feature.properties?.name ?? "" });
-        })
+        .on("click", onFeatureSelect)
         .attr("d", path);
 }
 
 async function setupMap(props: IProps) {
-    const { geography, id } = props;
+    const { mapTopology, id } = props;
 
     const svg = select(`#${id}`);
 
-    const usTopology = await json(geography.topologyLocation);
-    const features = geography.extractFeatures(usTopology);
+    const usTopology = await json(mapTopology.topologyLocation);
+    const features = mapTopology.extractFeatures(usTopology);
 
     const projection = geoAlbersUsa().fitSize(
         [window.innerWidth - PADDING * 2, window.innerHeight - PADDING * 2],
