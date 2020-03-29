@@ -73,12 +73,6 @@ async function setupMap(props: IProps) {
     );
     const path = geoPath().projection(projection);
 
-    const projection = geoAlbersUsa().fitSize(
-        [window.innerWidth - PADDING * 2, window.innerHeight - PADDING * 2],
-        features[0],
-    );
-    const path = geoPath().projection(projection);
-
     renderMap(props, svg, features, path);
 }
 
