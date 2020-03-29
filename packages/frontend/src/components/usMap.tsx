@@ -5,13 +5,14 @@ import { geoAlbersUsa, geoPath, GeoPath, GeoPermissibleObjects } from "d3-geo";
 import { BaseType, select, Selection } from "d3-selection";
 import GeoJSON from "geojson";
 import * as React from "react";
-import { IGeography } from "../../typings/map";
+import { IGeography, IFeatureSeletion } from "../../typings/map";
 import styles from "./usMap.module.scss";
 
 interface IProps {
+    id: string;
     data: IVirusData;
     geography: IGeography;
-    onClick: (name: string) => void;
+    onClick: (selection: IFeatureSeletion) => void;
 }
 
 function renderMap(
@@ -32,15 +33,15 @@ function renderMap(
             });
         })
         .on("click", feature => {
-            onClick(feature.properties?.name ?? feature.id);
+            onClick({ fipsCode: feature.id?.toString() ?? "", name: feature.properties?.name ?? "" });
         })
         .attr("d", path);
 }
 
 async function setupMap(props: IProps) {
-    const { geography } = props;
+    const { geography, id } = props;
 
-    const svg = select("#map");
+    const svg = select(`#${id}`);
     const projection = geoAlbersUsa()
         .scale(2000)
         .translate([window.innerWidth / 2, window.innerHeight / 2]);
@@ -53,9 +54,11 @@ async function setupMap(props: IProps) {
 }
 
 export function USMap(props: IProps) {
+    const { id } = props;
+
     React.useEffect(() => {
         setupMap(props);
     }, []);
 
-    return <svg id="map" width={window.innerWidth} height={window.innerHeight} />;
+    return <svg id={id} width={window.innerWidth} height={window.innerHeight} />;
 }
