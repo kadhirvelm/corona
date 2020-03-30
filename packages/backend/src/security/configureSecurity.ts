@@ -1,8 +1,9 @@
-import { Express } from "express";
 import cors from "cors";
+import { Express } from "express";
+import { ORIGIN, PORT } from "@corona/api";
 
 const CORS_OPTIONS: cors.CorsOptions = {
-    origin: [new RegExp("http://localhost:*")],
+    origin: [new RegExp(`http://${ORIGIN}:${PORT}`)],
     methods: ["GET"],
 };
 

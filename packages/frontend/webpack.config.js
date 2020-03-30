@@ -2,6 +2,7 @@ const path = require("path");
 const miniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
+const DefinePlugin = require("webpack").DefinePlugin;
 
 module.exports = {
     output : {
@@ -115,6 +116,10 @@ module.exports = {
         new miniCssExtractPlugin({
             filename: "[name].[hash].css",
             chunkFilename: "[id].[hash].css",
+        }),
+        new DefinePlugin({
+            "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
+            "process.env.PRODUCTION_HOST": JSON.stringify(process.env.PRODUCTION_HOST),
         }),
         ...(process.env.NODE_ENV === "production" ? [] : [new BundleAnalyzerPlugin({ analyzerMode: "static", openAnalyzer: false })]),
     ],
