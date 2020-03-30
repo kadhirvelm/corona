@@ -116,7 +116,7 @@ module.exports = {
             filename: "[name].[hash].css",
             chunkFilename: "[id].[hash].css",
         }),
-        process.env.NODE_ENV === "production" ? [] : new BundleAnalyzerPlugin({ analyzerMode: "static", openAnalyzer: false }),
+        ...(process.env.NODE_ENV === "production" ? [] : [new BundleAnalyzerPlugin({ analyzerMode: "static", openAnalyzer: false })]),
     ],
 
     resolve: {
