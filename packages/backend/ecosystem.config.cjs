@@ -4,8 +4,8 @@ module.exports = {
           name: "corona-service",
           script: "./dist/index.js",
           env: {
-            "NODE_ENV": $NODE_ENV,
-            "PRODUCTION_HOST": $PRODUCTION_HOST,
+            "NODE_ENV": process.env.NODE_ENV,
+            "PRODUCTION_HOST": process.env.PRODUCTION_HOST,
           }
         }
     ]
