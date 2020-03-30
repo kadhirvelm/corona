@@ -1,5 +1,5 @@
 import Express from "express";
-import { PORT } from "../constants";
+import { PORT, ORIGIN } from "../constants";
 
 type IMethods = "get" | "post" | "put" | "delete";
 
@@ -38,8 +38,6 @@ export function backendEndpointImplementation<Payload, Response>() {
     };
 }
 
-const origin = process.env.NODE_ENV === "production" ? process.env.PRODUCTION_HOST : "localhost";
-
 export function frontendEndpointImplementation<Payload, Response>(
     endpoint: string,
     method: IMethods = "get",
@@ -49,11 +47,11 @@ export function frontendEndpointImplementation<Payload, Response>(
 
         if (method === "get") {
             const stringPayload: string = typeof payload !== "string" ? "" : `/${payload}`;
-            rawResponse = await fetch(`http://${origin}:${PORT}${endpoint}${stringPayload}`, {
+            rawResponse = await fetch(`http://${ORIGIN}:${PORT}${endpoint}${stringPayload}`, {
                 method,
             });
         } else {
-            rawResponse = await fetch(`http://${origin}:${PORT}${endpoint}`, {
+            rawResponse = await fetch(`http://${ORIGIN}:${PORT}${endpoint}`, {
                 body: JSON.stringify(payload),
                 method: method.toUpperCase(),
             });

@@ -1,5 +1,5 @@
 import express from "express";
-import { PORT } from "@corona/api";
+import { ORIGIN, PORT } from "@corona/api";
 import { setRoutes } from "./routes";
 import { configureSecurity } from "./security/configureSecurity";
 
@@ -10,5 +10,5 @@ setRoutes(app);
 
 app.listen(PORT, () => {
     // eslint-disable-next-line no-console
-    console.log(`Server started, listening on http://localhost:${PORT}`);
+    console.log(`Server started, listening on http://${ORIGIN}:${PORT}`);
 });

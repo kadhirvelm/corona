@@ -7,6 +7,10 @@ export function setRoutes(app: Express.Express) {
         res.redirect("/index.html");
     });
 
+    app.get("/version", (_, res) => {
+        res.send(process.env.npm_package_version);
+    });
+
     setCoronaRoutes(app);
     setReactRoutes(app);
 }
