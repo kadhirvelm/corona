@@ -1,10 +1,12 @@
 import Express from "express";
 import { setCoronaRoutes } from "./corona";
+import { setReactRoutes } from "./frontend";
 
 export function setRoutes(app: Express.Express) {
     app.get("/", (_, res) => {
-        res.send("Running version 0.1.0");
+        res.redirect("/index.html");
     });
 
     setCoronaRoutes(app);
+    setReactRoutes(app);
 }
