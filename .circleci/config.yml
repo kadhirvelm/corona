@@ -65,7 +65,7 @@ jobs:
         docker:
             - image: circleci/node:13.12.0
         steps:
-            - run: ssh -o StrictHostKeyChecking=no $SERVER 'cd corona && git pull && yarn install --production-false && yarn build && sudo yarn pm2 reload corona-service && exit'
+            - run: ssh -o StrictHostKeyChecking=no $SERVER 'cd corona && git pull && yarn install --production-false && source ~/.bash_profile && yarn build && sudo yarn pm2 reload corona-service && exit'
 workflows:
     version: 2
     build_and_lint:
