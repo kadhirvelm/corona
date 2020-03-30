@@ -9,5 +9,13 @@ module.exports = {
         NODE_ENV: process.env.NODE_ENV,
         PRODUCTION_HOST: process.env.PRODUCTION_HOST
       }
+    },
+    {
+      name: "frontend",
+      script: "serve",
+      env_production: {
+        PM2_SERVE_PATH: "packages/frontend/dist",
+        PM2_SERVE_PORT: 81,
+      }
     }],
 };
