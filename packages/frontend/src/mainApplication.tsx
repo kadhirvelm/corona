@@ -18,7 +18,7 @@ async function getUnitedStatesData(addData: (dataEntry: IDataEntry) => void) {
     addData({ key: DEFAULT_DATA_KEY, data });
 }
 
-class UnconnectedMainApplication extends React.PureComponents<IProps> {
+class UnconnectedMainApplication extends React.PureComponent<IProps> {
     public componentDidMount() {
         const { addData } = this.props;
         getUnitedStatesData(addData);
