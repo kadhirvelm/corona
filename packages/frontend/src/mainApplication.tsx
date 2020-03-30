@@ -18,18 +18,20 @@ async function getUnitedStatesData(addData: (dataEntry: IDataEntry) => void) {
     addData({ key: DEFAULT_DATA_KEY, data });
 }
 
-function UnconnectedMainApplication(props: IProps) {
-    React.useEffect(() => {
-        const { addData } = props;
+class UnconnectedMainApplication extends React.PureComponents<IProps> {
+    public componentDidMount() {
+        const { addData } = this.props;
         getUnitedStatesData(addData);
-    }, []);
+    }
 
-    return (
-        <>
-            <StatsPanel />
-            <VirusDataRenderer />
-        </>
-    );
+    public render() {
+        return (
+            <>
+                <StatsPanel />
+                <VirusDataRenderer />
+            </>
+        );
+    }
 }
 
 function mapDispatchToProps(dispatch: Dispatch): IDispatchProps {
