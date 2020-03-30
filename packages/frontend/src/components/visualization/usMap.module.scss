@@ -1,0 +1,44 @@
+.state {
+    stroke: #34495E;
+    stroke-width: 0.75px;
+
+    &:hover {
+        fill: #85C1E9;
+        stroke: #1A5276;
+    }
+}
+
+.state-no-data {
+    fill:#CCD1D1;
+}
+
+.less-than-10 {
+    fill: #F9E79F;
+}
+
+.less-than-100 {
+    fill: #F7DC6F;
+}
+
+.less-than-500 {
+    fill: #F4D03F;
+}
+
+.less-than-1000 {
+    fill: #EC7063;   
+}
+
+.less-than-5000 {
+    fill: #CB4335;
+}
+
+.more-than-5000 {
+    fill: #943126;
+}
+
+.svg-map {
+    padding: 100px;
+    overflow: hidden;
+    margin-left: 75px;
+    background: rgba(#EBF5FB, 0.5);
+}

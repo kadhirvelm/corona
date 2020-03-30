@@ -12,6 +12,7 @@ export interface IBreakdown {
     coordinates: number[];
     deaths: number;
     duplicates: IBreakdown[];
+    name: string;
 }
 
 export interface IVirusData {

@@ -3,11 +3,12 @@ import { isValidState } from "@corona/utils";
 import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
-import { IGeography, IDataEntry } from "../typings";
-import { DEFAULT_DATA_KEY, Transitioner } from "../common";
+import { IGeography, IDataEntry } from "../../typings";
+import { Transitioner } from "../../common";
 import { USMap } from "./usMap";
-import { nationTopology, stateTopology } from "../utils";
-import { IStoreState, ADD_DATA, UPDATE_GEOGRAPHY } from "../store";
+import { nationTopology, stateTopology } from "../../utils";
+import { IStoreState, ADD_DATA, UPDATE_GEOGRAPHY } from "../../store";
+import { getDataKeyFromGeography } from "../../utils/getDataKeyFromGeography";
 
 interface IStateProps {
     cachedData: { [key: string]: IVirusData };
@@ -55,8 +56,7 @@ function UnconnectedVirusDataRenderer(props: IProps) {
         }
     };
 
-    const keyForData = IGeography.isStateGeography(geography) ? geography.name : DEFAULT_DATA_KEY;
-    const data = cachedData[keyForData];
+    const data = cachedData[getDataKeyFromGeography(geography)];
 
     return (
         <>

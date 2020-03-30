@@ -1,0 +1,56 @@
+$box-shadow: rgba(#34495E, 0.25);
+
+.stats-panel-container {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    background: #F2F4F4;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 200px;
+    z-index: 1;
+    box-shadow: 1px 0 $box-shadow;
+}
+
+.title-container {
+    display: flex;
+    padding: 10px;
+    font-size: 20px;
+    font-weight: 600;
+    box-shadow: 0 1px $box-shadow;
+}
+
+.total-cases-container {
+    display: flex;
+    font-size: 15px;
+    padding: 10px;
+    box-shadow: 0 1px $box-shadow;
+}
+
+.filter-container {
+    display: flex;
+    padding: 10px 5px;
+    box-shadow: 0 1px $box-shadow;
+
+    :global(.bp3-input-group) {
+        display: flex;
+        flex: 1;
+    }
+}
+
+.case-breakdown-container {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    overflow-y: auto;
+    margin-top: 1px;
+}
+
+.single-breakdown {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    box-shadow: 0 1px $box-shadow;
+}

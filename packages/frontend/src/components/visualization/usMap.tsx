@@ -6,9 +6,10 @@ import { BaseType, select, Selection } from "d3-selection";
 import GeoJSON from "geojson";
 import * as React from "react";
 import styles from "./usMap.module.scss";
-import { IMapTopology } from "../typings";
+import { IMapTopology } from "../../typings";
 
 const PADDING = 100;
+const MARGIN_LEFT = 75;
 
 interface IOwnProps {
     /**
@@ -46,8 +47,16 @@ function renderMap(
         .enter()
         .append("path")
         .attr("class", feature => {
+            const cases: number | undefined = data.breakdown[feature.id ?? ""]?.cases;
+
             return classNames(styles.state, {
-                [styles.stateNoData]: data.breakdown[feature.id ?? ""] === undefined,
+                [styles.stateNoData]: cases === undefined,
+                [styles.lessThan10]: cases < 10,
+                [styles.lessThan100]: cases >= 10 && cases < 100,
+                [styles.lessThan500]: cases >= 100 && cases < 500,
+                [styles.lessThan1000]: cases >= 500 && cases < 1000,
+                [styles.lessThan5000]: cases >= 1000 && cases < 5000,
+                [styles.moreThan5000]: cases >= 5000,
             });
         })
         .on("click", onFeatureSelect)
@@ -78,5 +87,13 @@ export function USMap(props: IProps) {
         setupMap(props);
     }, []);
 
-    return <svg className={styles.svgMap} id={id} width={window.innerWidth - 5} height={window.innerHeight - 5} />;
+    // Note: reducing the width and height to prevent a scroll container on the svg element
+    return (
+        <svg
+            className={styles.svgMap}
+            id={id}
+            width={window.innerWidth - MARGIN_LEFT}
+            height={window.innerHeight - 5}
+        />
+    );
 }

@@ -10,3 +10,8 @@ export interface IDataEntry {
      */
     data: IVirusData;
 }
+
+export interface IDataBreakdown {
+    name: string;
+    cases: number;
+}
