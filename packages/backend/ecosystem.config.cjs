@@ -1,12 +1,13 @@
 module.exports = {
-    apps : [
-        {
-          name: "corona-service",
-          script: "dist/index.js",
-          env: {
-            "NODE_ENV": "development",
-            "PRODUCTION_HOST": "localhost",
-          }
-        }
-    ]
-}
+  apps : [{
+    name: "corona-service",
+    script: "dist/index.js",
+    autorestart: false,
+    watch: false,
+    node_args: "esm --experimental-modules --es-module-specifier-resolution=node",
+    env_production: {
+      NODE_ENV: process.env.NODE_ENV,
+      PRODUCTION_HOST: process.env.PRODUCTION_HOST
+    }
+  }],
+};
