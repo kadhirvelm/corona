@@ -9,7 +9,7 @@ module.exports = {
         path : path.resolve(__dirname , "dist"),
     },
 
-    mode: "development",
+    mode: process.env.NODE_ENV === "production" ? "production" : "development",
 
     devServer: {
         contentBase: path.resolve(__dirname, "./src"),
@@ -116,7 +116,7 @@ module.exports = {
             filename: "[name].[hash].css",
             chunkFilename: "[id].[hash].css",
         }),
-        new BundleAnalyzerPlugin({ analyzerMode: "static", openAnalyzer: false }),
+        ...(process.env.NODE_ENV === "production" ? [] : [new BundleAnalyzerPlugin({ analyzerMode: "static", openAnalyzer: false })]),
     ],
 
     resolve: {

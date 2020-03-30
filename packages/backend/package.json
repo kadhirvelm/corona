@@ -12,7 +12,8 @@
     "@corona/pipeline": "^0.1.0",
     "@corona/utils": "^0.1.0",
     "cors": "^2.8.5",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "lru-cache": "^5.1.1"
   },
   "scripts": {
     "build": "tsc",
@@ -26,6 +27,7 @@
   "devDependencies": {
     "@types/cors": "^2.8.6",
     "@types/express": "^4.17.3",
+    "@types/lru-cache": "^5.1.0",
     "@types/node": "^12.12.31",
     "nodemon": "^2.0.2",
     "typescript": "^3.8.3"
