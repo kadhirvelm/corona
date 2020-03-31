@@ -1,4 +1,4 @@
-import { ICoronaBreakdown } from "@corona/api";
+import { ICoronaBreakdown, ICoronaDataPoint } from "@corona/api";
 import { createSelector } from "reselect";
 import { IDataBreakdown, IGeography } from "../typings";
 import { getDataKeyFromGeography } from "../utils/getDataKeyFromGeography";
@@ -37,3 +37,15 @@ export const getDataBreakdown = createSelector(
 export const getSortedDataBreakdown = createSelector(getDataBreakdown, (data: IDataBreakdown[]) => {
     return data.sort((a, b) => (a.dataPoint.totalCases > b.dataPoint.totalCases ? -1 : 1));
 });
+
+export const maybeGetDataForHoveringOverFips = createSelector(
+    maybeGetDataForGeography,
+    (state: IStoreState) => state.interface.hoveringOverFipsCode,
+    (data: ICoronaBreakdown | undefined, hoveringOverFips: string | undefined): ICoronaDataPoint | undefined => {
+        if (data === undefined || hoveringOverFips === undefined) {
+            return undefined;
+        }
+
+        return data.breakdown[hoveringOverFips];
+    },
+);

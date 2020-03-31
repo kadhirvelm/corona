@@ -18,24 +18,3 @@
     margin-left: 75px;
     background: rgba(#EBF5FB, 0.5);
 }
-
-.legend-container {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    display: flex;
-    flex-direction: column;
-}
-
-.legend-ticks {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 5px;
-}
-
-.legend {
-    height: 20px;
-    width: 200px;
-    background: linear-gradient(to right, #F7DC6F, #F5B041, #943126);
-    border-radius: 3px;
-}

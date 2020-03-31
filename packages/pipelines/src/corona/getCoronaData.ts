@@ -23,7 +23,7 @@ function mergeCoronaDatapoints(dataPointA?: ICoronaDataPoint, dataPointB?: ICoro
             return b;
         }
 
-        if ((a === 0 && b > 0) || (a === "" && b !== "")) {
+        if (b - a > 0 || (a === "" && b !== "")) {
             return b;
         }
 
@@ -44,6 +44,30 @@ function mergeCoronaBreakdowns(breakdownA: ITotalBreakdown, breakdownB: ITotalBr
             };
         },
     );
+}
+
+function verifyDatapoints(totalBreakdown: ITotalBreakdown): ITotalBreakdown {
+    return Object.keys(totalBreakdown)
+        .map(state => {
+            const countiesAdded = Object.values(totalBreakdown[state].countiesBreakdown).reduce(
+                (previous, next) => previous + next.totalCases,
+                0,
+            );
+            if (countiesAdded > (totalBreakdown[state].stateTotal?.totalCases ?? 0)) {
+                return {
+                    [state]: {
+                        ...totalBreakdown[state],
+                        stateTotal: {
+                            ...totalBreakdown[state].stateTotal,
+                            totalCases: countiesAdded,
+                        },
+                    },
+                };
+            }
+
+            return { [state]: totalBreakdown[state] };
+        })
+        .reduce((previous, next) => ({ ...previous, ...next }), {});
 }
 
 function getNationData(nation: ICoronaDataPoint, states: ITotalBreakdown): ICoronaBreakdown {
@@ -74,9 +98,10 @@ export async function getCoronaData(): Promise<ICoronaData> {
     const [usDataArc, usDataCoronaScraper] = await Promise.all([getCoronaDataArc(), getCoronaDataCoronaScraper()]);
 
     const mergedStateData = mergeCoronaBreakdowns(usDataArc, usDataCoronaScraper.states);
+    const verifiedDataPoints = verifyDatapoints(mergedStateData);
 
     return {
-        nation: getNationData(usDataCoronaScraper.nation, mergedStateData),
-        states: getStateData(mergedStateData),
+        nation: getNationData(usDataCoronaScraper.nation, verifiedDataPoints),
+        states: getStateData(verifiedDataPoints),
     };
 }

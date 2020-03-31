@@ -1,5 +1,6 @@
 import { ICoronaBreakdown } from "@corona/api";
 import { scaleLinear } from "d3-scale";
+import colors from "./variables.scss";
 
 export function getLinearColorScale(data: ICoronaBreakdown) {
     const average = (numbers: number[]) => numbers.reduce((previous, next) => previous + next, 0) / numbers.length;
@@ -11,6 +12,6 @@ export function getLinearColorScale(data: ICoronaBreakdown) {
         range,
         colorScale: scaleLinear()
             .domain(range)
-            .range(["#F7DC6F", "#F5B041", "#943126"] as any),
+            .range([colors.start, colors.middle, colors.end] as any),
     };
 }

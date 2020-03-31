@@ -1,12 +1,12 @@
 .fade-in {
     position: absolute;
-    animation: fade-in 1000ms ease-out;
+    animation: fade-in 500ms ease-out;
 }
 
 .fade-out {
     position: absolute;
     z-index: 1;
-    animation: fade-out 500ms ease-out;
+    animation: fade-out 250ms ease-out;
 }
 
 @keyframes fade-in {

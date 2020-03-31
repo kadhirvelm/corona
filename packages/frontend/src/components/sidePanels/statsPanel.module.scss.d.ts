@@ -2,10 +2,16 @@
 declare namespace StatsPanelModuleScssModule {
     export interface IStatsPanelModuleScss {
         caseBreakdownContainer: string;
+        end: string;
         filterContainer: string;
+        highlight: string;
+        middle: string;
         singleBreakdown: string;
+        start: string;
         statsPanelContainer: string;
+        titleBackButton: string;
         titleContainer: string;
+        titleText: string;
         totalCasesContainer: string;
     }
 }

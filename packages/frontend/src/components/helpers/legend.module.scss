@@ -1,0 +1,19 @@
+@import "../../utils/variables";
+
+.legend-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.legend-ticks {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+}
+
+.legend {
+    height: 20px;
+    width: 250px;
+    background: linear-gradient(to right, $start, $middle, $end);
+    border-radius: 3px;
+}

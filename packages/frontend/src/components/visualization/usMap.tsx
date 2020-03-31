@@ -1,15 +1,16 @@
+import { Spinner } from "@blueprintjs/core";
 import { ICoronaBreakdown } from "@corona/api";
 import classNames from "classnames";
 import { json } from "d3-fetch";
 import { geoAlbersUsa, geoPath, GeoPath, GeoPermissibleObjects } from "d3-geo";
+import { ScaleLinear } from "d3-scale";
 import { BaseType, select, Selection } from "d3-selection";
 import GeoJSON from "geojson";
 import * as React from "react";
-import { ScaleLinear } from "d3-scale";
-import { Spinner } from "@blueprintjs/core";
-import styles from "./usMap.module.scss";
 import { IMapTopology } from "../../typings";
-import { getLinearColorScale, getNumberTextForLegend } from "../../utils";
+import { getLinearColorScale } from "../../utils";
+import { MapHelpers } from "../helpers";
+import styles from "./usMap.module.scss";
 
 const PADDING = 100;
 const MARGIN_LEFT = 75;
@@ -33,6 +34,14 @@ interface IOwnProps {
      * Callback when a feature is clicked on.
      */
     onFeatureSelect: (feature: GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>) => void;
+    /**
+     * Callback when the user hovers over a feature.
+     */
+    onMouseEnter: (feature: GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>) => void;
+    /**
+     * Callback when the user hovers out of a feature.
+     */
+    onMouseLeave: (feature: GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>) => void;
 }
 
 type IProps = IOwnProps;
@@ -48,7 +57,7 @@ function renderMap(
     path: GeoPath<any, GeoPermissibleObjects>,
     mapOptions: IMapOptions,
 ) {
-    const { data, onFeatureSelect } = props;
+    const { data, onFeatureSelect, onMouseEnter, onMouseLeave } = props;
     const { colorScale } = mapOptions;
 
     if (data === undefined) {
@@ -76,6 +85,8 @@ function renderMap(
             return colorScale(cases);
         })
         .on("click", onFeatureSelect)
+        .on("mouseenter", onMouseEnter)
+        .on("mouseleave", onMouseLeave)
         .attr("d", path);
 }
 
@@ -112,14 +123,7 @@ export function USMap(props: IProps) {
     // Note: reducing the width and height to prevent a scroll container on the svg element
     return (
         <>
-            <div className={styles.legendContainer}>
-                <div className={styles.legend} />
-                <div className={styles.legendTicks}>
-                    {range.map(num => (
-                        <span key={num}>{getNumberTextForLegend(num)}</span>
-                    ))}
-                </div>
-            </div>
+            <MapHelpers range={range} />
             <svg
                 className={styles.svgMap}
                 id={id}
