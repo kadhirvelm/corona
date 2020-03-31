@@ -109,8 +109,6 @@ export function USMap(props: IProps) {
         setupMap(props, { colorScale });
     }, []);
 
-    console.log(id, data);
-
     // Note: reducing the width and height to prevent a scroll container on the svg element
     return (
         <>
