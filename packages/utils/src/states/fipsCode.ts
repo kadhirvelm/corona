@@ -48,7 +48,7 @@ const TWO_LETTER_STATE_TO_FIPS = {
     OK: "40",
     OR: "41",
     PW: "70",
-    PA: "95",
+    PA: "42",
     PR: "72",
     RI: "44",
     SC: "45",

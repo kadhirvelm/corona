@@ -1,22 +1,22 @@
-import { CoronaService, IVirusData } from "@corona/api";
+import { CoronaService, ICoronaBreakdown } from "@corona/api";
 import { isValidState } from "@corona/utils";
 import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 import { IGeography, IDataEntry } from "../../typings";
-import { Transitioner } from "../../common";
+import { Transitioner, DEFAULT_DATA_KEY } from "../../common";
 import { USMap } from "./usMap";
 import { nationTopology, stateTopology } from "../../utils";
 import { IStoreState, ADD_DATA, UPDATE_GEOGRAPHY } from "../../store";
 import { getDataKeyFromGeography } from "../../utils/getDataKeyFromGeography";
 
 interface IStateProps {
-    cachedData: { [key: string]: IVirusData };
+    cachedData: { [key: string]: ICoronaBreakdown };
     geography: IGeography;
 }
 
 interface IDispatchProps {
-    addData: (newData: { key: string; data: IVirusData }) => void;
+    addData: (newData: { key: string; data: ICoronaBreakdown }) => void;
     updateGeography: (geography: IGeography) => void;
 }
 
@@ -56,18 +56,21 @@ function UnconnectedVirusDataRenderer(props: IProps) {
         }
     };
 
-    const data = cachedData[getDataKeyFromGeography(geography)];
-
     return (
         <>
-            <Transitioner show={IGeography.isNationGeography(geography) && data !== undefined}>
-                <USMap id="nation" mapTopology={nationTopology()} data={data} onFeatureSelect={onFeatureSelect} />
+            <Transitioner show={IGeography.isNationGeography(geography)}>
+                <USMap
+                    id="nation"
+                    mapTopology={nationTopology()}
+                    data={cachedData[DEFAULT_DATA_KEY]}
+                    onFeatureSelect={onFeatureSelect}
+                />
             </Transitioner>
-            <Transitioner show={IGeography.isStateGeography(geography) && data !== undefined}>
+            <Transitioner show={IGeography.isStateGeography(geography)}>
                 <USMap
                     id="state"
                     mapTopology={stateTopology(geography)}
-                    data={data}
+                    data={cachedData[getDataKeyFromGeography(geography)]}
                     onFeatureSelect={onFeatureSelect}
                 />
             </Transitioner>

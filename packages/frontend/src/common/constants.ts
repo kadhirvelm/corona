@@ -1,1 +1,1 @@
-export const DEFAULT_DATA_KEY = "USA";
+export const DEFAULT_DATA_KEY = "Nation";

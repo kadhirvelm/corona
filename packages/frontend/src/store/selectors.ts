@@ -1,14 +1,13 @@
+import { ICoronaBreakdown } from "@corona/api";
 import { createSelector } from "reselect";
-import { IVirusData } from "@corona/api";
-import { convertTwoLetterCodeToState } from "@corona/utils";
-import { IStoreState } from "./state";
-import { IGeography, IDataBreakdown } from "../typings";
+import { IDataBreakdown, IGeography } from "../typings";
 import { getDataKeyFromGeography } from "../utils/getDataKeyFromGeography";
+import { IStoreState } from "./state";
 
 export const maybeGetDataForGeography = createSelector(
     (state: IStoreState) => state.application.cachedData,
     (state: IStoreState) => state.interface.geography,
-    (cachedData: { [key: string]: IVirusData }, geography: IGeography): IVirusData | undefined => {
+    (cachedData: { [key: string]: ICoronaBreakdown }, geography: IGeography): ICoronaBreakdown | undefined => {
         return cachedData[getDataKeyFromGeography(geography)];
     },
 );
@@ -16,21 +15,21 @@ export const maybeGetDataForGeography = createSelector(
 export const getDataBreakdown = createSelector(
     maybeGetDataForGeography,
     (state: IStoreState) => state.interface.geography,
-    (data: IVirusData | undefined, geography: IGeography): IDataBreakdown[] => {
+    (data: ICoronaBreakdown | undefined, geography: IGeography): IDataBreakdown[] => {
         if (data === undefined) {
             return [];
         }
 
         if (IGeography.isNationGeography(geography)) {
             return Object.values(data.breakdown).map(dataPoint => ({
-                name: convertTwoLetterCodeToState(dataPoint.name),
-                cases: dataPoint.cases,
+                name: dataPoint.state ?? "Unknown",
+                cases: dataPoint.totalCases,
             }));
         }
 
         return Object.values(data.breakdown).map(dataPoint => ({
-            name: dataPoint.name,
-            cases: dataPoint.cases,
+            name: dataPoint.county ?? "Unknown",
+            cases: dataPoint.totalCases,
         }));
     },
 );

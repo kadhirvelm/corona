@@ -5,20 +5,22 @@ import {
     IService,
 } from "../common/index";
 
-export interface IBreakdown {
-    id: string;
-    url: string;
-    cases: number;
-    coordinates: number[];
-    deaths: number;
-    duplicates: IBreakdown[];
-    name: string;
+export interface ICoronaDataPoint {
+    activeCases?: number;
+    county?: string;
+    deaths?: number;
+    fipsCode: string;
+    lastUpdated?: Date;
+    recovered?: number;
+    state?: string;
+    totalCases: number;
 }
 
-export interface IVirusData {
-    total: number;
+export interface ICoronaBreakdown {
+    description: string;
+    totalData?: ICoronaDataPoint;
     breakdown: {
-        [key: string]: IBreakdown;
+        [fipsCode: string]: ICoronaDataPoint;
     };
 }
 
@@ -82,19 +84,19 @@ export enum STATE {
  * Hosts the endpoints necessary to retrieve corona data.
  */
 interface ICoronaEndpoints extends IService {
-    getUnitedStatesData: IEndpointDefiniton<{}, IVirusData>;
-    getStateData: IEndpointDefiniton<STATE, IVirusData>;
+    getUnitedStatesData: IEndpointDefiniton<{}, ICoronaBreakdown>;
+    getStateData: IEndpointDefiniton<STATE, ICoronaBreakdown>;
 }
 
 export const CoronaService: ICoronaEndpoints = {
     getUnitedStatesData: {
-        backend: backendEndpointImplementation<{}, IVirusData>(),
+        backend: backendEndpointImplementation<{}, ICoronaBreakdown>(),
         endpoint: "/data/united-states/all",
         frontend: frontendEndpointImplementation("/data/united-states/all"),
         method: "get",
     },
     getStateData: {
-        backend: backendEndpointImplementation<STATE, IVirusData>(),
+        backend: backendEndpointImplementation<STATE, ICoronaBreakdown>(),
         endpoint: "/data/united-states/:state",
         frontend: frontendEndpointImplementation("/data/united-states"),
         method: "get",

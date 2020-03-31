@@ -1,40 +1,37 @@
-import { IVirusData, STATE } from "@corona/api";
-import { getUSCoronaData } from "@corona/pipeline";
-import { convertStateToTwoLetterCode, twoLetterCodeToFips } from "@corona/utils";
+import { ICoronaBreakdown, STATE } from "@corona/api";
+import { getCoronaData, ICoronaData } from "@corona/pipeline";
 import LRU from "lru-cache";
 
-const US_DATA_KEY = "us-data";
-const US_STATE_KEY = "us-state-data";
+const DATA_KEY = "data";
 
-const CACHE = new LRU({ max: 2, maxAge: 3600000 });
+// NOTE: every 3 hours the cache will expire and update its value
+const CACHE = new LRU({ max: 1, maxAge: 10800000 });
 
-export async function getCountryCoronaData(): Promise<IVirusData> {
+export function getCountryCoronaData(): Promise<ICoronaBreakdown> {
     return new Promise(async resolve => {
-        const cachedData = CACHE.get(US_DATA_KEY) as IVirusData;
+        const cachedData = CACHE.get(DATA_KEY) as ICoronaData;
 
         if (cachedData !== undefined) {
-            resolve(cachedData);
+            resolve(cachedData.nation);
         } else {
             // eslint-disable-next-line @typescript-eslint/await-thenable
-            const data = await getUSCoronaData();
-            CACHE.set(US_DATA_KEY, data.country);
-            resolve(data.country);
+            const data = await getCoronaData();
+            CACHE.set(DATA_KEY, data);
+            resolve(data.nation);
         }
     });
 }
 
-export async function getStateCoronaData(state: STATE): Promise<IVirusData> {
+export async function getStateCoronaData(state: STATE): Promise<ICoronaBreakdown> {
     return new Promise(async resolve => {
-        const stateKey = twoLetterCodeToFips(convertStateToTwoLetterCode(state));
-        const cachedData = CACHE.get(US_STATE_KEY) as any;
+        const cachedData = CACHE.get(DATA_KEY) as ICoronaData;
 
         if (cachedData !== undefined) {
-            resolve(cachedData[stateKey]);
+            resolve(cachedData.states[state]);
         } else {
-            // eslint-disable-next-line @typescript-eslint/await-thenable
-            const data = await getUSCoronaData();
-            CACHE.set(US_STATE_KEY, data.states);
-            resolve(data.states[stateKey]);
+            const data = await getCoronaData();
+            CACHE.set(DATA_KEY, data);
+            resolve(data.states[state]);
         }
     });
 }
