@@ -4,7 +4,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 import { IGeography, IDataEntry } from "../../typings";
-import { Transitioner } from "../../common";
+import { Transitioner, DEFAULT_DATA_KEY } from "../../common";
 import { USMap } from "./usMap";
 import { nationTopology, stateTopology } from "../../utils";
 import { IStoreState, ADD_DATA, UPDATE_GEOGRAPHY } from "../../store";
@@ -34,11 +34,9 @@ async function getDataForState(stateName: string, addData: (dataEntry: IDataEntr
 function UnconnectedVirusDataRenderer(props: IProps) {
     const { geography, cachedData, updateGeography } = props;
 
-    const key = getDataKeyFromGeography(geography);
-
     React.useEffect(() => {
         const { addData } = props;
-        if (IGeography.isNationGeography(geography) || cachedData[key] !== undefined) {
+        if (IGeography.isNationGeography(geography) || cachedData[geography.name] !== undefined) {
             return;
         }
 
@@ -58,18 +56,21 @@ function UnconnectedVirusDataRenderer(props: IProps) {
         }
     };
 
-    const data = cachedData[key];
-
     return (
         <>
-            <Transitioner show={IGeography.isNationGeography(geography) && data !== undefined}>
-                <USMap id="nation" mapTopology={nationTopology()} data={data} onFeatureSelect={onFeatureSelect} />
+            <Transitioner show={IGeography.isNationGeography(geography)}>
+                <USMap
+                    id="nation"
+                    mapTopology={nationTopology()}
+                    data={cachedData[DEFAULT_DATA_KEY]}
+                    onFeatureSelect={onFeatureSelect}
+                />
             </Transitioner>
-            <Transitioner show={IGeography.isStateGeography(geography) && data !== undefined}>
+            <Transitioner show={IGeography.isStateGeography(geography)}>
                 <USMap
                     id="state"
                     mapTopology={stateTopology(geography)}
-                    data={data}
+                    data={cachedData[getDataKeyFromGeography(geography)]}
                     onFeatureSelect={onFeatureSelect}
                 />
             </Transitioner>

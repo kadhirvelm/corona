@@ -1,6 +1,5 @@
-import { ICoronaDataPoint } from "@corona/api";
+import { ICoronaDataPoint, STATE } from "@corona/api";
 import lodash from "lodash";
-import { STATE_TO_TWO } from "@corona/utils";
 
 export interface IStatesKeyed {
     [state: string]: ICoronaDataPoint;
@@ -20,7 +19,7 @@ export interface ITotalBreakdown {
 export function getTotalBreakdowns(stateData: IStatesKeyed, counties: ICountiesKeyed) {
     const totalBreakdown: ITotalBreakdown = {};
 
-    Object.keys(STATE_TO_TWO).forEach(state => {
+    Object.values(STATE).forEach(state => {
         totalBreakdown[state] = {
             stateTotal: stateData[state],
             countiesBreakdown: lodash.keyBy(counties[state], "fipsCode"),

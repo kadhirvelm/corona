@@ -5,8 +5,11 @@ import { geoAlbersUsa, geoPath, GeoPath, GeoPermissibleObjects } from "d3-geo";
 import { BaseType, select, Selection } from "d3-selection";
 import GeoJSON from "geojson";
 import * as React from "react";
+import { ScaleLinear } from "d3-scale";
+import { Spinner } from "@blueprintjs/core";
 import styles from "./usMap.module.scss";
 import { IMapTopology } from "../../typings";
+import { getLinearColorScale, getNumberTextForLegend } from "../../utils";
 
 const PADDING = 100;
 const MARGIN_LEFT = 75;
@@ -20,7 +23,7 @@ interface IOwnProps {
     /**
      * The corona virus data to render on top of the topology data.
      */
-    data: ICoronaBreakdown;
+    data?: ICoronaBreakdown;
     /**
      * Provides information related to how to render this map with d3-geo, specifically where to get the topology from
      * and how to extract the features from said topology.
@@ -34,13 +37,23 @@ interface IOwnProps {
 
 type IProps = IOwnProps;
 
+interface IMapOptions {
+    colorScale: ScaleLinear<number, number>;
+}
+
 function renderMap(
     props: IProps,
     svg: Selection<BaseType, unknown, HTMLElement, any>,
     features: GeoJSON.Feature[],
     path: GeoPath<any, GeoPermissibleObjects>,
+    mapOptions: IMapOptions,
 ) {
     const { data, onFeatureSelect } = props;
+    const { colorScale } = mapOptions;
+
+    if (data === undefined) {
+        throw new Error("Should not reach here");
+    }
 
     svg.selectAll("path")
         .data(features)
@@ -51,19 +64,22 @@ function renderMap(
 
             return classNames(styles.state, {
                 [styles.stateNoData]: cases === undefined,
-                [styles.lessThan10]: cases < 10,
-                [styles.lessThan100]: cases >= 10 && cases < 100,
-                [styles.lessThan500]: cases >= 100 && cases < 500,
-                [styles.lessThan1000]: cases >= 500 && cases < 1000,
-                [styles.lessThan5000]: cases >= 1000 && cases < 5000,
-                [styles.moreThan5000]: cases >= 5000,
             });
+        })
+        .attr("fill", feature => {
+            const cases: number | undefined = data.breakdown[feature.id ?? ""]?.totalCases;
+
+            if (cases === undefined) {
+                return "gray";
+            }
+
+            return colorScale(cases);
         })
         .on("click", onFeatureSelect)
         .attr("d", path);
 }
 
-async function setupMap(props: IProps) {
+async function setupMap(props: IProps, mapOptions: IMapOptions) {
     const { mapTopology, id } = props;
 
     const svg = select(`#${id}`);
@@ -77,23 +93,41 @@ async function setupMap(props: IProps) {
     );
     const path = geoPath().projection(projection);
 
-    renderMap(props, svg, features, path);
+    renderMap(props, svg, features, path, mapOptions);
 }
 
 export function USMap(props: IProps) {
-    const { id } = props;
+    const { data, id } = props;
+
+    if (data === undefined) {
+        return <Spinner />;
+    }
+
+    const { range, colorScale } = getLinearColorScale(data);
 
     React.useEffect(() => {
-        setupMap(props);
+        setupMap(props, { colorScale });
     }, []);
+
+    console.log(id, data);
 
     // Note: reducing the width and height to prevent a scroll container on the svg element
     return (
-        <svg
-            className={styles.svgMap}
-            id={id}
-            width={window.innerWidth - MARGIN_LEFT}
-            height={window.innerHeight - 5}
-        />
+        <>
+            <div className={styles.legendContainer}>
+                <div className={styles.legend} />
+                <div className={styles.legendTicks}>
+                    {range.map(num => (
+                        <span key={num}>{getNumberTextForLegend(num)}</span>
+                    ))}
+                </div>
+            </div>
+            <svg
+                className={styles.svgMap}
+                id={id}
+                width={window.innerWidth - MARGIN_LEFT}
+                height={window.innerHeight - 5}
+            />
+        </>
     );
 }

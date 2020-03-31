@@ -12,33 +12,30 @@
     fill:#CCD1D1;
 }
 
-.less-than-10 {
-    fill: #F9E79F;
-}
-
-.less-than-100 {
-    fill: #F7DC6F;
-}
-
-.less-than-500 {
-    fill: #F4D03F;
-}
-
-.less-than-1000 {
-    fill: #EC7063;   
-}
-
-.less-than-5000 {
-    fill: #CB4335;
-}
-
-.more-than-5000 {
-    fill: #943126;
-}
-
 .svg-map {
     padding: 100px;
     overflow: hidden;
     margin-left: 75px;
     background: rgba(#EBF5FB, 0.5);
+}
+
+.legend-container {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.legend-ticks {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+}
+
+.legend {
+    height: 20px;
+    width: 200px;
+    background: linear-gradient(to right, #F7DC6F, #F5B041, #943126);
+    border-radius: 3px;
 }

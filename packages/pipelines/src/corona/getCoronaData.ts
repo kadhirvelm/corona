@@ -1,6 +1,5 @@
-import { ICoronaBreakdown, ICoronaDataPoint } from "@corona/api";
+import { ICoronaBreakdown, ICoronaDataPoint, STATE } from "@corona/api";
 import lodash from "lodash";
-import { STATE_TO_TWO } from "@corona/utils";
 import { getCoronaDataArc } from "./getCoronaDataArc";
 import { getCoronaDataCoronaScraper, ICoronaDataScraperBreakdown } from "./getCoronaDataCoronaScraper";
 import { ITotalBreakdown } from "./shared";
@@ -39,14 +38,14 @@ function getNationData(usDataArc: ITotalBreakdown, usDataCoronaScraper: ICoronaD
 }
 
 function getStateData(usDataArc: ITotalBreakdown, usDataCoronaScraper: ICoronaDataScraperBreakdown): IStateCoronaData {
-    return Object.keys(STATE_TO_TWO)
+    return Object.values(STATE)
         .map(state => ({
             [state]: {
                 description: state,
                 totalData: usDataCoronaScraper.states[state].stateTotal ?? usDataArc[state].stateTotal,
                 breakdown: mergeAndKeyCoronaDataPoints(
-                    Object.values(usDataArc[state].countiesBreakdown),
-                    Object.values(usDataCoronaScraper.states[state].countiesBreakdown),
+                    Object.values(usDataArc[state].countiesBreakdown ?? {}),
+                    Object.values(usDataCoronaScraper.states[state].countiesBreakdown ?? {}),
                 ),
             },
         }))
