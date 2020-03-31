@@ -3,11 +3,12 @@ import classNames from "classnames";
 import styles from "./transitioner.module.scss";
 
 interface IProps extends React.Props<{}> {
+    className?: string;
     show: boolean;
 }
 
 export function Transitioner(props: IProps) {
-    const { children, show } = props;
+    const { children, className, show } = props;
 
     const [shouldRender, setRender] = React.useState(false);
 
@@ -28,7 +29,10 @@ export function Transitioner(props: IProps) {
     }
 
     return (
-        <div className={classNames({ [styles.fadeIn]: show, [styles.fadeOut]: !show })} onAnimationEnd={onAnimationEnd}>
+        <div
+            className={classNames({ [styles.fadeIn]: show, [styles.fadeOut]: !show }, className)}
+            onAnimationEnd={onAnimationEnd}
+        >
             {children}
         </div>
     );

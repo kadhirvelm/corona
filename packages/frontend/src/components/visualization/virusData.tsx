@@ -3,11 +3,18 @@ import { isValidState } from "@corona/utils";
 import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
+import { debounce } from "lodash-es";
 import { IGeography, IDataEntry } from "../../typings";
 import { Transitioner, DEFAULT_DATA_KEY } from "../../common";
 import { USMap } from "./usMap";
 import { nationTopology, stateTopology } from "../../utils";
-import { IStoreState, ADD_DATA, UPDATE_GEOGRAPHY } from "../../store";
+import {
+    IStoreState,
+    ADD_DATA,
+    UPDATE_GEOGRAPHY,
+    SET_HOVERING_OVER_FIPS,
+    REMOVE_HOVERING_OVER_FIPS,
+} from "../../store";
 import { getDataKeyFromGeography } from "../../utils/getDataKeyFromGeography";
 
 interface IStateProps {
@@ -17,6 +24,8 @@ interface IStateProps {
 
 interface IDispatchProps {
     addData: (newData: { key: string; data: ICoronaBreakdown }) => void;
+    removeHoveringOverFips: (fipsCode: string | undefined) => void;
+    setHoveringOverFips: (fipsCode: string | undefined) => void;
     updateGeography: (geography: IGeography) => void;
 }
 
@@ -32,7 +41,7 @@ async function getDataForState(stateName: string, addData: (dataEntry: IDataEntr
 }
 
 function UnconnectedVirusDataRenderer(props: IProps) {
-    const { geography, cachedData, updateGeography } = props;
+    const { cachedData, geography, removeHoveringOverFips, setHoveringOverFips, updateGeography } = props;
 
     React.useEffect(() => {
         const { addData } = props;
@@ -51,9 +60,23 @@ function UnconnectedVirusDataRenderer(props: IProps) {
                     name: feature.properties?.name ?? "",
                 }),
             );
-        } else {
-            updateGeography(IGeography.nationGeography());
         }
+
+        // TODO: handle when the user clicks on a county
+    };
+
+    const onMouseEnter = (feature: GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>) => {
+        setHoveringOverFips(feature.id?.toString());
+    };
+
+    const onMouseLeave = (feature: GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>) => {
+        removeHoveringOverFips(feature.id?.toString());
+    };
+
+    const sharedProps = {
+        onFeatureSelect,
+        onMouseEnter: debounce(onMouseEnter, 100),
+        onMouseLeave: debounce(onMouseLeave, 300),
     };
 
     return (
@@ -63,7 +86,7 @@ function UnconnectedVirusDataRenderer(props: IProps) {
                     id="nation"
                     mapTopology={nationTopology()}
                     data={cachedData[DEFAULT_DATA_KEY]}
-                    onFeatureSelect={onFeatureSelect}
+                    {...sharedProps}
                 />
             </Transitioner>
             <Transitioner show={IGeography.isStateGeography(geography)}>
@@ -71,7 +94,7 @@ function UnconnectedVirusDataRenderer(props: IProps) {
                     id="state"
                     mapTopology={stateTopology(geography)}
                     data={cachedData[getDataKeyFromGeography(geography)]}
-                    onFeatureSelect={onFeatureSelect}
+                    {...sharedProps}
                 />
             </Transitioner>
         </>
@@ -89,6 +112,8 @@ function mapDispatchToProps(dispatch: Dispatch): IDispatchProps {
     return bindActionCreators(
         {
             addData: ADD_DATA.create,
+            removeHoveringOverFips: REMOVE_HOVERING_OVER_FIPS.create,
+            setHoveringOverFips: SET_HOVERING_OVER_FIPS.create,
             updateGeography: UPDATE_GEOGRAPHY.create,
         },
         dispatch,

@@ -1,0 +1,12 @@
+$box-shadow: rgba(#34495E, 0.25);
+$background: #F2F4F4;
+
+$start: #F7DC6F;
+$middle: #F5B041; 
+$end: #943126;
+
+:export {
+    start: $start;
+    middle: $middle;
+    end: $end;
+}
