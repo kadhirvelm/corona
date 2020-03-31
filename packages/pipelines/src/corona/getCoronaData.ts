@@ -1,5 +1,6 @@
 import { ICoronaBreakdown, ICoronaDataPoint, STATE } from "@corona/api";
 import lodash from "lodash";
+import { twoLetterCodeToFips, convertStateToTwoLetterCode } from "@corona/utils";
 import { getCoronaDataArc } from "./getCoronaDataArc";
 import { getCoronaDataCoronaScraper } from "./getCoronaDataCoronaScraper";
 import { ITotalBreakdown, ISingleBreakdown } from "./shared";
@@ -48,7 +49,7 @@ function mergeCoronaBreakdowns(breakdownA: ITotalBreakdown, breakdownB: ITotalBr
 
 function verifyDatapoints(totalBreakdown: ITotalBreakdown): ITotalBreakdown {
     return Object.keys(totalBreakdown)
-        .map(state => {
+        .map((state): { [state: string]: ISingleBreakdown } => {
             const countiesAdded = Object.values(totalBreakdown[state].countiesBreakdown).reduce(
                 (previous, next) => previous + next.totalCases,
                 0,
@@ -60,6 +61,9 @@ function verifyDatapoints(totalBreakdown: ITotalBreakdown): ITotalBreakdown {
                         stateTotal: {
                             ...totalBreakdown[state].stateTotal,
                             totalCases: countiesAdded,
+                            fipsCode:
+                                totalBreakdown[state].stateTotal?.fipsCode ??
+                                twoLetterCodeToFips(convertStateToTwoLetterCode(state)),
                         },
                     },
                 };
