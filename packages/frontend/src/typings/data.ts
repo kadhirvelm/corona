@@ -1,4 +1,4 @@
-import { IVirusData } from "@corona/api";
+import { ICoronaBreakdown } from "@corona/api";
 
 export interface IDataEntry {
     /**
@@ -8,7 +8,7 @@ export interface IDataEntry {
     /**
      * The data returned from the backend about the key.
      */
-    data: IVirusData;
+    data: ICoronaBreakdown;
 }
 
 export interface IDataBreakdown {

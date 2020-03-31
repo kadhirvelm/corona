@@ -1,5 +1,5 @@
 import * as React from "react";
-import { IVirusData } from "@corona/api";
+import { ICoronaBreakdown } from "@corona/api";
 import { connect } from "react-redux";
 import { InputGroup } from "@blueprintjs/core";
 import { IStoreState, maybeGetDataForGeography, getSortedDataBreakdown } from "../../store";
@@ -8,15 +8,11 @@ import { IGeography, IDataBreakdown } from "../../typings";
 
 interface IStateProps {
     geography: IGeography;
-    data: IVirusData | undefined;
+    data: ICoronaBreakdown | undefined;
     dataBreakdown: IDataBreakdown[];
 }
 
 type IProps = IStateProps;
-
-function renderTitle(geography: IGeography) {
-    return IGeography.isNationGeography(geography) ? "United States" : geography.name;
-}
 
 function renderDataBreakdown(dataBreakdown: IDataBreakdown[], filter: string) {
     return (
@@ -36,17 +32,19 @@ function renderDataBreakdown(dataBreakdown: IDataBreakdown[], filter: string) {
 function UnconnectedStatsPanel(props: IProps) {
     const [filter, setFilter] = React.useState("");
 
-    const { data, dataBreakdown, geography } = props;
+    const { data, dataBreakdown } = props;
     if (data === undefined) {
         return <div className={styles.statsPanelContainer} />;
     }
 
     const updateFilterValue = (event: React.ChangeEvent<HTMLInputElement>) => setFilter(event.currentTarget.value);
 
+    console.log(data);
+
     return (
         <div className={styles.statsPanelContainer}>
-            <div className={styles.titleContainer}>{renderTitle(geography)}</div>
-            <div className={styles.totalCasesContainer}>{data.total.toLocaleString()} Total Cases</div>
+            <div className={styles.titleContainer}>{data.description}</div>
+            <div className={styles.totalCasesContainer}>{data?.totalData.totalCases.toLocaleString()} Total Cases</div>
             <div className={styles.filterContainer}>
                 <InputGroup leftIcon="search" onChange={updateFilterValue} value={filter} />
             </div>

@@ -1,1 +1,1 @@
-export * from "./usData";
+export * from "./getCoronaData";

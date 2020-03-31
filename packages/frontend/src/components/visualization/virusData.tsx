@@ -1,4 +1,4 @@
-import { CoronaService, IVirusData } from "@corona/api";
+import { CoronaService, ICoronaBreakdown } from "@corona/api";
 import { isValidState } from "@corona/utils";
 import * as React from "react";
 import { connect } from "react-redux";
@@ -11,12 +11,12 @@ import { IStoreState, ADD_DATA, UPDATE_GEOGRAPHY } from "../../store";
 import { getDataKeyFromGeography } from "../../utils/getDataKeyFromGeography";
 
 interface IStateProps {
-    cachedData: { [key: string]: IVirusData };
+    cachedData: { [key: string]: ICoronaBreakdown };
     geography: IGeography;
 }
 
 interface IDispatchProps {
-    addData: (newData: { key: string; data: IVirusData }) => void;
+    addData: (newData: { key: string; data: ICoronaBreakdown }) => void;
     updateGeography: (geography: IGeography) => void;
 }
 
@@ -34,9 +34,11 @@ async function getDataForState(stateName: string, addData: (dataEntry: IDataEntr
 function UnconnectedVirusDataRenderer(props: IProps) {
     const { geography, cachedData, updateGeography } = props;
 
+    const key = getDataKeyFromGeography(geography);
+
     React.useEffect(() => {
         const { addData } = props;
-        if (IGeography.isNationGeography(geography) || cachedData[geography.name] !== undefined) {
+        if (IGeography.isNationGeography(geography) || cachedData[key] !== undefined) {
             return;
         }
 
@@ -56,7 +58,7 @@ function UnconnectedVirusDataRenderer(props: IProps) {
         }
     };
 
-    const data = cachedData[getDataKeyFromGeography(geography)];
+    const data = cachedData[key];
 
     return (
         <>

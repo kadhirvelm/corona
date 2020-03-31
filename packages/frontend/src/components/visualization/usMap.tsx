@@ -1,4 +1,4 @@
-import { IVirusData } from "@corona/api";
+import { ICoronaBreakdown } from "@corona/api";
 import classNames from "classnames";
 import { json } from "d3-fetch";
 import { geoAlbersUsa, geoPath, GeoPath, GeoPermissibleObjects } from "d3-geo";
@@ -20,7 +20,7 @@ interface IOwnProps {
     /**
      * The corona virus data to render on top of the topology data.
      */
-    data: IVirusData;
+    data: ICoronaBreakdown;
     /**
      * Provides information related to how to render this map with d3-geo, specifically where to get the topology from
      * and how to extract the features from said topology.
@@ -47,7 +47,7 @@ function renderMap(
         .enter()
         .append("path")
         .attr("class", feature => {
-            const cases: number | undefined = data.breakdown[feature.id ?? ""]?.cases;
+            const cases: number | undefined = data.breakdown[feature.id ?? ""]?.totalCases;
 
             return classNames(styles.state, {
                 [styles.stateNoData]: cases === undefined,

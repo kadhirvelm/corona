@@ -1,4 +1,4 @@
-const STATE_TO_TWO = {
+export const STATE_TO_TWO = {
     Alabama: "AL",
     Alaska: "AK",
     "American Samoa": "AS",
@@ -60,7 +60,7 @@ const STATE_TO_TWO = {
     Wyoming: "WY",
 };
 
-const TWO_TO_STATE = {
+export const TWO_TO_STATE = {
     AL: "Alabama",
     AK: "Alaska",
     AS: "American Samoa",

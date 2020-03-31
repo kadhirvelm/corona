@@ -1,5 +1,5 @@
 import { TypedReducer, setWith } from "redoodle";
-import { IVirusData } from "@corona/api";
+import { ICoronaBreakdown } from "@corona/api";
 import { ADD_DATA } from "./actions";
 
 export interface IApplicationState {
@@ -8,7 +8,7 @@ export interface IApplicationState {
      * mostly to help keep the load off the backend given that the data is quite light.
      */
     cachedData: {
-        [typeOfData: string]: IVirusData;
+        [typeOfData: string]: ICoronaBreakdown;
     };
 }
 
