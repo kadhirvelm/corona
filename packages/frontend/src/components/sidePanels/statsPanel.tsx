@@ -39,12 +39,12 @@ function UnconnectedStatsPanel(props: IProps) {
 
     const updateFilterValue = (event: React.ChangeEvent<HTMLInputElement>) => setFilter(event.currentTarget.value);
 
-    console.log(data);
-
     return (
         <div className={styles.statsPanelContainer}>
             <div className={styles.titleContainer}>{data.description}</div>
-            <div className={styles.totalCasesContainer}>{data?.totalData.totalCases.toLocaleString()} Total Cases</div>
+            <div className={styles.totalCasesContainer}>
+                {data.totalData?.totalCases.toLocaleString() ?? "Unknown"} Total Cases
+            </div>
             <div className={styles.filterContainer}>
                 <InputGroup leftIcon="search" onChange={updateFilterValue} value={filter} />
             </div>
