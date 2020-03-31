@@ -22,7 +22,7 @@ function renderDataBreakdown(dataBreakdown: IDataBreakdown[], filter: string) {
                 .map(breakdown => (
                     <div className={styles.singleBreakdown}>
                         <span>{breakdown.name}</span>
-                        <span>{breakdown.cases.toLocaleString()}</span>
+                        <span>{breakdown.dataPoint.totalCases.toLocaleString()}</span>
                     </div>
                 ))}
         </div>

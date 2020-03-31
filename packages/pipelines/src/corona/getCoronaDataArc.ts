@@ -1,5 +1,6 @@
 import fetch from "node-fetch";
 import { ICoronaDataPoint } from "@corona/api";
+import { twoLetterCodeToFips, convertStateToTwoLetterCode } from "@corona/utils";
 import { IStatesKeyed, ICountiesKeyed, getTotalBreakdowns, ITotalBreakdown } from "./shared";
 
 interface IRawArcCoronaData {
@@ -31,12 +32,16 @@ function maybeGetCounty(admin2: string) {
     return admin2;
 }
 
+function getFipsCodeFromState(state: string) {
+    return twoLetterCodeToFips(convertStateToTwoLetterCode(state));
+}
+
 function cleanRawArcDatapoint(dataPoint: IArcCoronaData): ICoronaDataPoint {
     return {
         activeCases: dataPoint.Active,
         county: maybeGetCounty(dataPoint.Admin2),
         deaths: dataPoint.Deaths,
-        fipsCode: dataPoint.FIPS,
+        fipsCode: dataPoint.FIPS ?? getFipsCodeFromState(dataPoint.Province_State),
         lastUpdated: new Date(dataPoint.Last_Update),
         recovered: dataPoint.Recovered,
         state: dataPoint.Province_State,

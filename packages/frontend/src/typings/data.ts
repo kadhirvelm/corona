@@ -1,4 +1,4 @@
-import { ICoronaBreakdown } from "@corona/api";
+import { ICoronaBreakdown, ICoronaDataPoint } from "@corona/api";
 
 export interface IDataEntry {
     /**
@@ -13,5 +13,5 @@ export interface IDataEntry {
 
 export interface IDataBreakdown {
     name: string;
-    cases: number;
+    dataPoint: ICoronaDataPoint;
 }

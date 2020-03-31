@@ -23,17 +23,17 @@ export const getDataBreakdown = createSelector(
         if (IGeography.isNationGeography(geography)) {
             return Object.values(data.breakdown).map(dataPoint => ({
                 name: dataPoint.state ?? "Unknown",
-                cases: dataPoint.totalCases,
+                dataPoint,
             }));
         }
 
         return Object.values(data.breakdown).map(dataPoint => ({
             name: dataPoint.county ?? "Unknown",
-            cases: dataPoint.totalCases,
+            dataPoint,
         }));
     },
 );
 
 export const getSortedDataBreakdown = createSelector(getDataBreakdown, (data: IDataBreakdown[]) => {
-    return data.sort((a, b) => a.name.localeCompare(b.name));
+    return data.sort((a, b) => (a.dataPoint.totalCases > b.dataPoint.totalCases ? -1 : 1));
 });

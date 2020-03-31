@@ -9,11 +9,13 @@ export interface ICountiesKeyed {
     [state: string]: ICoronaDataPoint[];
 }
 
+export interface ISingleBreakdown {
+    stateTotal?: ICoronaDataPoint;
+    countiesBreakdown: { [fipsCode: string]: ICoronaDataPoint };
+}
+
 export interface ITotalBreakdown {
-    [state: string]: {
-        stateTotal?: ICoronaDataPoint;
-        countiesBreakdown: { [fipsCode: string]: ICoronaDataPoint };
-    };
+    [state: string]: ISingleBreakdown;
 }
 
 export function getTotalBreakdowns(stateData: IStatesKeyed, counties: ICountiesKeyed) {
