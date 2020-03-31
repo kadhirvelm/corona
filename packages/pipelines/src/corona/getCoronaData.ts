@@ -1,8 +1,8 @@
 import { ICoronaBreakdown, ICoronaDataPoint, STATE } from "@corona/api";
 import lodash from "lodash";
 import { getCoronaDataArc } from "./getCoronaDataArc";
-import { getCoronaDataCoronaScraper, ICoronaDataScraperBreakdown } from "./getCoronaDataCoronaScraper";
-import { ITotalBreakdown } from "./shared";
+import { getCoronaDataCoronaScraper } from "./getCoronaDataCoronaScraper";
+import { ITotalBreakdown, ISingleBreakdown } from "./shared";
 
 export interface IStateCoronaData {
     [stateName: string]: ICoronaBreakdown;
@@ -13,40 +13,58 @@ export interface ICoronaData {
     states: IStateCoronaData;
 }
 
-function mergeAndKeyCoronaDataPoints(
-    usDataArc: Array<ICoronaDataPoint | undefined>,
-    usDataCoronaScraper: Array<ICoronaDataPoint | undefined>,
-): { [fipsCode: string]: ICoronaDataPoint } {
-    // NOTE: through keyBy the last key for a particular value will take precedence. In this case we want the usDataArc to
-    // be the more reliable value, so it gets added second.
-    const dataPoints = [...usDataCoronaScraper, ...usDataArc].filter(
-        dataPoint => !lodash.isUndefined(dataPoint),
-    ) as ICoronaDataPoint[];
+function mergeCoronaDatapoints(dataPointA?: ICoronaDataPoint, dataPointB?: ICoronaDataPoint) {
+    return lodash.mergeWith(dataPointA, dataPointB, (a, b) => {
+        if (a != null && b == null) {
+            return a;
+        }
 
-    return lodash.keyBy(dataPoints, dataPoint => dataPoint.fipsCode);
+        if (a == null && b != null) {
+            return b;
+        }
+
+        if ((a === 0 && b > 0) || (a === "" && b !== "")) {
+            return b;
+        }
+
+        return a;
+    });
 }
 
-function getNationData(usDataArc: ITotalBreakdown, usDataCoronaScraper: ICoronaDataScraperBreakdown): ICoronaBreakdown {
-    const usDataArcStates = Object.values(usDataArc).map(dataPoint => dataPoint.stateTotal);
-    const usDataCoronaScraperStates = Object.values(usDataCoronaScraper.states).map(dataPoint => dataPoint.stateTotal);
+function mergeCoronaBreakdowns(breakdownA: ITotalBreakdown, breakdownB: ITotalBreakdown): ITotalBreakdown {
+    return lodash.mergeWith(
+        breakdownA,
+        breakdownB,
+        (a: ISingleBreakdown, b: ISingleBreakdown): ISingleBreakdown => {
+            return {
+                stateTotal: mergeCoronaDatapoints(a.stateTotal, b.stateTotal),
+                countiesBreakdown: lodash.mergeWith(a.countiesBreakdown, b.countiesBreakdown, (c, d) =>
+                    mergeCoronaDatapoints(c, d),
+                ),
+            };
+        },
+    );
+}
+
+function getNationData(nation: ICoronaDataPoint, states: ITotalBreakdown): ICoronaBreakdown {
+    const allDatapointsMerged = Object.values(states)
+        .map(dataPoint => dataPoint.stateTotal)
+        .filter(dataPoint => dataPoint !== undefined) as ICoronaDataPoint[];
 
     return {
         description: "United States",
-        totalData: usDataCoronaScraper.nation,
-        breakdown: mergeAndKeyCoronaDataPoints(usDataArcStates, usDataCoronaScraperStates),
+        totalData: nation,
+        breakdown: lodash.keyBy(allDatapointsMerged, dataPoint => dataPoint?.fipsCode),
     };
 }
 
-function getStateData(usDataArc: ITotalBreakdown, usDataCoronaScraper: ICoronaDataScraperBreakdown): IStateCoronaData {
+function getStateData(mergedStateData: ITotalBreakdown): IStateCoronaData {
     return Object.values(STATE)
         .map(state => ({
             [state]: {
                 description: state,
-                totalData: usDataCoronaScraper.states[state].stateTotal ?? usDataArc[state].stateTotal,
-                breakdown: mergeAndKeyCoronaDataPoints(
-                    Object.values(usDataArc[state].countiesBreakdown ?? {}),
-                    Object.values(usDataCoronaScraper.states[state].countiesBreakdown ?? {}),
-                ),
+                totalData: mergedStateData[state].stateTotal,
+                breakdown: mergedStateData[state].countiesBreakdown,
             },
         }))
         .reduce((previous, next) => ({ ...previous, ...next }), {}) as IStateCoronaData;
@@ -55,8 +73,10 @@ function getStateData(usDataArc: ITotalBreakdown, usDataCoronaScraper: ICoronaDa
 export async function getCoronaData(): Promise<ICoronaData> {
     const [usDataArc, usDataCoronaScraper] = await Promise.all([getCoronaDataArc(), getCoronaDataCoronaScraper()]);
 
+    const mergedStateData = mergeCoronaBreakdowns(usDataArc, usDataCoronaScraper.states);
+
     return {
-        nation: getNationData(usDataArc, usDataCoronaScraper),
-        states: getStateData(usDataArc, usDataCoronaScraper),
+        nation: getNationData(usDataCoronaScraper.nation, mergedStateData),
+        states: getStateData(mergedStateData),
     };
 }

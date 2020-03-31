@@ -33,7 +33,6 @@ export enum STATE {
     COLORADO = "Colorado",
     CONNECTICUT = "Connecticut",
     DELAWARE = "Delaware",
-    DISTRICT_OF_COLUMBIA = "District Of Columbia",
     FLORIDA = "Florida",
     GEORGIA = "Georgia",
     GUAM = "Guam",
