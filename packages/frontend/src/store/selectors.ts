@@ -3,7 +3,6 @@ import { createSelector } from "reselect";
 import { IDataBreakdown, IGeography } from "../typings";
 import { getDataKeyFromGeography } from "../utils/getDataKeyFromGeography";
 import { IStoreState } from "./state";
-import { DEFAULT_DATA_KEY } from "../common";
 
 export const maybeGetDataForGeography = createSelector(
     (state: IStoreState) => state.application.cachedData,
