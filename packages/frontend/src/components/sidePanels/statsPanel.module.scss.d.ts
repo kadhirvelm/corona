@@ -4,11 +4,12 @@ declare namespace StatsPanelModuleScssModule {
         caseBreakdownContainer: string;
         end: string;
         filterContainer: string;
-        highlight: string;
+        isOpen: string;
         middle: string;
         singleBreakdown: string;
         start: string;
         statsPanelContainer: string;
+        text: string;
         titleBackButton: string;
         titleContainer: string;
         titleText: string;

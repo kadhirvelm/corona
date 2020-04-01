@@ -1,0 +1,27 @@
+@import "../../utils/variables";
+
+.internal-container {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    position: relative;
+}
+
+.deep-dive-container {
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+    border-radius: 3px;
+    box-shadow: 1px 0 $box-shadow, -1px 0 $box-shadow, 0 1px $box-shadow, 0 -1px $box-shadow;
+    background: $background;
+    width: 500px;
+    height: 400px;
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 1px $box-shadow;
+    padding: 10px
+}

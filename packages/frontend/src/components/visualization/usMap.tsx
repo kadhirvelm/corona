@@ -79,7 +79,7 @@ function renderMap(
             const cases: number | undefined = data.breakdown[feature.id ?? ""]?.totalCases;
 
             if (cases === undefined) {
-                return "gray";
+                return styles.defaultGray;
             }
 
             return colorScale(cases);
@@ -99,7 +99,7 @@ async function setupMap(props: IProps, mapOptions: IMapOptions) {
     const features = mapTopology.extractFeatures(usTopology);
 
     const projection = geoAlbersUsa().fitSize(
-        [window.innerWidth - PADDING * 2, window.innerHeight - PADDING * 2],
+        [window.innerWidth - MARGIN_LEFT - PADDING * 2, window.innerHeight - PADDING * 2],
         features[0],
     );
     const path = geoPath().projection(projection);

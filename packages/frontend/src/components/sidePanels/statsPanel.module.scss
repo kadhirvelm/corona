@@ -1,17 +1,11 @@
 @import "../../utils/variables";
 
 .stats-panel-container {
-    position: absolute;
     display: flex;
     flex-direction: column;
-    flex: 1;
     background: $background;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: 200px;
-    z-index: 1;
     box-shadow: 1px 0 $box-shadow;
+    width: 225px;
 }
 
 .title-container {
@@ -54,6 +48,19 @@
     flex-direction: column;
     overflow-y: auto;
     margin-top: 1px;
+
+    &::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: rgba(#AEB6BF, 0.25);
+    }
+
+    &::-webkit-scrollbar-thumb {
+        width: 5px;
+        background-color: rgba(#616A6B, 0.5);
+    }
 }
 
 .single-breakdown {
@@ -63,8 +70,20 @@
     box-shadow: 0 1px $box-shadow;
     margin-top: 1px;
     cursor: pointer;
+
+    &:hover {
+        background: rgba(#85C1E9, 0.75);
+    }
 }
 
-.highlight {
-    background: rgba(#85C1E9, 0.25);
+.is-open {
+    background: #2E86C1;
+
+    &.single-breakdown:hover {
+        background: #2E86C1;
+    }
+
+    .text {
+        color: #FDFEFE;
+    }
 }

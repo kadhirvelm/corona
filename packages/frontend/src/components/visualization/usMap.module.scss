@@ -1,6 +1,9 @@
+$default-gray: #CCD1D1;
+
 .state {
     stroke: #34495E;
     stroke-width: 0.75px;
+    cursor: pointer;
 
     &:hover {
         fill: #85C1E9;
@@ -8,8 +11,14 @@
     }
 }
 
-.state-no-data {
-    fill:#CCD1D1;
+.state-no-data.state-no-data {
+    fill: $default-gray;
+    cursor: not-allowed;
+
+    &:hover {
+        fill: #99A3A4;
+        stroke: #5D6D7E;
+    }
 }
 
 .svg-map {
@@ -17,4 +26,8 @@
     overflow: hidden;
     margin-left: 75px;
     background: rgba(#EBF5FB, 0.5);
+}
+
+:export {
+    defaultGray: $default-gray;
 }

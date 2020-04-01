@@ -12,5 +12,5 @@ export function configureSecurity(app: Express) {
         return;
     }
 
-    app.use(cors(CORS_OPTIONS));
+    app.use(process.env.NODE_ENV === "production" ? cors(CORS_OPTIONS) : cors());
 }

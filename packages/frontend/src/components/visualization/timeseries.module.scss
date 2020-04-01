@@ -1,0 +1,27 @@
+.cases {
+    fill: none;
+    stroke:#1F618D;
+    stroke-width: 2px;
+}
+
+.active-cases {
+    fill: none;
+    stroke: #B03A2E;
+    stroke-width: 2px;
+}
+
+.deaths {
+    fill: none;
+    stroke: #283747;
+    stroke-width: 2px;
+}
+
+.recovered {
+    fill: none;
+    stroke: #1E8449;
+    stroke-width: 2px;
+}
+
+.svg-container {
+    margin-top: 1px;
+}

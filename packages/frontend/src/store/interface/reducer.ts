@@ -1,5 +1,5 @@
 import { TypedReducer, setWith } from "redoodle";
-import { UPDATE_GEOGRAPHY, SET_HOVERING_OVER_FIPS, REMOVE_HOVERING_OVER_FIPS } from "./actions";
+import { UPDATE_GEOGRAPHY, SET_HIGHLIGHTED_FIPS, REMOVE_HIGHLIGHTED_FIPS, SET_DEEP_DIVE_FIPS_CODE } from "./actions";
 import { IGeography } from "../../typings/geography";
 
 export interface IInterfaceState {
@@ -8,24 +8,32 @@ export interface IInterfaceState {
      */
     geography: IGeography;
     /**
-     * What the user is currently hovering over.
+     * What the user is currently hovering over. This pops up the highlightedFeatureInfo, which displays various stats.
      */
-    hoveringOverFipsCode: string | undefined;
+    highlightedFipsCode: string | undefined;
+    /**
+     * When the user clicks on a value in the statsPanel, this will open a growths curve panel.
+     */
+    deepDiveFipsCode: string | undefined;
 }
 
 export const EMPTY_INTERFACE_STATE: IInterfaceState = {
     geography: IGeography.nationGeography(),
-    hoveringOverFipsCode: undefined,
+    highlightedFipsCode: undefined,
+    deepDiveFipsCode: undefined,
 };
 
 export const interfaceReducer = TypedReducer.builder<IInterfaceState>()
-    .withHandler(SET_HOVERING_OVER_FIPS.TYPE, (state, hoveringOverFipsCode) => setWith(state, { hoveringOverFipsCode }))
-    .withHandler(REMOVE_HOVERING_OVER_FIPS.TYPE, (state, hoveringOverFipsCode) => {
-        if (state.hoveringOverFipsCode === hoveringOverFipsCode) {
-            return setWith(state, { hoveringOverFipsCode: undefined });
+    .withHandler(SET_HIGHLIGHTED_FIPS.TYPE, (state, highlightedFipsCode) => setWith(state, { highlightedFipsCode }))
+    .withHandler(REMOVE_HIGHLIGHTED_FIPS.TYPE, (state, highlightedFipsCode) => {
+        if (state.highlightedFipsCode === highlightedFipsCode) {
+            return setWith(state, { highlightedFipsCode: undefined });
         }
 
         return state;
     })
-    .withHandler(UPDATE_GEOGRAPHY.TYPE, (state, geography) => setWith(state, { geography }))
+    .withHandler(SET_DEEP_DIVE_FIPS_CODE.TYPE, (state, deepDiveFipsCode) => setWith(state, { deepDiveFipsCode }))
+    .withHandler(UPDATE_GEOGRAPHY.TYPE, (state, geography) =>
+        setWith(state, { geography, highlightedFipsCode: undefined, deepDiveFipsCode: undefined }),
+    )
     .build();

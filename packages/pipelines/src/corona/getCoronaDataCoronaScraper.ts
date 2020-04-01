@@ -1,7 +1,9 @@
 import { ICoronaDataPoint } from "@corona/api";
-import { twoLetterCodeToFips, twoLetterCodeWithCountyToFips, convertTwoLetterCodeToState } from "@corona/utils";
+import { convertTwoLetterCodeToState } from "@corona/utils";
 import fetch from "node-fetch";
-import { ICountiesKeyed, IStatesKeyed, getTotalBreakdowns, ITotalBreakdown } from "./shared";
+import { cleanCountyName } from "../utils/cleanCountyName";
+import { getCoronaDataScraperFipsCode } from "../utils/getCoronaDataScraperFipsCode";
+import { getTotalBreakdowns, ICountiesKeyed, IStatesKeyed, ITotalBreakdown } from "./shared";
 
 interface ICoronaDataScraperData {
     city?: string;
@@ -25,22 +27,14 @@ export interface ICoronaDataScraperBreakdown {
     states: ITotalBreakdown;
 }
 
-function getFipsCode(state?: string, county?: string) {
-    if (county === undefined) {
-        return twoLetterCodeToFips(state ?? "USA");
-    }
-
-    return twoLetterCodeWithCountyToFips(`${state}_${county.replace(/County/g, "").trim()}`) ?? "unassigned";
-}
-
 function cleanRawCoronaDataScraperDatapoint(dataPoint: ICoronaDataScraperData): ICoronaDataPoint {
-    const cleanedCounty = dataPoint.county?.replace(/County/g, "").trim();
+    const cleanedCounty = cleanCountyName(dataPoint.county);
 
     return {
         activeCases: dataPoint.active,
         county: cleanedCounty === "(unassigned)" ? "Unassigned" : cleanedCounty,
         deaths: dataPoint.deaths,
-        fipsCode: getFipsCode(dataPoint.state, cleanedCounty),
+        fipsCode: getCoronaDataScraperFipsCode(dataPoint.state, cleanedCounty),
         lastUpdated: undefined,
         recovered: dataPoint.recovered,
         state: convertTwoLetterCodeToState(dataPoint.state ?? ""),
@@ -71,6 +65,7 @@ function separateIntoNationStatesAndCounties(data: ICoronaDataScraperData[]) {
             cleanedDataPoint.state !== "" &&
             dataPoint.city === undefined
         ) {
+            // eslint-disable-next-line prefer-destructuring
             states[cleanedDataPoint.state] = cleanedDataPoint;
         } else if (cleanedDataPoint.fipsCode === "999") {
             nation.push(cleanedDataPoint);

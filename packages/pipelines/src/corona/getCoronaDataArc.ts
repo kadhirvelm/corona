@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 import { ICoronaDataPoint } from "@corona/api";
-import { twoLetterCodeToFips, convertStateToTwoLetterCode } from "@corona/utils";
+import { twoLetterCodeToFips, convertStateToTwoLetterCode, twoLetterCodeWithCountyToFips } from "@corona/utils";
 import { IStatesKeyed, ICountiesKeyed, getTotalBreakdowns, ITotalBreakdown } from "./shared";
 
 interface IRawArcCoronaData {
@@ -24,6 +24,8 @@ interface IArcCoronaData {
     Admin2: string;
 }
 
+const IGNORED_COUNTIES = ["Kansas City"];
+
 function maybeGetCounty(admin2: string) {
     if (admin2.startsWith("Out of") || admin2.startsWith("Unassigned")) {
         return undefined;
@@ -32,16 +34,29 @@ function maybeGetCounty(admin2: string) {
     return admin2;
 }
 
-function getFipsCodeFromState(state: string) {
-    return twoLetterCodeToFips(convertStateToTwoLetterCode(state));
+function getFipsCodeFromStateAndCounty(state: string, county?: string) {
+    const twoLetterCode = convertStateToTwoLetterCode(state);
+
+    if (county === undefined) {
+        return twoLetterCodeToFips(twoLetterCode);
+    }
+
+    return twoLetterCodeWithCountyToFips(`${twoLetterCode}_${county}`);
 }
 
 function cleanRawArcDatapoint(dataPoint: IArcCoronaData): ICoronaDataPoint {
+    const county = maybeGetCounty(dataPoint.Admin2);
+    const finalFipsCode = dataPoint.FIPS ?? getFipsCodeFromStateAndCounty(dataPoint.Province_State, county);
+
+    if (finalFipsCode == null && !IGNORED_COUNTIES.includes(dataPoint.Admin2)) {
+        console.error("ArcGis Data -->", dataPoint.Admin2, dataPoint.Province_State);
+    }
+
     return {
         activeCases: dataPoint.Active,
         county: maybeGetCounty(dataPoint.Admin2),
         deaths: dataPoint.Deaths,
-        fipsCode: dataPoint.FIPS ?? getFipsCodeFromState(dataPoint.Province_State),
+        fipsCode: finalFipsCode,
         lastUpdated: new Date(dataPoint.Last_Update),
         recovered: dataPoint.Recovered,
         state: dataPoint.Province_State,
@@ -60,6 +75,7 @@ function separateCountiesAndStates(data: IRawArcCoronaData[]) {
         }
 
         if (cleanedDataPoint.county === undefined) {
+            // eslint-disable-next-line prefer-destructuring
             states[cleanedDataPoint.state] = cleanedDataPoint;
         } else if (cleanedDataPoint.fipsCode !== undefined) {
             counties[cleanedDataPoint.state] = (counties[cleanedDataPoint.state] ?? []).concat(cleanedDataPoint);
