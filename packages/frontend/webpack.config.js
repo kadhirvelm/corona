@@ -12,25 +12,25 @@ module.exports = {
 
     mode: process.env.NODE_ENV === "production" ? "production" : "development",
 
-    // devServer: {
-    //     contentBase: path.resolve(__dirname, "./src"),
-    //     hot: true,
-    //     inline: true,
-    //     port: 3001,
-    //     stats: {
-    //         colors: true,
-    //         hash: false,
-    //         version: false,
-    //         timings: false,
-    //         assets: false,
-    //         chunks: false,
-    //         modules: false,
-    //         children: false,
-    //         source: false,
-    //         warnings: false,
-    //         publicPath: false
-    //     }
-    // },
+    devServer: {
+        contentBase: path.resolve(__dirname, "./src"),
+        hot: true,
+        inline: true,
+        port: 3001,
+        stats: {
+            colors: true,
+            hash: false,
+            version: false,
+            timings: false,
+            assets: false,
+            chunks: false,
+            modules: false,
+            children: false,
+            source: false,
+            warnings: false,
+            publicPath: false
+        }
+    },
 
     module: {
         rules: [

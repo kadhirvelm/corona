@@ -7,15 +7,8 @@ import { debounce } from "lodash-es";
 import { IGeography, IDataEntry } from "../../typings";
 import { Transitioner, DEFAULT_DATA_KEY } from "../../common";
 import { USMap } from "./usMap";
-import { nationTopology, stateTopology } from "../../utils";
-import {
-    IStoreState,
-    ADD_DATA,
-    UPDATE_GEOGRAPHY,
-    SET_HOVERING_OVER_FIPS,
-    REMOVE_HOVERING_OVER_FIPS,
-} from "../../store";
-import { getDataKeyFromGeography } from "../../utils/getDataKeyFromGeography";
+import { nationTopology, stateTopology, getDataKeyFromGeography } from "../../utils";
+import { IStoreState, ADD_DATA, UPDATE_GEOGRAPHY, SET_HIGHLIGHTED_FIPS, REMOVE_HIGHLIGHTED_FIPS } from "../../store";
 
 interface IStateProps {
     cachedData: { [key: string]: ICoronaBreakdown };
@@ -24,8 +17,8 @@ interface IStateProps {
 
 interface IDispatchProps {
     addData: (newData: { key: string; data: ICoronaBreakdown }) => void;
-    removeHoveringOverFips: (fipsCode: string | undefined) => void;
-    setHoveringOverFips: (fipsCode: string | undefined) => void;
+    removeHighlightedFips: (fipsCode: string | undefined) => void;
+    setHighlightedFips: (fipsCode: string | undefined) => void;
     updateGeography: (geography: IGeography) => void;
 }
 
@@ -41,7 +34,7 @@ async function getDataForState(stateName: string, addData: (dataEntry: IDataEntr
 }
 
 function UnconnectedVirusDataRenderer(props: IProps) {
-    const { cachedData, geography, removeHoveringOverFips, setHoveringOverFips, updateGeography } = props;
+    const { cachedData, geography, removeHighlightedFips, setHighlightedFips, updateGeography } = props;
 
     React.useEffect(() => {
         const { addData } = props;
@@ -66,11 +59,11 @@ function UnconnectedVirusDataRenderer(props: IProps) {
     };
 
     const onMouseEnter = (feature: GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>) => {
-        setHoveringOverFips(feature.id?.toString());
+        setHighlightedFips(feature.id?.toString());
     };
 
     const onMouseLeave = (feature: GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>) => {
-        removeHoveringOverFips(feature.id?.toString());
+        removeHighlightedFips(feature.id?.toString());
     };
 
     const sharedProps = {
@@ -112,8 +105,8 @@ function mapDispatchToProps(dispatch: Dispatch): IDispatchProps {
     return bindActionCreators(
         {
             addData: ADD_DATA.create,
-            removeHoveringOverFips: REMOVE_HOVERING_OVER_FIPS.create,
-            setHoveringOverFips: SET_HOVERING_OVER_FIPS.create,
+            removeHighlightedFips: REMOVE_HIGHLIGHTED_FIPS.create,
+            setHighlightedFips: SET_HIGHLIGHTED_FIPS.create,
             updateGeography: UPDATE_GEOGRAPHY.create,
         },
         dispatch,

@@ -2,7 +2,7 @@ import { CoronaService } from "@corona/api";
 import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
-import { VirusDataRenderer, StatsPanel } from "./components";
+import { VirusDataRenderer, Panels } from "./components";
 import { ADD_DATA } from "./store";
 import { IDataEntry } from "./typings";
 import { DEFAULT_DATA_KEY } from "./common";
@@ -27,7 +27,7 @@ class UnconnectedMainApplication extends React.PureComponent<IProps> {
     public render() {
         return (
             <>
-                <StatsPanel />
+                <Panels />
                 <VirusDataRenderer />
             </>
         );

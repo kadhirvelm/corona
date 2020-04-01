@@ -1,12 +1,12 @@
 import * as React from "react";
 import { ICoronaDataPoint } from "@corona/api";
 import { connect } from "react-redux";
-import { IStoreState, maybeGetDataForHoveringOverFips } from "../../store";
-import styles from "./hoveringOverFeatureInfo.module.scss";
+import { IStoreState, maybeGetDataForHighlightedFips } from "../../store";
+import styles from "./highlightedFipsInfo.module.scss";
 import { Transitioner } from "../../common";
 
 interface IStateProps {
-    hoveringOverInfo: ICoronaDataPoint | undefined;
+    highlightedInfo: ICoronaDataPoint | undefined;
 }
 
 type IProps = IStateProps;
@@ -52,24 +52,39 @@ function maybeRenderPopulationPercent(totalCases?: number, population?: number) 
     return renderSingleLabel("Infection rate", `${Math.abs((totalCases / population) * 100).toFixed(3)}%`);
 }
 
-function UnconnectedHoveringOverFeatureInfo(props: IProps) {
-    const { hoveringOverInfo } = props;
+function UnconnectedHighlightedFipsInfo(props: IProps) {
+    const { highlightedInfo } = props;
+
+    const [temporaryCopy, setTemporaryCopy] = React.useState<ICoronaDataPoint | undefined>(undefined);
+
+    React.useEffect(() => {
+        if (props.highlightedInfo === undefined) {
+            return;
+        }
+
+        setTemporaryCopy(props.highlightedInfo);
+    }, [highlightedInfo]);
+
+    const finalHighlightedInfo = highlightedInfo ?? temporaryCopy;
 
     return (
         <div className={styles.internalContainer}>
-            <Transitioner className={styles.transitioner} show={hoveringOverInfo !== undefined}>
+            <Transitioner className={styles.transitioner} show={highlightedInfo !== undefined}>
                 <div className={styles.hoverInfo}>
                     <div className={styles.title}>
-                        {hoveringOverInfo?.county ?? hoveringOverInfo?.state ?? "None selected"}
+                        {finalHighlightedInfo?.county ?? finalHighlightedInfo?.state ?? "None selected"}
                     </div>
                     <div className={styles.infoContainer}>
-                        {renderSingleLabel("Total", hoveringOverInfo?.totalCases.toLocaleString())}
-                        {renderSingleLabel("Recovered", hoveringOverInfo?.recovered?.toLocaleString())}
-                        {renderSingleLabel("Active", hoveringOverInfo?.activeCases?.toLocaleString())}
-                        {renderSingleLabel("Deaths", hoveringOverInfo?.deaths?.toLocaleString())}
-                        {renderSingleLabel("Population", hoveringOverInfo?.population?.toLocaleString())}
-                        {maybeRenderPopulationPercent(hoveringOverInfo?.totalCases, hoveringOverInfo?.population)}
-                        {renderLastUpdated(hoveringOverInfo?.lastUpdated)}
+                        {renderSingleLabel("Total", finalHighlightedInfo?.totalCases.toLocaleString())}
+                        {renderSingleLabel("Recovered", finalHighlightedInfo?.recovered?.toLocaleString())}
+                        {renderSingleLabel("Active", finalHighlightedInfo?.activeCases?.toLocaleString())}
+                        {renderSingleLabel("Deaths", finalHighlightedInfo?.deaths?.toLocaleString())}
+                        {renderSingleLabel("Population", finalHighlightedInfo?.population?.toLocaleString())}
+                        {maybeRenderPopulationPercent(
+                            finalHighlightedInfo?.totalCases,
+                            finalHighlightedInfo?.population,
+                        )}
+                        {renderLastUpdated(finalHighlightedInfo?.lastUpdated)}
                     </div>
                 </div>
             </Transitioner>
@@ -79,8 +94,8 @@ function UnconnectedHoveringOverFeatureInfo(props: IProps) {
 
 function mapStateToProps(state: IStoreState): IStateProps {
     return {
-        hoveringOverInfo: maybeGetDataForHoveringOverFips(state),
+        highlightedInfo: maybeGetDataForHighlightedFips(state),
     };
 }
 
-export const HoveringOverFeatureInfo = connect(mapStateToProps)(UnconnectedHoveringOverFeatureInfo);
+export const HighlightedFipsInfo = connect(mapStateToProps)(UnconnectedHighlightedFipsInfo);

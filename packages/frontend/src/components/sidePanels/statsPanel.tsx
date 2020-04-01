@@ -9,8 +9,7 @@ import {
     maybeGetDataForGeography,
     getSortedDataBreakdown,
     UPDATE_GEOGRAPHY,
-    SET_HOVERING_OVER_FIPS,
-    REMOVE_HOVERING_OVER_FIPS,
+    SET_DEEP_DIVE_FIPS_CODE,
 } from "../../store";
 import styles from "./statsPanel.module.scss";
 import { IGeography, IDataBreakdown } from "../../typings";
@@ -19,13 +18,13 @@ interface IStateProps {
     geography: IGeography;
     data: ICoronaBreakdown | undefined;
     dataBreakdown: IDataBreakdown[];
-    hoveringOverFipsCode: string | undefined;
+    highlightedFipsCode: string | undefined;
+    deepDiveFipsCode: string | undefined;
 }
 
 interface IDispatchProps {
     backToNation: () => void;
-    removeHoveringOverFipsCode: (fipsCode: string | undefined) => void;
-    setHoveringOverFipsCode: (fipsCode: string | undefined) => void;
+    setdeepDiveFipsCode: (fipsCode: string | undefined) => void;
 }
 
 type IProps = IStateProps & IDispatchProps;
@@ -34,16 +33,16 @@ function renderDataBreakdown(
     dataBreakdown: IDataBreakdown[],
     filter: string,
     fips: {
-        hoveringOverFipsCode: string | undefined;
-        removeHoveringOverFipsCode: (fipsCode: string | undefined) => void;
-        setHoveringOverFipsCode: (fipsCode: string | undefined) => void;
+        highlightedFipsCode: string | undefined;
+        deepDiveFipsCode: string | undefined;
+        setdeepDiveFipsCode: (fipsCode: string | undefined) => void;
     },
 ) {
     const handleClick = (fipsCode: string) => () => {
-        if (fips.hoveringOverFipsCode === fipsCode) {
-            fips.removeHoveringOverFipsCode(fipsCode);
+        if (fips.deepDiveFipsCode === fipsCode) {
+            fips.setdeepDiveFipsCode(undefined);
         } else {
-            fips.setHoveringOverFipsCode(fipsCode);
+            fips.setdeepDiveFipsCode(fipsCode);
         }
     };
 
@@ -54,12 +53,15 @@ function renderDataBreakdown(
                 .map(breakdown => (
                     <div
                         className={classNames(styles.singleBreakdown, {
-                            [styles.highlight]: fips.hoveringOverFipsCode === breakdown.dataPoint.fipsCode,
+                            [styles.isOpen]: fips.deepDiveFipsCode === breakdown.dataPoint.fipsCode,
+                            [styles.highlight]:
+                                fips.highlightedFipsCode === breakdown.dataPoint.fipsCode &&
+                                !(fips.deepDiveFipsCode === breakdown.dataPoint.fipsCode),
                         })}
                         onClick={handleClick(breakdown.dataPoint.fipsCode)}
                     >
-                        <span>{breakdown.name}</span>
-                        <span>{breakdown.dataPoint.totalCases.toLocaleString()}</span>
+                        <span className={styles.text}>{breakdown.name}</span>
+                        <span className={styles.text}>{breakdown.dataPoint.totalCases.toLocaleString()}</span>
                     </div>
                 ))}
         </div>
@@ -82,9 +84,9 @@ function UnconnectedStatsPanel(props: IProps) {
         dataBreakdown,
         backToNation,
         geography,
-        hoveringOverFipsCode,
-        setHoveringOverFipsCode,
-        removeHoveringOverFipsCode,
+        deepDiveFipsCode,
+        highlightedFipsCode,
+        setdeepDiveFipsCode,
     } = props;
     if (data === undefined) {
         return <div className={styles.statsPanelContainer} />;
@@ -105,9 +107,9 @@ function UnconnectedStatsPanel(props: IProps) {
                 <InputGroup leftIcon="search" onChange={updateFilterValue} value={filter} />
             </div>
             {renderDataBreakdown(dataBreakdown, filter, {
-                hoveringOverFipsCode,
-                setHoveringOverFipsCode,
-                removeHoveringOverFipsCode,
+                highlightedFipsCode,
+                deepDiveFipsCode,
+                setdeepDiveFipsCode,
             })}
         </div>
     );
@@ -118,7 +120,8 @@ function mapStateToProps(state: IStoreState): IStateProps {
         geography: state.interface.geography,
         data: maybeGetDataForGeography(state),
         dataBreakdown: getSortedDataBreakdown(state),
-        hoveringOverFipsCode: state.interface.hoveringOverFipsCode,
+        highlightedFipsCode: state.interface.highlightedFipsCode,
+        deepDiveFipsCode: state.interface.deepDiveFipsCode,
     };
 }
 
@@ -126,8 +129,7 @@ function mapDispatchToProps(dispatch: Dispatch): IDispatchProps {
     return {
         ...bindActionCreators(
             {
-                setHoveringOverFipsCode: SET_HOVERING_OVER_FIPS.create,
-                removeHoveringOverFipsCode: REMOVE_HOVERING_OVER_FIPS.create,
+                setdeepDiveFipsCode: SET_DEEP_DIVE_FIPS_CODE.create,
             },
             dispatch,
         ),

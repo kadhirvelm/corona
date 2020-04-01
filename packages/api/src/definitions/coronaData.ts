@@ -5,6 +5,14 @@ import {
     IService,
 } from "../common/index";
 
+export interface ICoronaDatapointTimeseriesDatapoint {
+    cases?: number;
+    deaths?: number;
+    recovered?: number;
+    active?: number;
+    growthFactor?: number;
+}
+
 export interface ICoronaDataPoint {
     activeCases?: number;
     county?: string;
@@ -16,13 +24,7 @@ export interface ICoronaDataPoint {
     totalCases: number;
     population?: number;
     timeseries?: {
-        [date: string]: {
-            cases?: number;
-            deaths?: number;
-            recovered?: number;
-            active?: number;
-            growthFactor?: number;
-        };
+        [date: string]: ICoronaDatapointTimeseriesDatapoint;
     };
 }
 
