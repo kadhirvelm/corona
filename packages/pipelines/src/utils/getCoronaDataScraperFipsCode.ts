@@ -1,7 +1,15 @@
 import { twoLetterCodeToFips, twoLetterCodeWithCountyToFips, convertStateToTwoLetterCode } from "@corona/utils";
 import { cleanCountyName } from "./cleanCountyName";
 
-const IGNORED_COUNTIES = ["Miami-Dade", "Tri", "Dukes and Nantucket", "Kansas City"];
+const IGNORED_COUNTIES = [
+    "Miami-Dade",
+    "Tri",
+    "Dukes and Nantucket",
+    "Kansas City",
+    "New York City",
+    "Nashua",
+    "Manchester",
+];
 
 function getFinalFipsCode(state: string, county: string): { cleanedCountyName: string | undefined; fipsCode: string } {
     const cleanedCountyName = cleanCountyName(county);
