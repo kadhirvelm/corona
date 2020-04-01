@@ -5,7 +5,11 @@ import colors from "./variables.scss";
 export function getLinearColorScale(data: ICoronaBreakdown) {
     const average = (numbers: number[]) => numbers.reduce((previous, next) => previous + next, 0) / numbers.length;
 
-    const numbers = Object.values(data.breakdown).map(dataPoint => dataPoint.totalCases);
+    const isValidFips = (fips: string) => fips.length === 2 || fips.length === 5;
+
+    const numbers = Object.values(data.breakdown)
+        .filter(dataPoint => isValidFips(dataPoint.fipsCode))
+        .map(dataPoint => dataPoint.totalCases);
     const range = [0, average(numbers), Math.max(...numbers)];
 
     return {

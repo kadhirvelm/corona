@@ -32,7 +32,8 @@
     "clean:lock": "npx yarn-deduplicate yarn.lock",
     "dev": "lerna run dev --parallel",
     "lint": "lerna run lint --parallel",
-    "update-version": "lerna publish --skip-git --skip-npm --force-publish '*'"
+    "update-version": "lerna publish --skip-git --skip-npm --force-publish '*'",
+    "start:production": "source ~/.bash_profile && yarn build && cd packages/backend && yarn start:production"
   },
   "repository": {
     "type": "git",

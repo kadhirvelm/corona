@@ -3,7 +3,10 @@ import { Express } from "express";
 import { ORIGIN, PORT } from "@corona/api";
 
 const CORS_OPTIONS: cors.CorsOptions = {
-    origin: [new RegExp(`http://${ORIGIN}:${PORT}`)],
+    origin: [
+        new RegExp(`http://${ORIGIN}:${PORT}`),
+        ...(process.env.NODE_ENV === "production" ? ["http://dashboardus.live"] : []),
+    ],
     methods: ["GET"],
 };
 
