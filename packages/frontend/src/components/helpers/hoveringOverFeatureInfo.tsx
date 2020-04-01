@@ -44,6 +44,14 @@ function renderSingleLabel(label: string, value?: string) {
     );
 }
 
+function maybeRenderPopulationPercent(totalCases?: number, population?: number) {
+    if (totalCases === undefined || population === undefined) {
+        return null;
+    }
+
+    return renderSingleLabel("Infection rate", `${Math.abs((totalCases / population) * 100).toFixed(3)}%`);
+}
+
 function UnconnectedHoveringOverFeatureInfo(props: IProps) {
     const { hoveringOverInfo } = props;
 
@@ -59,6 +67,8 @@ function UnconnectedHoveringOverFeatureInfo(props: IProps) {
                         {renderSingleLabel("Recovered", hoveringOverInfo?.recovered?.toLocaleString())}
                         {renderSingleLabel("Active", hoveringOverInfo?.activeCases?.toLocaleString())}
                         {renderSingleLabel("Deaths", hoveringOverInfo?.deaths?.toLocaleString())}
+                        {renderSingleLabel("Population", hoveringOverInfo?.population?.toLocaleString())}
+                        {maybeRenderPopulationPercent(hoveringOverInfo?.totalCases, hoveringOverInfo?.population)}
                         {renderLastUpdated(hoveringOverInfo?.lastUpdated)}
                     </div>
                 </div>
