@@ -2,6 +2,7 @@ import fetch from "node-fetch";
 import { ICoronaDataPoint } from "@corona/api";
 import { twoLetterCodeToFips, convertStateToTwoLetterCode, twoLetterCodeWithCountyToFips } from "@corona/utils";
 import { IStatesKeyed, ICountiesKeyed, getTotalBreakdowns, ITotalBreakdown } from "./shared";
+import { getArcgisFipsCode } from "../utils/getCoronaDataScraperFipsCode";
 
 interface IRawArcCoronaData {
     attributes: IArcCoronaData;
@@ -24,8 +25,6 @@ interface IArcCoronaData {
     Admin2: string;
 }
 
-const IGNORED_COUNTIES = ["Kansas City"];
-
 function maybeGetCounty(admin2: string) {
     if (admin2.startsWith("Out of") || admin2.startsWith("Unassigned")) {
         return undefined;
@@ -34,23 +33,9 @@ function maybeGetCounty(admin2: string) {
     return admin2;
 }
 
-function getFipsCodeFromStateAndCounty(state: string, county?: string) {
-    const twoLetterCode = convertStateToTwoLetterCode(state);
-
-    if (county === undefined) {
-        return twoLetterCodeToFips(twoLetterCode);
-    }
-
-    return twoLetterCodeWithCountyToFips(`${twoLetterCode}_${county}`);
-}
-
 function cleanRawArcDatapoint(dataPoint: IArcCoronaData): ICoronaDataPoint {
     const county = maybeGetCounty(dataPoint.Admin2);
-    const finalFipsCode = dataPoint.FIPS ?? getFipsCodeFromStateAndCounty(dataPoint.Province_State, county);
-
-    if (finalFipsCode == null && !IGNORED_COUNTIES.includes(dataPoint.Admin2)) {
-        console.error("ArcGis Data -->", dataPoint.Admin2, dataPoint.Province_State);
-    }
+    const finalFipsCode = getArcgisFipsCode(dataPoint.Province_State, dataPoint.FIPS, county);
 
     return {
         activeCases: dataPoint.Active,

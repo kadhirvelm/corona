@@ -61,14 +61,14 @@ function UnconnectedVirusDataRenderer(props: IProps) {
     }, [geography]);
 
     const onFeatureSelect = (feature: GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>) => {
-        if (isValidState(feature.properties?.name)) {
+        if (feature.id?.toString().length === 2) {
             updateGeography(
                 IGeography.stateGeography({
                     stateFipsCode: feature.id?.toString() ?? "",
                     name: feature.properties?.name ?? "",
                 }),
             );
-        } else {
+        } else if (feature.id?.toString().length === 5) {
             setDeepDiveFips(feature.id?.toString());
         }
     };
