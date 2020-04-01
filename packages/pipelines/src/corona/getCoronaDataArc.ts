@@ -1,8 +1,7 @@
-import fetch from "node-fetch";
 import { ICoronaDataPoint } from "@corona/api";
-import { twoLetterCodeToFips, convertStateToTwoLetterCode, twoLetterCodeWithCountyToFips } from "@corona/utils";
-import { IStatesKeyed, ICountiesKeyed, getTotalBreakdowns, ITotalBreakdown } from "./shared";
+import fetch from "node-fetch";
 import { getArcgisFipsCode } from "../utils/getCoronaDataScraperFipsCode";
+import { getTotalBreakdowns, ICountiesKeyed, IStatesKeyed, ITotalBreakdown } from "./shared";
 
 interface IRawArcCoronaData {
     attributes: IArcCoronaData;

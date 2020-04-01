@@ -27,6 +27,7 @@ export function getCoronaDataScraperFipsCode(state?: string, county?: string, ci
         !cleanedCountyName?.includes("Counties") &&
         !IGNORED_COUNTIES.includes(cleanedCountyName ?? "")
     ) {
+        // eslint-disable-next-line no-console
         console.error("CoronaScraper -->", fipsCode);
     }
 
@@ -50,6 +51,7 @@ export function getArcgisFipsCode(state: string, fips?: string, county?: string)
     const { cleanedCountyName, fipsCode } = getFinalFipsCode(twoLetterState, county);
 
     if (fipsCode.length > 5 && !IGNORED_COUNTIES.includes(cleanedCountyName ?? "")) {
+        // eslint-disable-next-line no-console
         console.error("Arcgis -->", fipsCode);
     }
 
