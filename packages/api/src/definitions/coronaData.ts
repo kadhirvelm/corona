@@ -14,6 +14,16 @@ export interface ICoronaDataPoint {
     recovered?: number;
     state?: string;
     totalCases: number;
+    population?: number;
+    timeseries?: {
+        [date: string]: {
+            cases?: number;
+            deaths?: number;
+            recovered?: number;
+            active?: number;
+            growthFactor?: number;
+        };
+    };
 }
 
 export interface ICoronaBreakdown {
