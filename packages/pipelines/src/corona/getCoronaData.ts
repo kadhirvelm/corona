@@ -84,7 +84,11 @@ function verifyDatapoints(totalBreakdown: ITotalBreakdown): ITotalBreakdown {
     return Object.keys(totalBreakdown)
         .map((state): { [state: string]: ISingleBreakdown } => {
             const { stateTotal } = totalBreakdown[state];
-            const counties = Object.values(totalBreakdown[state].countiesBreakdown);
+            // NOTE: we only want the proper county counts here, we don't want to include the regions and other multi-county counts
+            const counties = Object.values(totalBreakdown[state].countiesBreakdown).filter(
+                // eslint-disable-next-line no-restricted-globals
+                point => !isNaN(parseInt(point.fipsCode, 10)),
+            );
 
             return {
                 [state]: {

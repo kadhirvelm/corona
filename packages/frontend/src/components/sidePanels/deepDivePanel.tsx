@@ -2,7 +2,7 @@ import { ICoronaDataPoint, ICoronaDatapointTimeseriesDatapoint } from "@corona/a
 import * as React from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
-import { Button } from "@blueprintjs/core";
+import { Button, NonIdealState } from "@blueprintjs/core";
 import { Transitioner } from "../../common";
 import { IStoreState, maybeGetDataForDeepDiveFips, SET_DEEP_DIVE_FIPS_CODE } from "../../store";
 import styles from "./deepDivePanel.module.scss";
@@ -23,7 +23,7 @@ function maybeRenderGrowthCurve(
     fipsCode?: string,
 ) {
     if (timeseries === undefined) {
-        return <div>No timeseries data available</div>;
+        return <NonIdealState description="No timeseries data available" />;
     }
 
     return <Timeseries key={fipsCode} timeseries={timeseries} />;

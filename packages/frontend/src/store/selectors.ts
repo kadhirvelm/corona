@@ -66,11 +66,24 @@ export const maybeGetDataForHighlightedFips = createSelector(
 export const maybeGetDataForDeepDiveFips = createSelector(
     maybeGetDataForGeography,
     (state: IStoreState) => state.interface.deepDiveFipsCode,
-    (data: ICoronaBreakdown | undefined, deepDiveFipsCode: string | undefined): ICoronaDataPoint | undefined => {
+    (state: IStoreState) => state.interface.geography,
+    (
+        data: ICoronaBreakdown | undefined,
+        deepDiveFipsCode: string | undefined,
+        geography: IGeography,
+    ): ICoronaDataPoint | undefined => {
         if (data === undefined || deepDiveFipsCode === undefined) {
             return undefined;
         }
 
-        return data.breakdown[deepDiveFipsCode] ?? data.totalData;
+        if (IGeography.isNationGeography(geography) && deepDiveFipsCode === "999") {
+            return data.totalData;
+        }
+
+        if (IGeography.isStateGeography(geography) && deepDiveFipsCode === data.totalData?.fipsCode) {
+            return data.totalData;
+        }
+
+        return data.breakdown[deepDiveFipsCode];
     },
 );

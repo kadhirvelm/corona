@@ -18,7 +18,6 @@ interface IStateProps {
     geography: IGeography;
     data: ICoronaBreakdown | undefined;
     dataBreakdown: IDataBreakdown[];
-    highlightedFipsCode: string | undefined;
     deepDiveFipsCode: string | undefined;
 }
 
@@ -33,7 +32,6 @@ function renderDataBreakdown(
     dataBreakdown: IDataBreakdown[],
     filter: string,
     fips: {
-        highlightedFipsCode: string | undefined;
         deepDiveFipsCode: string | undefined;
         setdeepDiveFipsCode: (fipsCode: string | undefined) => void;
     },
@@ -54,9 +52,6 @@ function renderDataBreakdown(
                     <div
                         className={classNames(styles.singleBreakdown, {
                             [styles.isOpen]: fips.deepDiveFipsCode === breakdown.dataPoint.fipsCode,
-                            [styles.highlight]:
-                                fips.highlightedFipsCode === breakdown.dataPoint.fipsCode &&
-                                !(fips.deepDiveFipsCode === breakdown.dataPoint.fipsCode),
                         })}
                         onClick={handleClick(breakdown.dataPoint.fipsCode)}
                     >
@@ -79,15 +74,7 @@ function maybeRenderBackButton(geography: IGeography, backToNation: () => void) 
 function UnconnectedStatsPanel(props: IProps) {
     const [filter, setFilter] = React.useState("");
 
-    const {
-        data,
-        dataBreakdown,
-        backToNation,
-        geography,
-        deepDiveFipsCode,
-        highlightedFipsCode,
-        setdeepDiveFipsCode,
-    } = props;
+    const { data, dataBreakdown, backToNation, geography, deepDiveFipsCode, setdeepDiveFipsCode } = props;
     if (data === undefined) {
         return <div className={styles.statsPanelContainer} />;
     }
@@ -107,7 +94,6 @@ function UnconnectedStatsPanel(props: IProps) {
                 <InputGroup leftIcon="search" onChange={updateFilterValue} value={filter} />
             </div>
             {renderDataBreakdown(dataBreakdown, filter, {
-                highlightedFipsCode,
                 deepDiveFipsCode,
                 setdeepDiveFipsCode,
             })}
@@ -120,7 +106,6 @@ function mapStateToProps(state: IStoreState): IStateProps {
         geography: state.interface.geography,
         data: maybeGetDataForGeography(state),
         dataBreakdown: getSortedDataBreakdown(state),
-        highlightedFipsCode: state.interface.highlightedFipsCode,
         deepDiveFipsCode: state.interface.deepDiveFipsCode,
     };
 }

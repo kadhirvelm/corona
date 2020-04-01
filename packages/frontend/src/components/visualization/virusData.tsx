@@ -8,7 +8,14 @@ import { IGeography, IDataEntry } from "../../typings";
 import { Transitioner, DEFAULT_DATA_KEY } from "../../common";
 import { USMap } from "./usMap";
 import { nationTopology, stateTopology, getDataKeyFromGeography } from "../../utils";
-import { IStoreState, ADD_DATA, UPDATE_GEOGRAPHY, SET_HIGHLIGHTED_FIPS, REMOVE_HIGHLIGHTED_FIPS } from "../../store";
+import {
+    IStoreState,
+    ADD_DATA,
+    UPDATE_GEOGRAPHY,
+    SET_HIGHLIGHTED_FIPS,
+    REMOVE_HIGHLIGHTED_FIPS,
+    SET_DEEP_DIVE_FIPS_CODE,
+} from "../../store";
 
 interface IStateProps {
     cachedData: { [key: string]: ICoronaBreakdown };
@@ -19,6 +26,7 @@ interface IDispatchProps {
     addData: (newData: { key: string; data: ICoronaBreakdown }) => void;
     removeHighlightedFips: (fipsCode: string | undefined) => void;
     setHighlightedFips: (fipsCode: string | undefined) => void;
+    setDeepDiveFips: (fipsCode: string | undefined) => void;
     updateGeography: (geography: IGeography) => void;
 }
 
@@ -34,7 +42,14 @@ async function getDataForState(stateName: string, addData: (dataEntry: IDataEntr
 }
 
 function UnconnectedVirusDataRenderer(props: IProps) {
-    const { cachedData, geography, removeHighlightedFips, setHighlightedFips, updateGeography } = props;
+    const {
+        cachedData,
+        geography,
+        setDeepDiveFips,
+        removeHighlightedFips,
+        setHighlightedFips,
+        updateGeography,
+    } = props;
 
     React.useEffect(() => {
         const { addData } = props;
@@ -53,9 +68,9 @@ function UnconnectedVirusDataRenderer(props: IProps) {
                     name: feature.properties?.name ?? "",
                 }),
             );
+        } else {
+            setDeepDiveFips(feature.id?.toString());
         }
-
-        // TODO: handle when the user clicks on a county
     };
 
     const onMouseEnter = (feature: GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>) => {
@@ -107,6 +122,7 @@ function mapDispatchToProps(dispatch: Dispatch): IDispatchProps {
             addData: ADD_DATA.create,
             removeHighlightedFips: REMOVE_HIGHLIGHTED_FIPS.create,
             setHighlightedFips: SET_HIGHLIGHTED_FIPS.create,
+            setDeepDiveFips: SET_DEEP_DIVE_FIPS_CODE.create,
             updateGeography: UPDATE_GEOGRAPHY.create,
         },
         dispatch,

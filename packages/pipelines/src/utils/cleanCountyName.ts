@@ -1,3 +1,3 @@
 export function cleanCountyName(fullCountyName?: string) {
-    return fullCountyName?.replace(/(County)|(\.)|(')|(Parish)/g, "").trim();
+    return fullCountyName?.replace(/(County)|(Borough)|(\.)|(')|(Parish)/g, "").trim();
 }

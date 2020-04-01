@@ -27,28 +27,19 @@ export interface ICoronaDataScraperBreakdown {
     states: ITotalBreakdown;
 }
 
-function cleanRawCoronaDataScraperDatapoint(dataPoint: ICoronaDataScraperData): ICoronaDataPoint[] {
+function cleanRawCoronaDataScraperDatapoint(dataPoint: ICoronaDataScraperData): ICoronaDataPoint {
     const cleanedCounty = cleanCountyName(dataPoint.county);
 
-    if (cleanedCounty === "Dukes and Nantucket") {
-        return [
-            ...cleanRawCoronaDataScraperDatapoint({ ...dataPoint, county: "Dukes" }),
-            ...cleanRawCoronaDataScraperDatapoint({ ...dataPoint, county: "Nantucket" }),
-        ];
-    }
-
-    return [
-        {
-            activeCases: dataPoint.active,
-            county: cleanedCounty === "(unassigned)" ? "Unassigned" : cleanedCounty,
-            deaths: dataPoint.deaths,
-            fipsCode: getCoronaDataScraperFipsCode(dataPoint.state, cleanedCounty),
-            lastUpdated: undefined,
-            recovered: dataPoint.recovered,
-            state: convertTwoLetterCodeToState(dataPoint.state ?? ""),
-            totalCases: dataPoint.cases,
-        },
-    ];
+    return {
+        activeCases: dataPoint.active,
+        county: cleanedCounty === "(unassigned)" ? "Unassigned" : cleanedCounty,
+        deaths: dataPoint.deaths,
+        fipsCode: getCoronaDataScraperFipsCode(dataPoint.state, cleanedCounty),
+        lastUpdated: undefined,
+        recovered: dataPoint.recovered,
+        state: convertTwoLetterCodeToState(dataPoint.state ?? ""),
+        totalCases: dataPoint.cases,
+    };
 }
 
 function separateIntoNationStatesAndCounties(data: ICoronaDataScraperData[]) {
@@ -64,20 +55,20 @@ function separateIntoNationStatesAndCounties(data: ICoronaDataScraperData[]) {
         const cleanedDataPoint = cleanRawCoronaDataScraperDatapoint(dataPoint);
 
         if (
-            cleanedDataPoint[0].state !== undefined &&
-            cleanedDataPoint[0].state !== "" &&
-            cleanedDataPoint[0].county !== undefined
+            cleanedDataPoint.state !== undefined &&
+            cleanedDataPoint.state !== "" &&
+            cleanedDataPoint.county !== undefined
         ) {
-            counties[cleanedDataPoint[0].state] = (counties[cleanedDataPoint[0].state] ?? []).concat(cleanedDataPoint);
+            counties[cleanedDataPoint.state] = (counties[cleanedDataPoint.state] ?? []).concat(cleanedDataPoint);
         } else if (
-            cleanedDataPoint[0].state !== undefined &&
-            cleanedDataPoint[0].state !== "" &&
+            cleanedDataPoint.state !== undefined &&
+            cleanedDataPoint.state !== "" &&
             dataPoint.city === undefined
         ) {
             // eslint-disable-next-line prefer-destructuring
-            states[cleanedDataPoint[0].state] = cleanedDataPoint[0];
-        } else if (cleanedDataPoint[0].fipsCode === "999") {
-            nation.push(cleanedDataPoint[0]);
+            states[cleanedDataPoint.state] = cleanedDataPoint;
+        } else if (cleanedDataPoint.fipsCode === "999") {
+            nation.push(cleanedDataPoint);
         }
     });
 
