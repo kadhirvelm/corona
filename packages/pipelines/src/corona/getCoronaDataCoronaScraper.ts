@@ -1,9 +1,9 @@
 import { ICoronaDataPoint } from "@corona/api";
-import { twoLetterCodeToFips, twoLetterCodeWithCountyToFips, convertTwoLetterCodeToState } from "@corona/utils";
+import { convertTwoLetterCodeToState } from "@corona/utils";
 import fetch from "node-fetch";
-import { ICountiesKeyed, IStatesKeyed, getTotalBreakdowns, ITotalBreakdown } from "./shared";
+import { cleanCountyName } from "../utils/cleanCountyName";
 import { getCoronaDataScraperFipsCode } from "../utils/getCoronaDataScraperFipsCode";
-import { removeCountyName } from "../utils/removeCountyName";
+import { getTotalBreakdowns, ICountiesKeyed, IStatesKeyed, ITotalBreakdown } from "./shared";
 
 interface ICoronaDataScraperData {
     city?: string;
@@ -27,19 +27,28 @@ export interface ICoronaDataScraperBreakdown {
     states: ITotalBreakdown;
 }
 
-function cleanRawCoronaDataScraperDatapoint(dataPoint: ICoronaDataScraperData): ICoronaDataPoint {
-    const cleanedCounty = removeCountyName(dataPoint.county);
+function cleanRawCoronaDataScraperDatapoint(dataPoint: ICoronaDataScraperData): ICoronaDataPoint[] {
+    const cleanedCounty = cleanCountyName(dataPoint.county);
 
-    return {
-        activeCases: dataPoint.active,
-        county: cleanedCounty === "(unassigned)" ? "Unassigned" : cleanedCounty,
-        deaths: dataPoint.deaths,
-        fipsCode: getCoronaDataScraperFipsCode(dataPoint.state, cleanedCounty),
-        lastUpdated: undefined,
-        recovered: dataPoint.recovered,
-        state: convertTwoLetterCodeToState(dataPoint.state ?? ""),
-        totalCases: dataPoint.cases,
-    };
+    if (cleanedCounty === "Dukes and Nantucket") {
+        return [
+            ...cleanRawCoronaDataScraperDatapoint({ ...dataPoint, county: "Dukes" }),
+            ...cleanRawCoronaDataScraperDatapoint({ ...dataPoint, county: "Nantucket" }),
+        ];
+    }
+
+    return [
+        {
+            activeCases: dataPoint.active,
+            county: cleanedCounty === "(unassigned)" ? "Unassigned" : cleanedCounty,
+            deaths: dataPoint.deaths,
+            fipsCode: getCoronaDataScraperFipsCode(dataPoint.state, cleanedCounty),
+            lastUpdated: undefined,
+            recovered: dataPoint.recovered,
+            state: convertTwoLetterCodeToState(dataPoint.state ?? ""),
+            totalCases: dataPoint.cases,
+        },
+    ];
 }
 
 function separateIntoNationStatesAndCounties(data: ICoronaDataScraperData[]) {
@@ -55,19 +64,20 @@ function separateIntoNationStatesAndCounties(data: ICoronaDataScraperData[]) {
         const cleanedDataPoint = cleanRawCoronaDataScraperDatapoint(dataPoint);
 
         if (
-            cleanedDataPoint.state !== undefined &&
-            cleanedDataPoint.state !== "" &&
-            cleanedDataPoint.county !== undefined
+            cleanedDataPoint[0].state !== undefined &&
+            cleanedDataPoint[0].state !== "" &&
+            cleanedDataPoint[0].county !== undefined
         ) {
-            counties[cleanedDataPoint.state] = (counties[cleanedDataPoint.state] ?? []).concat(cleanedDataPoint);
+            counties[cleanedDataPoint[0].state] = (counties[cleanedDataPoint[0].state] ?? []).concat(cleanedDataPoint);
         } else if (
-            cleanedDataPoint.state !== undefined &&
-            cleanedDataPoint.state !== "" &&
+            cleanedDataPoint[0].state !== undefined &&
+            cleanedDataPoint[0].state !== "" &&
             dataPoint.city === undefined
         ) {
-            states[cleanedDataPoint.state] = cleanedDataPoint;
-        } else if (cleanedDataPoint.fipsCode === "999") {
-            nation.push(cleanedDataPoint);
+            // eslint-disable-next-line prefer-destructuring
+            states[cleanedDataPoint[0].state] = cleanedDataPoint[0];
+        } else if (cleanedDataPoint[0].fipsCode === "999") {
+            nation.push(cleanedDataPoint[0]);
         }
     });
 
