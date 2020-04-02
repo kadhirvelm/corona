@@ -21,6 +21,13 @@ $default-gray: #CCD1D1;
     }
 }
 
+.center-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
 .svg-map {
     padding: 100px;
     overflow: hidden;

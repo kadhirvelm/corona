@@ -1,7 +1,6 @@
 import { Spinner } from "@blueprintjs/core";
 import { ICoronaBreakdown } from "@corona/api";
 import classNames from "classnames";
-import { json } from "d3-fetch";
 import { geoAlbersUsa, geoPath, GeoPath, GeoPermissibleObjects } from "d3-geo";
 import { ScaleLinear } from "d3-scale";
 import { BaseType, select, Selection } from "d3-selection";
@@ -91,12 +90,12 @@ function renderMap(
         .attr("d", path);
 }
 
-async function setupMap(props: IProps, mapOptions: IMapOptions) {
+async function setupMap(props: IProps, setLoading: (isLoading: boolean) => void, mapOptions: IMapOptions) {
     const { mapTopology, id } = props;
 
     const svg = select(`#${id}`);
 
-    const usTopology = await getTopology(mapTopology.topologyLocation);
+    const usTopology = await getTopology(mapTopology.topologyLocation, setLoading);
     const features = mapTopology.extractFeatures(usTopology);
 
     const projection = geoAlbersUsa().fitSize(
@@ -108,22 +107,32 @@ async function setupMap(props: IProps, mapOptions: IMapOptions) {
     renderMap(props, svg, features, path, mapOptions);
 }
 
+function maybeRenderLoadingState(isLoading: boolean) {
+    if (!isLoading) {
+        return null;
+    }
+
+    return <Spinner className={styles.centerSpinner} />;
+}
+
 export function USMap(props: IProps) {
     const { data, id } = props;
 
     if (data === undefined) {
-        return <Spinner />;
+        return <Spinner className={styles.centerSpinner} />;
     }
 
+    const [isLoading, setLoading] = React.useState(false);
     const { range, colorScale } = getLinearColorScale(data);
 
     React.useEffect(() => {
-        setupMap(props, { colorScale });
+        setupMap(props, setLoading, { colorScale });
     }, []);
 
     // Note: reducing the width and height to prevent a scroll container on the svg element
     return (
         <>
+            {maybeRenderLoadingState(isLoading)}
             <MapHelpers range={range} />
             <svg
                 className={styles.svgMap}
