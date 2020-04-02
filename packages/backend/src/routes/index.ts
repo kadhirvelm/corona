@@ -1,15 +1,16 @@
 import Express from "express";
+import { BACKEND_LOGGER } from "@corona/logger";
 import { setCoronaRoutes } from "./corona";
 import { setReactRoutes } from "./frontend";
 
 export function setRoutes(app: Express.Express) {
     app.get("/", (_, res) => {
-        console.log("Ping for /");
+        BACKEND_LOGGER.log({ level: "info", message: "Ping for /" });
         res.redirect("/index.html");
     });
 
     app.get("/version", (_, res) => {
-        console.log("Ping for /version");
+        BACKEND_LOGGER.log({ level: "info", message: "Ping for /version" });
         res.send(process.env.npm_package_version);
     });
 

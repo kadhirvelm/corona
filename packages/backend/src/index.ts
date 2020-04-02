@@ -1,6 +1,7 @@
 import express from "express";
 import { ORIGIN, PORT } from "@corona/api";
 import compression from "compression";
+import { BACKEND_LOGGER } from "@corona/logger";
 import { setRoutes } from "./routes";
 import { configureSecurity } from "./security/configureSecurity";
 
@@ -12,6 +13,5 @@ configureSecurity(app);
 setRoutes(app);
 
 app.listen(PORT, "0.0.0.0", () => {
-    // eslint-disable-next-line no-console
-    console.log(`Server started, listening on http://${ORIGIN}:${PORT}`);
+    BACKEND_LOGGER.log({ level: "info", message: `Server started, listening on http://${ORIGIN}:${PORT}` });
 });

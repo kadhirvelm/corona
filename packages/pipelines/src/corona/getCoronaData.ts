@@ -5,6 +5,7 @@ import { getCoronaDataArc } from "./getCoronaDataArc";
 import { getCoronaDataCoronaScraper } from "./getCoronaDataCoronaScraper";
 import { ITotalBreakdown, ISingleBreakdown } from "./shared";
 import { getCoronaDataTimeseries, ICoronaDataScraperTimeseriesBreakdown } from "./getCoronaTimeseries";
+import { PIPELINE_LOGGER } from "@corona/logger";
 
 export interface IStateCoronaData {
     [stateName: string]: ICoronaBreakdown;
@@ -137,6 +138,8 @@ export async function getCoronaData(): Promise<ICoronaData> {
         getCoronaDataCoronaScraper(),
         getCoronaDataTimeseries(),
     ]);
+
+    PIPELINE_LOGGER.log({ level: "info", message: "Fetched data from arcgis and coronadatascraper." });
 
     const mergedStateData = mergeCoronaDatasets(usDataArc, usDataCoronaScraper.states, usTimeSeries);
     const verifiedDataPoints = verifyDatapoints(mergedStateData);

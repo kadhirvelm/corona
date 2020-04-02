@@ -9,6 +9,7 @@
   "type": "module",
   "dependencies": {
     "@corona/api": "^0.1.0",
+    "@corona/logger": "^0.1.0",
     "@corona/pipeline": "^0.1.0",
     "@corona/utils": "^0.1.0",
     "compression": "^1.7.4",

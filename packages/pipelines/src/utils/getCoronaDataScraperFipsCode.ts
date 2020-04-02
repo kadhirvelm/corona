@@ -1,15 +1,8 @@
 import { twoLetterCodeToFips, twoLetterCodeWithCountyToFips, convertStateToTwoLetterCode } from "@corona/utils";
+import { PIPELINE_LOGGER } from "@corona/logger";
 import { cleanCountyName } from "./cleanCountyName";
 
-const IGNORED_COUNTIES = [
-    "Miami-Dade",
-    "Tri",
-    "Dukes and Nantucket",
-    "Kansas City",
-    "New York City",
-    "Nashua",
-    "Manchester",
-];
+const IGNORED_COUNTIES = ["Tri", "Dukes and Nantucket", "Kansas City", "New York City", "Nashua", "Manchester"];
 
 function getFinalFipsCode(state: string, county: string): { cleanedCountyName: string | undefined; fipsCode: string } {
     const cleanedCountyName = cleanCountyName(county);
@@ -31,12 +24,12 @@ export function getCoronaDataScraperFipsCode(state?: string, county?: string, ci
     if (
         fipsCode.length > 5 &&
         !cleanedCountyName?.includes("Region") &&
+        !cleanedCountyName?.includes("Unknown") &&
         !cleanedCountyName?.includes("unassigned") &&
         !cleanedCountyName?.includes("Counties") &&
         !IGNORED_COUNTIES.includes(cleanedCountyName ?? "")
     ) {
-        // eslint-disable-next-line no-console
-        console.error("CoronaScraper -->", fipsCode);
+        PIPELINE_LOGGER.log({ level: "error", message: `CoronaScraper --> INVALID FIPS --> ${fipsCode}` });
     }
 
     return fipsCode;
@@ -58,9 +51,12 @@ export function getArcgisFipsCode(state: string, fips?: string, county?: string)
 
     const { cleanedCountyName, fipsCode } = getFinalFipsCode(twoLetterState, county);
 
-    if (fipsCode.length > 5 && !IGNORED_COUNTIES.includes(cleanedCountyName ?? "")) {
-        // eslint-disable-next-line no-console
-        console.error("Arcgis -->", fipsCode);
+    if (
+        fipsCode.length > 5 &&
+        !cleanedCountyName?.includes("unassigned") &&
+        !IGNORED_COUNTIES.includes(cleanedCountyName ?? "")
+    ) {
+        PIPELINE_LOGGER.log({ level: "error", message: `Arcgis --> INVALID FIPS --> ${fipsCode}` });
     }
 
     return fipsCode;

@@ -12,4 +12,6 @@ packages/*/build/*
 distribution/*
 production/*
 
-lerna-debug.log
+*.log
+logs/*
+logs
