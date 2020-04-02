@@ -1,24 +1,25 @@
 import winston from "winston";
 
 const logLocation = (logName: string) => `../../logs/${logName}.log`;
+const format = winston.format.combine(winston.format.timestamp(), winston.format.json());
 
 const BACKEND_LOGGER = winston.createLogger({
     level: "info",
-    format: winston.format.json(),
+    format,
     defaultMeta: { service: "corona-backend" },
     transports: [
-        new winston.transports.File({ filename: logLocation("backend-error.log"), level: "error" }),
-        new winston.transports.File({ filename: logLocation("backend-info.log"), level: "info" }),
+        new winston.transports.File({ filename: logLocation("backend-error"), level: "error" }),
+        new winston.transports.File({ filename: logLocation("backend-info"), level: "info" }),
     ],
 });
 
 const PIPELINE_LOGGER = winston.createLogger({
     level: "info",
-    format: winston.format.json(),
+    format,
     defaultMeta: { service: "corona-pipeline" },
     transports: [
-        new winston.transports.File({ filename: logLocation("pipeline-error.log"), level: "error" }),
-        new winston.transports.File({ filename: logLocation("pipeline-info.log"), level: "info" }),
+        new winston.transports.File({ filename: logLocation("pipeline-error"), level: "error" }),
+        new winston.transports.File({ filename: logLocation("pipeline-info"), level: "info" }),
     ],
 });
 
