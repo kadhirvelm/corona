@@ -27,14 +27,24 @@ export interface ICoronaDataScraperBreakdown {
     states: ITotalBreakdown;
 }
 
+function getCleanCountyName(county: string | undefined) {
+    const cleanedCounty = cleanCountyName(county);
+
+    if (cleanedCounty == null || cleanedCounty.includes("unassigned") || cleanedCounty === "") {
+        return undefined;
+    }
+
+    return county;
+}
+
 function cleanRawCoronaDataScraperDatapoint(dataPoint: ICoronaDataScraperData): ICoronaDataPoint {
-    const cleanedCounty = cleanCountyName(dataPoint.county);
+    const cleanedCountyName = getCleanCountyName(dataPoint.county);
 
     return {
         activeCases: dataPoint.active,
-        county: cleanedCounty === "(unassigned)" ? "Unassigned" : cleanedCounty,
+        county: cleanedCountyName,
         deaths: dataPoint.deaths,
-        fipsCode: getCoronaDataScraperFipsCode(dataPoint.state, cleanedCounty),
+        fipsCode: getCoronaDataScraperFipsCode(dataPoint.state, cleanedCountyName),
         lastUpdated: undefined,
         recovered: dataPoint.recovered,
         state: convertTwoLetterCodeToState(dataPoint.state ?? ""),

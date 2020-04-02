@@ -25,7 +25,7 @@ interface IArcCoronaData {
 }
 
 function maybeGetCounty(admin2: string) {
-    if (admin2.startsWith("Out of") || admin2.startsWith("Unassigned")) {
+    if (admin2.startsWith("Out of") || admin2.startsWith("Unassigned") || admin2 === "") {
         return undefined;
     }
 
