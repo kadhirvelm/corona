@@ -1,11 +1,11 @@
 import { ICoronaBreakdown, ICoronaDataPoint, STATE } from "@corona/api";
 import lodash from "lodash";
 import { twoLetterCodeToFips, convertStateToTwoLetterCode } from "@corona/utils";
+import { PIPELINE_LOGGER } from "@corona/logger";
 import { getCoronaDataArc } from "./getCoronaDataArc";
 import { getCoronaDataCoronaScraper } from "./getCoronaDataCoronaScraper";
 import { ITotalBreakdown, ISingleBreakdown } from "./shared";
 import { getCoronaDataTimeseries, ICoronaDataScraperTimeseriesBreakdown } from "./getCoronaTimeseries";
-import { PIPELINE_LOGGER } from "@corona/logger";
 
 export interface IStateCoronaData {
     [stateName: string]: ICoronaBreakdown;
