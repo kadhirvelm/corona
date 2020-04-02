@@ -31,7 +31,7 @@
     "clean": "node scripts/cleanPackages",
     "clean:lock": "npx yarn-deduplicate yarn.lock",
     "dev": "lerna run dev --parallel",
-    "lint": "lerna run lint --parallel",
+    "lint": "lerna run lint",
     "update-version": "lerna publish --skip-git --skip-npm --force-publish '*'",
     "start:production": "source ~/.bash_profile && yarn build && cd packages/backend && yarn start:production"
   },
