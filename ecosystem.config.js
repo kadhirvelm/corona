@@ -2,7 +2,7 @@ module.exports = {
     apps : [{
       name: "corona-service",
       script: "./dist/index.js",
-      autorestart: false,
+      autorestart: true,
       watch: false,
       node_args: "--experimental-modules --es-module-specifier-resolution=node",
       env_production: {
