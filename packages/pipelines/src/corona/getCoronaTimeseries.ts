@@ -48,12 +48,14 @@ export interface ICoronaDataScraperTimeseriesBreakdown {
 function filterToUS(data: ICoronaDataScraperTimeseriesRaw) {
     return Object.entries(data)
         .filter(entry => entry[0].includes("USA"))
-        .map(entry => ({
-            [getCoronaDataScraperFipsCode(entry[1].state, entry[1].county, entry[1].city)]: {
-                population: entry[1].population,
-                timeseries: entry[1].dates,
-            },
-        }))
+        .map(entry => {
+            return {
+                [getCoronaDataScraperFipsCode(entry[1].state, entry[1].county, entry[1].city)]: {
+                    population: entry[1].population,
+                    timeseries: entry[1].dates,
+                },
+            };
+        })
         .reduce(lodash.merge);
 }
 
