@@ -124,7 +124,7 @@ module.exports = {
             "process.env.PRODUCTION_HOST": JSON.stringify(process.env.PRODUCTION_HOST),
         }),
         new webpack.optimize.AggressiveMergingPlugin(),
-        ...(process.env.NODE_ENV === "production" ? [new webpack.optimize.UglifyJsPlugin(), new CompressionPlugin({
+        ...(process.env.NODE_ENV === "production" ? [new CompressionPlugin({
             filename: "[path].gz[query]",
             algorithm: "gzip",
             test: /\.js$|\.css$|\.html$|\.json$/,
