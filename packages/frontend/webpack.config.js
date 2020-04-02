@@ -2,7 +2,8 @@ const path = require("path");
 const miniCssExtractPlugin = require("mini-css-extract-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
-const DefinePlugin = require("webpack").DefinePlugin;
+const webpack = require("webpack");
+const CompressionPlugin = require("compression-webpack-plugin");
 
 module.exports = {
     output : {
@@ -14,6 +15,7 @@ module.exports = {
 
     devServer: {
         contentBase: path.resolve(__dirname, "./src"),
+        compress: true,
         hot: true,
         inline: true,
         port: 3001,
@@ -117,11 +119,19 @@ module.exports = {
             filename: "[name].[hash].css",
             chunkFilename: "[id].[hash].css",
         }),
-        new DefinePlugin({
+        new webpack.DefinePlugin({
             "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
             "process.env.PRODUCTION_HOST": JSON.stringify(process.env.PRODUCTION_HOST),
         }),
-        ...(process.env.NODE_ENV === "production" ? [] : [new BundleAnalyzerPlugin({ analyzerMode: "static", openAnalyzer: false })]),
+        new webpack.optimize.AggressiveMergingPlugin(),
+        ...(process.env.NODE_ENV === "production" ? [new webpack.optimize.UglifyJsPlugin(), new CompressionPlugin({
+            filename: "[path].gz[query]",
+            algorithm: "gzip",
+            test: /\.js$|\.css$|\.html$|\.json$/,
+            threshold: 10240,
+            deleteOriginalAssets: true,
+            minRatio: 0.8,
+        })] : [new BundleAnalyzerPlugin({ analyzerMode: "static", openAnalyzer: false })]),
     ],
 
     resolve: {
