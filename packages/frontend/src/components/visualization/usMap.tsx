@@ -11,6 +11,7 @@ import { IMapTopology } from "../../typings";
 import { getLinearColorScale } from "../../utils";
 import { MapHelpers } from "../helpers";
 import styles from "./usMap.module.scss";
+import { getTopology } from "../../utils/mapDataCache";
 
 const PADDING = 100;
 const MARGIN_LEFT = 75;
@@ -95,7 +96,7 @@ async function setupMap(props: IProps, mapOptions: IMapOptions) {
 
     const svg = select(`#${id}`);
 
-    const usTopology = await json(mapTopology.topologyLocation);
+    const usTopology = await getTopology(mapTopology.topologyLocation);
     const features = mapTopology.extractFeatures(usTopology);
 
     const projection = geoAlbersUsa().fitSize(
