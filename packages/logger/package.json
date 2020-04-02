@@ -13,7 +13,7 @@
   "scripts": {
     "build": "tsc -d",
     "dev": "tsc -d --watch",
-    "lint": "eslint . --ext .ts,.tsx"
+    "lint:logger": "eslint . --ext .ts,.tsx"
   },
   "devDependencies": {
     "@types/node": "^12.12.31",
