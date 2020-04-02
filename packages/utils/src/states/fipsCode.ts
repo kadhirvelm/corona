@@ -430,6 +430,7 @@ const TWO_LETTER_STATE_WITH_COUNTY_FIPS = {
     FL_Levy: "12075",
     FL_Liberty: "12077",
     FL_Madison: "12079",
+    "FL_Miami-Dade": "12086",
     FL_Manatee: "12081",
     FL_Marion: "12083",
     FL_Martin: "12085",
