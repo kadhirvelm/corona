@@ -48,6 +48,9 @@ jobs:
                 name: Install dependencies
                 command: NODE_ENV=development yarn
             - run:
+                name: Build
+                command: NODE_ENV=production yarn build
+            - run:
                 name: Lint
                 command: NODE_ENV=development yarn lint
     clean-lock:
@@ -75,6 +78,7 @@ workflows:
             - lint:
                 requires:
                     - setup
+                    - build
             - deploy:
                 requires:
                     - setup
