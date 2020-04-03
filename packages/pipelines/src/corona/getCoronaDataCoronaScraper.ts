@@ -1,8 +1,8 @@
 import { ICoronaDataPoint } from "@corona/api";
-import { convertTwoLetterCodeToState } from "@corona/utils";
 import fetch from "node-fetch";
 import { cleanCountyName } from "../utils/cleanCountyName";
 import { getCoronaDataScraperFipsCode } from "../utils/getCoronaDataScraperFipsCode";
+import { logCoronaScraperAnomalies } from "../utils/logAnomalies";
 import { getTotalBreakdowns, ICountiesKeyed, IStatesKeyed, ITotalBreakdown } from "./shared";
 
 interface ICoronaDataScraperData {
@@ -44,10 +44,10 @@ function cleanRawCoronaDataScraperDatapoint(dataPoint: ICoronaDataScraperData): 
         activeCases: dataPoint.active,
         county: cleanedCountyName,
         deaths: dataPoint.deaths,
-        fipsCode: getCoronaDataScraperFipsCode(dataPoint.state, cleanedCountyName),
+        fipsCode: getCoronaDataScraperFipsCode(dataPoint.state, cleanedCountyName, dataPoint.city),
         lastUpdated: undefined,
         recovered: dataPoint.recovered,
-        state: convertTwoLetterCodeToState(dataPoint.state ?? ""),
+        state: dataPoint.state,
         totalCases: dataPoint.cases,
     };
 }
@@ -58,7 +58,7 @@ function separateIntoNationStatesAndCounties(data: ICoronaDataScraperData[]) {
     const counties: ICountiesKeyed = {};
 
     data.forEach(dataPoint => {
-        if (dataPoint.country !== "USA") {
+        if (dataPoint.country !== "United States") {
             return;
         }
 
@@ -90,6 +90,8 @@ export async function getCoronaDataCoronaScraper(): Promise<ICoronaDataScraperBr
     const json = (await rawData.json()) as ICoronaDataScraperData[];
 
     const { nation, states, counties } = separateIntoNationStatesAndCounties(json);
+
+    logCoronaScraperAnomalies(nation, states, counties);
 
     return {
         nation: nation[0],

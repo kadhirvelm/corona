@@ -1,13 +1,13 @@
-import { twoLetterCodeToFips, twoLetterCodeWithCountyToFips, convertStateToTwoLetterCode } from "@corona/utils";
 import { PIPELINE_LOGGER } from "@corona/logger";
+import { stateAndCountyToFips, stateToFips } from "@corona/utils";
 import { cleanCountyName } from "./cleanCountyName";
 
-const IGNORED_COUNTIES = ["Tri", "Dukes and Nantucket", "Kansas City", "New York City", "Nashua", "Manchester"];
+const IGNORED_COUNTIES = ["DukesandNantucket", "KansasCity", "NewYorkCity"];
 
 function getFinalFipsCode(state: string, county: string): { cleanedCountyName: string | undefined; fipsCode: string } {
     const cleanedCountyName = cleanCountyName(county);
     const countyKey = `${state}_${cleanedCountyName}`;
-    return { cleanedCountyName, fipsCode: twoLetterCodeWithCountyToFips(countyKey) ?? countyKey };
+    return { cleanedCountyName, fipsCode: stateAndCountyToFips(countyKey) ?? countyKey };
 }
 
 export function getCoronaDataScraperFipsCode(state?: string, county?: string, city?: string) {
@@ -16,10 +16,10 @@ export function getCoronaDataScraperFipsCode(state?: string, county?: string, ci
     }
 
     if ((county === undefined || county === "") && (city === undefined || city === "")) {
-        return twoLetterCodeToFips(state ?? "USA");
+        return stateToFips(state ?? "United States");
     }
 
-    const { cleanedCountyName, fipsCode } = getFinalFipsCode(state ?? "USA", county ?? "");
+    const { cleanedCountyName, fipsCode } = getFinalFipsCode(state ?? "United States", county ?? "Unassigned");
 
     if (
         fipsCode.length > 5 &&
@@ -27,9 +27,13 @@ export function getCoronaDataScraperFipsCode(state?: string, county?: string, ci
         !cleanedCountyName?.includes("Unknown") &&
         !cleanedCountyName?.includes("unassigned") &&
         !cleanedCountyName?.includes("Counties") &&
+        !cleanedCountyName?.includes(",") &&
         !IGNORED_COUNTIES.includes(cleanedCountyName ?? "")
     ) {
-        PIPELINE_LOGGER.log({ level: "error", message: `CoronaScraper --> INVALID FIPS --> ${fipsCode}` });
+        PIPELINE_LOGGER.log({
+            level: "warn",
+            message: `CoronaScraper --> ${fipsCode}. State: ${state}, County: ${county}, City: ${city}`,
+        });
     }
 
     return fipsCode;
@@ -50,20 +54,18 @@ export function getArcgisFipsCode(state: string, fips?: string, county?: string)
         return fips.slice(-2);
     }
 
-    const twoLetterState = state.length > 2 ? convertStateToTwoLetterCode(state) : state;
-
     if (county === undefined || county.includes("Out of") || county.includes("Unassigned")) {
-        return twoLetterCodeToFips(twoLetterState);
+        return stateToFips(state);
     }
 
-    const { cleanedCountyName, fipsCode } = getFinalFipsCode(twoLetterState, county);
+    const { cleanedCountyName, fipsCode } = getFinalFipsCode(state, county);
 
     if (
         fipsCode.length > 5 &&
         !cleanedCountyName?.includes("unassigned") &&
         !IGNORED_COUNTIES.includes(cleanedCountyName ?? "")
     ) {
-        PIPELINE_LOGGER.log({ level: "error", message: `Arcgis --> INVALID FIPS --> ${fipsCode}` });
+        PIPELINE_LOGGER.log({ level: "warn", message: `Arcgis --> INVALID FIPS --> ${fipsCode}` });
     }
 
     return fipsCode;

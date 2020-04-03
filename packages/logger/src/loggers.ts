@@ -8,7 +8,7 @@ const BACKEND_LOGGER = winston.createLogger({
     format,
     defaultMeta: { service: "corona-backend" },
     transports: [
-        new winston.transports.File({ filename: logLocation("backend-error"), level: "error" }),
+        new winston.transports.File({ filename: logLocation("backend-warn"), level: "warn" }),
         new winston.transports.File({ filename: logLocation("backend-info"), level: "info" }),
     ],
 });
@@ -19,6 +19,7 @@ const PIPELINE_LOGGER = winston.createLogger({
     defaultMeta: { service: "corona-pipeline" },
     transports: [
         new winston.transports.File({ filename: logLocation("pipeline-error"), level: "error" }),
+        new winston.transports.File({ filename: logLocation("pipeline-warn"), level: "warn" }),
         new winston.transports.File({ filename: logLocation("pipeline-info"), level: "info" }),
     ],
 });
