@@ -8,6 +8,7 @@ import { VirusDataRenderer, Panels } from "./components";
 import { ADD_DATA, SET_DEEP_DIVE_FIPS_CODE } from "./store";
 import { IDataEntry } from "./typings";
 import { DEFAULT_DATA_KEY } from "./common";
+import styles from "./mainApplication.module.scss";
 
 interface IDispatchProps {
     addData: (dataEntry: IDataEntry) => void;
@@ -16,17 +17,14 @@ interface IDispatchProps {
 
 type IProps = IDispatchProps;
 
-async function getUnitedStatesData(addData: (dataEntry: IDataEntry) => void) {
-    const data = await CoronaService.getUnitedStatesData.frontend({});
-    addData({ key: DEFAULT_DATA_KEY, data });
-}
-
 interface IState {
+    error: string | undefined;
     resizeId: string;
 }
 
 class UnconnectedMainApplication extends React.PureComponent<IProps, IState> {
     public state: IState = {
+        error: undefined,
         resizeId: v4(),
     };
 
@@ -39,7 +37,7 @@ class UnconnectedMainApplication extends React.PureComponent<IProps, IState> {
 
     public componentDidMount() {
         const { addData } = this.props;
-        getUnitedStatesData(addData);
+        this.getUnitedStatesData(addData);
 
         document.addEventListener("keydown", this.handleKeyDown);
         window.addEventListener("resize", this.debounceResize);
@@ -50,8 +48,15 @@ class UnconnectedMainApplication extends React.PureComponent<IProps, IState> {
         window.removeEventListener("resize", this.debounceResize);
     }
 
+    public componentDidCatch() {
+        this.setState({ error: "Whoops, something went wrong. Try refreshing the page?" });
+    }
+
     public render() {
-        const { resizeId } = this.state;
+        const { error, resizeId } = this.state;
+        if (error !== undefined) {
+            return <div className={styles.centerError}>{error}</div>;
+        }
 
         return (
             <div key={resizeId}>
@@ -70,6 +75,15 @@ class UnconnectedMainApplication extends React.PureComponent<IProps, IState> {
     };
 
     private handleResize = () => this.setState({ resizeId: v4() });
+
+    private async getUnitedStatesData(addData: (dataEntry: IDataEntry) => void) {
+        try {
+            const data = await CoronaService.getUnitedStatesData.frontend({});
+            addData({ key: DEFAULT_DATA_KEY, data });
+        } catch {
+            this.setState({ error: "It seems our servers are down. Please check again soon." });
+        }
+    }
 }
 
 function mapDispatchToProps(dispatch: Dispatch): IDispatchProps {
