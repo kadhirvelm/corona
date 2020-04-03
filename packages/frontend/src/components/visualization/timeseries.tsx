@@ -5,6 +5,7 @@ import { line, curveMonotoneX } from "d3-shape";
 import { select } from "d3-selection";
 import { extent } from "d3-array";
 import { axisBottom, axisLeft } from "d3-axis";
+import { timeFormat, timeParse } from "d3-time-format";
 import styles from "./timeseries.module.scss";
 
 interface IProps {
@@ -12,16 +13,18 @@ interface IProps {
 }
 
 interface ICleanedPoint {
-    x: Date;
+    x: Date | null;
     cases: number;
     active: number;
     deaths: number;
     recovered: number;
 }
 
+const parseTime = timeParse("%Y-%m-%d");
+
 function cleanDataPoint(timeseries: { [date: string]: ICoronaDatapointTimeseriesDatapoint }): ICleanedPoint[] {
     return Object.entries(timeseries).map(entry => ({
-        x: new Date(entry[0]),
+        x: parseTime(entry[0]),
         cases: entry[1].cases ?? 0,
         active: entry[1].active ?? 0,
         deaths: entry[1].deaths ?? 0,
@@ -31,7 +34,7 @@ function cleanDataPoint(timeseries: { [date: string]: ICoronaDatapointTimeseries
 
 const WIDTH = 430;
 const HEIGHT = 300;
-const PADDING = { top: 20, right: 20, bottom: 30, left: 50 };
+const PADDING = { top: 20, right: 20, bottom: 50, left: 50 };
 
 function setupGraph(datapoints: ICleanedPoint[]) {
     const xValues = datapoints.map(point => point.x);
@@ -39,7 +42,7 @@ function setupGraph(datapoints: ICleanedPoint[]) {
 
     const x = scaleTime()
         .range([0, WIDTH])
-        .domain(extent(xValues) as any);
+        .domain(extent(xValues as any) as any);
     const y = scaleLinear()
         .range([HEIGHT, 0])
         .domain([0, Math.max(...yValues)]);
@@ -73,7 +76,12 @@ function setupGraph(datapoints: ICleanedPoint[]) {
     graph
         .append("g")
         .attr("transform", `translate(0, ${HEIGHT})`)
-        .call(axisBottom(x) as any);
+        .call(axisBottom(x).tickFormat(timeFormat("%m-%d") as any) as any)
+        .selectAll("text")
+        .style("text-anchor", "end")
+        .attr("dx", "-.8em")
+        .attr("dy", ".15em")
+        .attr("transform", "rotate(-65)");
 
     graph.append("g").call(axisLeft(y));
 
@@ -103,6 +111,7 @@ function setupGraph(datapoints: ICleanedPoint[]) {
 }
 
 export function Timeseries(props: IProps) {
+    console.log(props.timeseries);
     React.useEffect(() => setupGraph(cleanDataPoint(props.timeseries)), []);
 
     return <svg className={styles.svgContainer} id="line-graph" />;

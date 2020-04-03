@@ -67,10 +67,12 @@
 
 .single-breakdown {
     display: flex;
+    align-items: center;
     justify-content: space-between;
     padding: 10px;
     box-shadow: 0 1px $box-shadow;
     margin-top: 1px;
+    min-height: 40px;
     cursor: pointer;
 
     &.browser {
