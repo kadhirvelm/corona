@@ -52,7 +52,7 @@ export const getSortedDataBreakdown = createSelector(getDataBreakdown, (data: ID
 
 export const maybeGetDataForHighlightedFips = createSelector(
     maybeGetDataForGeography,
-    (state: IStoreState) => state.interface.highlightedFipsCode,
+    (state: IStoreState) => state.interface.basicInfoFipsCode,
     (data: ICoronaBreakdown | undefined, highlightedFips: string | undefined): ICoronaDataPoint | undefined => {
         if (data === undefined || highlightedFips === undefined) {
             return undefined;

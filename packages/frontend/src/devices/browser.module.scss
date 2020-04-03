@@ -1,0 +1,21 @@
+.panel-container {
+    display: flex;
+    flex: 1;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    width: 225px;
+}
+
+.basic-info-container {
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+    display: flex;
+    flex-direction: column;
+    width: 250px;
+    height: 250px;
+    z-index: 1;
+}

@@ -1,5 +1,5 @@
-import { TypedReducer, setWith } from "redoodle";
 import { ICoronaBreakdown } from "@corona/api";
+import { setWith, TypedReducer } from "redoodle";
 import { ADD_DATA } from "./actions";
 
 export interface IApplicationState {

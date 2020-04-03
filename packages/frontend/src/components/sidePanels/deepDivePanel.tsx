@@ -31,7 +31,7 @@ function maybeRenderGrowthCurve(
 
 function renderTitle(county?: string, state?: string) {
     if (county !== undefined) {
-        return `${county} County growth curves`;
+        return `${county} growth curves`;
     }
 
     if (state !== undefined && state !== "") {

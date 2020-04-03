@@ -29,10 +29,14 @@ $default-gray: #CCD1D1;
 }
 
 .svg-map {
-    padding: 100px;
+    position: relative;
     overflow: hidden;
-    margin-left: 75px;
     background: rgba(#EBF5FB, 0.5);
+}
+
+.center {
+    position: absolute;
+    transform: translateY(50%);
 }
 
 :export {

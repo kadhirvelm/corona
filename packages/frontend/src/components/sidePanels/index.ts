@@ -1,1 +1,3 @@
-export * from "./panels";
+export * from "./deepDivePanel";
+export * from "./basicInfoPanel";
+export * from "./statsPanel";

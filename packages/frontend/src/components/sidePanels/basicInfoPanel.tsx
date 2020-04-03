@@ -2,11 +2,11 @@ import * as React from "react";
 import { ICoronaDataPoint } from "@corona/api";
 import { connect } from "react-redux";
 import { IStoreState, maybeGetDataForHighlightedFips } from "../../store";
-import styles from "./highlightedFipsInfo.module.scss";
+import styles from "./basicInfoPanel.module.scss";
 import { Transitioner } from "../../common";
 
 interface IStateProps {
-    highlightedInfo: ICoronaDataPoint | undefined;
+    basicInfoDataPoint: ICoronaDataPoint | undefined;
 }
 
 type IProps = IStateProps;
@@ -52,39 +52,39 @@ function maybeRenderPopulationPercent(totalCases?: number, population?: number) 
     return renderSingleLabel("Infection rate", `${Math.abs((totalCases / population) * 100).toFixed(3)}%`);
 }
 
-function UnconnectedHighlightedFipsInfo(props: IProps) {
-    const { highlightedInfo } = props;
+function UnconnectedBasicInfo(props: IProps) {
+    const { basicInfoDataPoint } = props;
 
     const [temporaryCopy, setTemporaryCopy] = React.useState<ICoronaDataPoint | undefined>(undefined);
 
     React.useEffect(() => {
-        if (props.highlightedInfo === undefined) {
+        if (props.basicInfoDataPoint === undefined) {
             return;
         }
 
-        setTemporaryCopy(props.highlightedInfo);
-    }, [highlightedInfo]);
+        setTemporaryCopy(props.basicInfoDataPoint);
+    }, [basicInfoDataPoint]);
 
-    const finalHighlightedInfo = highlightedInfo ?? temporaryCopy;
+    const finalbasicInfoDataPoint = basicInfoDataPoint ?? temporaryCopy;
 
     return (
         <div className={styles.internalContainer}>
-            <Transitioner className={styles.transitioner} show={highlightedInfo !== undefined}>
+            <Transitioner className={styles.transitioner} show={basicInfoDataPoint !== undefined}>
                 <div className={styles.hoverInfo}>
                     <div className={styles.title}>
-                        {finalHighlightedInfo?.county ?? finalHighlightedInfo?.state ?? "None selected"}
+                        {finalbasicInfoDataPoint?.county ?? finalbasicInfoDataPoint?.state ?? "None selected"}
                     </div>
                     <div className={styles.infoContainer}>
-                        {renderSingleLabel("Total", finalHighlightedInfo?.totalCases.toLocaleString())}
-                        {renderSingleLabel("Recovered", finalHighlightedInfo?.recovered?.toLocaleString())}
-                        {renderSingleLabel("Active", finalHighlightedInfo?.activeCases?.toLocaleString())}
-                        {renderSingleLabel("Deaths", finalHighlightedInfo?.deaths?.toLocaleString())}
-                        {renderSingleLabel("Population", finalHighlightedInfo?.population?.toLocaleString())}
+                        {renderSingleLabel("Total", finalbasicInfoDataPoint?.totalCases.toLocaleString())}
+                        {renderSingleLabel("Recovered", finalbasicInfoDataPoint?.recovered?.toLocaleString())}
+                        {renderSingleLabel("Active", finalbasicInfoDataPoint?.activeCases?.toLocaleString())}
+                        {renderSingleLabel("Deaths", finalbasicInfoDataPoint?.deaths?.toLocaleString())}
+                        {renderSingleLabel("Population", finalbasicInfoDataPoint?.population?.toLocaleString())}
                         {maybeRenderPopulationPercent(
-                            finalHighlightedInfo?.totalCases,
-                            finalHighlightedInfo?.population,
+                            finalbasicInfoDataPoint?.totalCases,
+                            finalbasicInfoDataPoint?.population,
                         )}
-                        {renderLastUpdated(finalHighlightedInfo?.lastUpdated)}
+                        {renderLastUpdated(finalbasicInfoDataPoint?.lastUpdated)}
                     </div>
                 </div>
             </Transitioner>
@@ -94,8 +94,8 @@ function UnconnectedHighlightedFipsInfo(props: IProps) {
 
 function mapStateToProps(state: IStoreState): IStateProps {
     return {
-        highlightedInfo: maybeGetDataForHighlightedFips(state),
+        basicInfoDataPoint: maybeGetDataForHighlightedFips(state),
     };
 }
 
-export const HighlightedFipsInfo = connect(mapStateToProps)(UnconnectedHighlightedFipsInfo);
+export const BasicInfo = connect(mapStateToProps)(UnconnectedBasicInfo);

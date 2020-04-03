@@ -2,18 +2,20 @@ import { Spinner } from "@blueprintjs/core";
 import { ICoronaBreakdown } from "@corona/api";
 import classNames from "classnames";
 import { geoAlbersUsa, geoPath, GeoPath, GeoPermissibleObjects } from "d3-geo";
-import { ScaleLinear } from "d3-scale";
 import { BaseType, select, Selection } from "d3-selection";
 import GeoJSON from "geojson";
 import * as React from "react";
-import { IMapTopology } from "../../typings";
-import { getLinearColorScale } from "../../utils";
+import { connect } from "react-redux";
+import { IStoreState } from "../../store";
+import { IDeviceType, IMapOptions, IMapTopology } from "../../typings";
+import { getDimensionsForMap, getLinearColorScale, getTotalDimensionSpacing } from "../../utils";
+import { getTopology } from "../../utils/mapDataCache";
 import { MapHelpers } from "../helpers";
 import styles from "./usMap.module.scss";
-import { getTopology } from "../../utils/mapDataCache";
 
-const PADDING = 100;
-const MARGIN_LEFT = 75;
+interface IStateProps {
+    deviceType: IDeviceType | undefined;
+}
 
 interface IOwnProps {
     /**
@@ -44,11 +46,7 @@ interface IOwnProps {
     onMouseLeave: (feature: GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>) => void;
 }
 
-type IProps = IOwnProps;
-
-interface IMapOptions {
-    colorScale: ScaleLinear<number, number>;
-}
+type IProps = IStateProps & IOwnProps;
 
 function renderMap(
     props: IProps,
@@ -58,7 +56,7 @@ function renderMap(
     mapOptions: IMapOptions,
 ) {
     const { data, onFeatureSelect, onMouseEnter, onMouseLeave } = props;
-    const { colorScale } = mapOptions;
+    const { colorScale, dimensions } = mapOptions;
 
     if (data === undefined) {
         throw new Error("Should not reach here");
@@ -87,7 +85,8 @@ function renderMap(
         .on("click", onFeatureSelect)
         .on("mouseenter", onMouseEnter)
         .on("mouseleave", onMouseLeave)
-        .attr("d", path);
+        .attr("d", path)
+        .attr("transform", `translate(${dimensions.margin?.left ?? 0}, ${dimensions.margin?.top ?? 0})`);
 }
 
 async function setupMap(props: IProps, setLoading: (isLoading: boolean) => void, mapOptions: IMapOptions) {
@@ -98,8 +97,11 @@ async function setupMap(props: IProps, setLoading: (isLoading: boolean) => void,
     const usTopology = await getTopology(mapTopology.topologyLocation, setLoading);
     const features = mapTopology.extractFeatures(usTopology);
 
+    const { dimensions } = mapOptions;
+    const { widthSpacing, heightSpacing } = getTotalDimensionSpacing(dimensions);
+
     const projection = geoAlbersUsa().fitSize(
-        [window.innerWidth - MARGIN_LEFT - PADDING * 2, window.innerHeight - PADDING * 2],
+        [dimensions.width - widthSpacing, dimensions.height - heightSpacing],
         features[0],
     );
     const path = geoPath().projection(projection);
@@ -115,8 +117,8 @@ function maybeRenderLoadingState(isLoading: boolean) {
     return <Spinner className={styles.centerSpinner} />;
 }
 
-export function USMap(props: IProps) {
-    const { data, id } = props;
+function UnconnectedUSMap(props: IProps) {
+    const { data, deviceType, id } = props;
 
     if (data === undefined) {
         return <Spinner className={styles.centerSpinner} />;
@@ -125,21 +127,25 @@ export function USMap(props: IProps) {
     const [isLoading, setLoading] = React.useState(false);
     const { range, colorScale } = getLinearColorScale(data);
 
+    const dimensions = getDimensionsForMap(deviceType);
+
     React.useEffect(() => {
-        setupMap(props, setLoading, { colorScale });
+        setupMap(props, setLoading, { colorScale, dimensions });
     }, []);
 
-    // Note: reducing the width and height to prevent a scroll container on the svg element
     return (
         <>
             {maybeRenderLoadingState(isLoading)}
             <MapHelpers range={range} />
-            <svg
-                className={styles.svgMap}
-                id={id}
-                width={window.innerWidth - MARGIN_LEFT}
-                height={window.innerHeight - 5}
-            />
+            <svg className={styles.svgMap} id={id} width={dimensions.width} height={dimensions.height} />
         </>
     );
 }
+
+function mapStateToProps(store: IStoreState): IStateProps {
+    return {
+        deviceType: store.interface.deviceType,
+    };
+}
+
+export const USMap = connect(mapStateToProps)(UnconnectedUSMap);
