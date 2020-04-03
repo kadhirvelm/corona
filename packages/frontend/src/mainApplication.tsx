@@ -2,6 +2,8 @@ import { CoronaService } from "@corona/api";
 import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
+import { debounce } from "lodash-es";
+import { v4 } from "uuid";
 import { VirusDataRenderer, Panels } from "./components";
 import { ADD_DATA, SET_DEEP_DIVE_FIPS_CODE } from "./store";
 import { IDataEntry } from "./typings";
@@ -19,24 +21,43 @@ async function getUnitedStatesData(addData: (dataEntry: IDataEntry) => void) {
     addData({ key: DEFAULT_DATA_KEY, data });
 }
 
-class UnconnectedMainApplication extends React.PureComponent<IProps> {
+interface IState {
+    resizeId: string;
+}
+
+class UnconnectedMainApplication extends React.PureComponent<IProps, IState> {
+    public state: IState = {
+        resizeId: v4(),
+    };
+
+    private debounceResize: () => void;
+
+    public constructor(props: IProps, context: any) {
+        super(props, context);
+        this.debounceResize = debounce(this.handleResize, 500);
+    }
+
     public componentDidMount() {
         const { addData } = this.props;
         getUnitedStatesData(addData);
 
         document.addEventListener("keydown", this.handleKeyDown);
+        window.addEventListener("resize", this.debounceResize);
     }
 
     public componentWillUnmount() {
         document.removeEventListener("keydown", this.handleKeyDown);
+        window.removeEventListener("resize", this.debounceResize);
     }
 
     public render() {
+        const { resizeId } = this.state;
+
         return (
-            <>
+            <div key={resizeId}>
                 <Panels />
                 <VirusDataRenderer />
-            </>
+            </div>
         );
     }
 
@@ -47,6 +68,8 @@ class UnconnectedMainApplication extends React.PureComponent<IProps> {
             removeDeepDive();
         }
     };
+
+    private handleResize = () => this.setState({ resizeId: v4() });
 }
 
 function mapDispatchToProps(dispatch: Dispatch): IDispatchProps {

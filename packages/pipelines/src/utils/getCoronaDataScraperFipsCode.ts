@@ -15,7 +15,7 @@ export function getCoronaDataScraperFipsCode(state?: string, county?: string, ci
         return city;
     }
 
-    if (county === undefined && city === undefined) {
+    if ((county === undefined || county === "") && (city === undefined || city === "")) {
         return twoLetterCodeToFips(state ?? "USA");
     }
 
@@ -39,11 +39,18 @@ export function getCoronaDataScraperFipsCode(state?: string, county?: string, ci
 const ARCGIS_BLACKLISTED_FIPS = ["36061"];
 
 export function getArcgisFipsCode(state: string, fips?: string, county?: string) {
-    if (fips != null && !ARCGIS_BLACKLISTED_FIPS.includes(fips)) {
+    // If the FIPS code is supposed to describe a county
+    if (fips != null && !ARCGIS_BLACKLISTED_FIPS.includes(fips) && county != null && fips.length === 5) {
         return fips;
     }
 
-    const twoLetterState = convertStateToTwoLetterCode(state);
+    // If the FIPS code is supposed to describe a state
+    if (fips != null && !ARCGIS_BLACKLISTED_FIPS.includes(fips) && fips.length !== 2 && county == null) {
+        // NOTE: It seems arcgis suddenly decided to add a '900' to the beginning of some state fips codes..
+        return fips.slice(-2);
+    }
+
+    const twoLetterState = state.length > 2 ? convertStateToTwoLetterCode(state) : state;
 
     if (county === undefined || county.includes("Out of") || county.includes("Unassigned")) {
         return twoLetterCodeToFips(twoLetterState);

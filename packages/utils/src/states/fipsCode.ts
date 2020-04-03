@@ -3057,6 +3057,7 @@ const TWO_LETTER_STATE_WITH_COUNTY_FIPS = {
     "VA_Salem City": "51775",
     "VA_South Boston City": "51780",
     "VA_Staunton City": "51790",
+    VA_Staunton: "51790",
     "VA_Suffolk City": "51800",
     "VA_Virginia Beach City": "51810",
     "VA_Waynesboro City": "51820",
