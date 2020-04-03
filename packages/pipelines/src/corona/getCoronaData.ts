@@ -29,6 +29,7 @@ function mergeCoronaDatapoints(dataPointA?: ICoronaDataPoint, dataPointB?: ICoro
             level: "error",
             message: "Something went wrong in the data pipeline, attempted to merge two undefined data points.",
         });
+
         return {
             fipsCode: "",
             totalCases: 0,

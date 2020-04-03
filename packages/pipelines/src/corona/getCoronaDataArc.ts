@@ -2,6 +2,7 @@ import { ICoronaDataPoint } from "@corona/api";
 import fetch from "node-fetch";
 import { getArcgisFipsCode } from "../utils/getCoronaDataScraperFipsCode";
 import { getTotalBreakdowns, ICountiesKeyed, IStatesKeyed, ITotalBreakdown } from "./shared";
+import { logArcgisAnomalies } from "../utils/logAnomalies";
 
 interface IRawArcCoronaData {
     attributes: IArcCoronaData;
@@ -76,6 +77,8 @@ export async function getCoronaDataArc(): Promise<ITotalBreakdown> {
     const json = (await rawData.json()).features as IRawArcCoronaData[];
 
     const { states, counties } = separateCountiesAndStates(json);
+
+    logArcgisAnomalies(states, counties);
 
     return getTotalBreakdowns(states, counties);
 }

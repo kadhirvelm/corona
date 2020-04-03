@@ -31,7 +31,7 @@ export function getCoronaDataScraperFipsCode(state?: string, county?: string, ci
         !IGNORED_COUNTIES.includes(cleanedCountyName ?? "")
     ) {
         PIPELINE_LOGGER.log({
-            level: "error",
+            level: "warn",
             message: `CoronaScraper --> ${fipsCode}. State: ${state}, County: ${county}, City: ${city}`,
         });
     }
@@ -65,7 +65,7 @@ export function getArcgisFipsCode(state: string, fips?: string, county?: string)
         !cleanedCountyName?.includes("unassigned") &&
         !IGNORED_COUNTIES.includes(cleanedCountyName ?? "")
     ) {
-        PIPELINE_LOGGER.log({ level: "error", message: `Arcgis --> INVALID FIPS --> ${fipsCode}` });
+        PIPELINE_LOGGER.log({ level: "warn", message: `Arcgis --> INVALID FIPS --> ${fipsCode}` });
     }
 
     return fipsCode;

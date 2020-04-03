@@ -1,9 +1,11 @@
-import { ICoronaDataPoint } from "@corona/api";
+import { ICoronaDataPoint, STATE } from "@corona/api";
 import fetch from "node-fetch";
 import { BACKEND_LOGGER } from "@corona/logger";
+import lodash from "lodash";
 import { cleanCountyName } from "../utils/cleanCountyName";
 import { getCoronaDataScraperFipsCode } from "../utils/getCoronaDataScraperFipsCode";
 import { getTotalBreakdowns, ICountiesKeyed, IStatesKeyed, ITotalBreakdown } from "./shared";
+import { logCoronaScraperAnomalies } from "../utils/logAnomalies";
 
 interface ICoronaDataScraperData {
     city?: string;
@@ -64,13 +66,6 @@ function separateIntoNationStatesAndCounties(data: ICoronaDataScraperData[]) {
 
         const cleanedDataPoint = cleanRawCoronaDataScraperDatapoint(dataPoint);
 
-        if (cleanedDataPoint.fipsCode === undefined) {
-            BACKEND_LOGGER.log({
-                level: "error",
-                message: `CoronaScraper --> ${cleanedDataPoint.state}, ${cleanedDataPoint.county} producing undefined.`,
-            });
-        }
-
         if (
             cleanedDataPoint.state !== undefined &&
             cleanedDataPoint.state !== "" &&
@@ -97,6 +92,8 @@ export async function getCoronaDataCoronaScraper(): Promise<ICoronaDataScraperBr
     const json = (await rawData.json()) as ICoronaDataScraperData[];
 
     const { nation, states, counties } = separateIntoNationStatesAndCounties(json);
+
+    logCoronaScraperAnomalies(nation, states, counties);
 
     return {
         nation: nation[0],
