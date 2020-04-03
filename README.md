@@ -2,7 +2,9 @@
 
 [![CircleCI](https://circleci.com/gh/kadhirvelm/corona.svg?style=svg)](https://circleci.com/gh/kadhirvelm/corona)
 
-Please note this is still a work in progress, it's not ready to be GA yet.
+This projects gets its data from:
+1. https://github.com/covidatlas/coronadatascraper
+2. https://coronavirus-disasterresponse.hub.arcgis.com/#get-data
 
 ## Dev instructions
 1. Pull the repo and install the dependencies using `yarn`
