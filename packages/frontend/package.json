@@ -46,7 +46,8 @@
     "redoodle": "^2.3.2",
     "redux": "4.0.1",
     "reselect": "^4.0.0",
-    "topojson-client": "^3.1.0"
+    "topojson-client": "^3.1.0",
+    "uuid": "^7.0.3"
   },
   "devDependencies": {
     "@teamsupercell/typings-for-css-modules-loader": "^2.1.0",
@@ -64,6 +65,7 @@
     "@types/react-redux": "^7.1.5",
     "@types/reselect": "^2.2.0",
     "@types/topojson-client": "^3.0.0",
+    "@types/uuid": "^7.0.2",
     "@types/webpack-env": "^1.15.0",
     "compression-webpack-plugin": "^3.1.0",
     "css-loader": "^3.4.0",

@@ -71,8 +71,6 @@ function renderMap(
         .attr("class", feature => {
             const cases: number | undefined = data.breakdown[feature.id ?? ""]?.totalCases;
 
-            console.log(data.breakdown, feature.id);
-
             return classNames(styles.state, {
                 [styles.stateNoData]: cases === undefined,
             });
