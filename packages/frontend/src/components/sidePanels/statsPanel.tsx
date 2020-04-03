@@ -10,20 +10,25 @@ import {
     getSortedDataBreakdown,
     UPDATE_GEOGRAPHY,
     SET_DEEP_DIVE_FIPS_CODE,
+    SET_BASIC_INFO_FIPS,
+    REMOVE_BASIC_INFO_FIPS,
 } from "../../store";
 import styles from "./statsPanel.module.scss";
-import { IGeography, IDataBreakdown } from "../../typings";
+import { IGeography, IDataBreakdown, IDeviceType, IDevice } from "../../typings";
 
 interface IStateProps {
     geography: IGeography;
     data: ICoronaBreakdown | undefined;
+    deviceType: IDeviceType | undefined;
     dataBreakdown: IDataBreakdown[];
     deepDiveFipsCode: string | undefined;
 }
 
 interface IDispatchProps {
     backToNation: () => void;
-    setdeepDiveFipsCode: (fipsCode: string | undefined) => void;
+    setDeepDiveFipsCode: (fipsCode: string | undefined) => void;
+    setBasicInfoFips: (fipsCode: string | undefined) => void;
+    removeBasicInfoFips: (fipsCode: string | undefined) => void;
 }
 
 type IProps = IStateProps & IDispatchProps;
@@ -31,27 +36,39 @@ type IProps = IStateProps & IDispatchProps;
 function renderDataBreakdown(
     dataBreakdown: IDataBreakdown[],
     filter: string,
+    deviceType: IDeviceType | undefined,
     fips: {
         deepDiveFipsCode: string | undefined;
-        setdeepDiveFipsCode: (fipsCode: string | undefined) => void;
+        setDeepDiveFipsCode: (fipsCode: string | undefined) => void;
+        setBasicInfoFips: (fipsCode: string | undefined) => void;
+        removeBasicInfoFips: (fipsCode: string | undefined) => void;
     },
 ) {
+    const isMobileOrTablet = IDevice.isMobile(deviceType) || IDevice.isTablet(deviceType);
+
     const handleClick = (fipsCode: string) => () => {
         if (fips.deepDiveFipsCode === fipsCode) {
-            fips.setdeepDiveFipsCode(undefined);
+            fips.setDeepDiveFipsCode(undefined);
         } else {
-            fips.setdeepDiveFipsCode(fipsCode);
+            fips.setDeepDiveFipsCode(fipsCode);
+        }
+
+        if (fips.deepDiveFipsCode === fipsCode && isMobileOrTablet) {
+            fips.removeBasicInfoFips(fipsCode);
+        } else if (isMobileOrTablet) {
+            fips.setBasicInfoFips(fipsCode);
         }
     };
 
     return (
-        <div className={styles.caseBreakdownContainer}>
+        <div className={classNames(styles.caseBreakdownContainer, { [styles.browser]: IDevice.isBrowser(deviceType) })}>
             {dataBreakdown
                 .filter(breakdown => breakdown.name.toLowerCase().includes(filter.toLowerCase()))
                 .map(breakdown => (
                     <div
                         className={classNames(styles.singleBreakdown, {
                             [styles.isOpen]: fips.deepDiveFipsCode === breakdown.dataPoint.fipsCode,
+                            [styles.browser]: IDevice.isBrowser(deviceType),
                         })}
                         onClick={handleClick(breakdown.dataPoint.fipsCode)}
                     >
@@ -74,7 +91,17 @@ function maybeRenderBackButton(geography: IGeography, backToNation: () => void) 
 function UnconnectedStatsPanel(props: IProps) {
     const [filter, setFilter] = React.useState("");
 
-    const { data, dataBreakdown, backToNation, geography, deepDiveFipsCode, setdeepDiveFipsCode } = props;
+    const {
+        data,
+        dataBreakdown,
+        deviceType,
+        backToNation,
+        geography,
+        deepDiveFipsCode,
+        setDeepDiveFipsCode,
+        setBasicInfoFips,
+        removeBasicInfoFips,
+    } = props;
     if (data === undefined) {
         return <div className={styles.statsPanelContainer} />;
     }
@@ -93,9 +120,11 @@ function UnconnectedStatsPanel(props: IProps) {
             <div className={styles.filterContainer}>
                 <InputGroup leftIcon="search" onChange={updateFilterValue} value={filter} />
             </div>
-            {renderDataBreakdown(dataBreakdown, filter, {
+            {renderDataBreakdown(dataBreakdown, filter, deviceType, {
                 deepDiveFipsCode,
-                setdeepDiveFipsCode,
+                setDeepDiveFipsCode,
+                setBasicInfoFips,
+                removeBasicInfoFips,
             })}
         </div>
     );
@@ -105,6 +134,7 @@ function mapStateToProps(state: IStoreState): IStateProps {
     return {
         geography: state.interface.geography,
         data: maybeGetDataForGeography(state),
+        deviceType: state.interface.deviceType,
         dataBreakdown: getSortedDataBreakdown(state),
         deepDiveFipsCode: state.interface.deepDiveFipsCode,
     };
@@ -114,7 +144,9 @@ function mapDispatchToProps(dispatch: Dispatch): IDispatchProps {
     return {
         ...bindActionCreators(
             {
-                setdeepDiveFipsCode: SET_DEEP_DIVE_FIPS_CODE.create,
+                setDeepDiveFipsCode: SET_DEEP_DIVE_FIPS_CODE.create,
+                setBasicInfoFips: SET_BASIC_INFO_FIPS.create,
+                removeBasicInfoFips: REMOVE_BASIC_INFO_FIPS.create,
             },
             dispatch,
         ),

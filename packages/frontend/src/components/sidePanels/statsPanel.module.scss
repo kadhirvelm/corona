@@ -2,10 +2,10 @@
 
 .stats-panel-container {
     display: flex;
+    flex: 1;
     flex-direction: column;
     background: $background;
     box-shadow: 1px 0 $box-shadow;
-    width: 225px;
 }
 
 .title-container {
@@ -49,17 +49,19 @@
     overflow-y: auto;
     margin-top: 1px;
 
-    &::-webkit-scrollbar {
-        width: 5px;
-    }
-
-    &::-webkit-scrollbar-track {
-        background: rgba(#AEB6BF, 0.25);
-    }
-
-    &::-webkit-scrollbar-thumb {
-        width: 5px;
-        background-color: rgba(#616A6B, 0.5);
+    &.browser {
+        &::-webkit-scrollbar {
+            width: 5px;
+        }
+    
+        &::-webkit-scrollbar-track {
+            background: rgba(#AEB6BF, 0.25);
+        }
+    
+        &::-webkit-scrollbar-thumb {
+            width: 5px;
+            background-color: rgba(#616A6B, 0.5);
+        }
     }
 }
 
@@ -71,8 +73,10 @@
     margin-top: 1px;
     cursor: pointer;
 
-    &:hover {
-        background: rgba(#85C1E9, 0.75);
+    &.browser {
+        &:hover {
+            background: rgba(#85C1E9, 0.75);
+        }
     }
 }
 

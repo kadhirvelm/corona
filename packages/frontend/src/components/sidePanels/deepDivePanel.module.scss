@@ -2,9 +2,9 @@
 
 .internal-container {
     display: flex;
-    flex: 1;
     flex-direction: column;
     position: relative;
+    z-index: 1;
 }
 
 .deep-dive-container {

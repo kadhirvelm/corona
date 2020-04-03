@@ -4,8 +4,8 @@ import { stateToFips } from "@corona/utils";
 import { PIPELINE_LOGGER } from "@corona/logger";
 import { getCoronaDataArc } from "./getCoronaDataArc";
 import { getCoronaDataCoronaScraper } from "./getCoronaDataCoronaScraper";
-import { ITotalBreakdown, ISingleBreakdown } from "./shared";
 import { getCoronaDataTimeseries, ICoronaDataScraperTimeseriesBreakdown } from "./getCoronaTimeseries";
+import { ISingleBreakdown, ITotalBreakdown } from "./shared";
 
 export interface IStateCoronaData {
     [stateName: string]: ICoronaBreakdown;
@@ -117,14 +117,21 @@ function verifyDatapoints(totalBreakdown: ITotalBreakdown): ITotalBreakdown {
 }
 
 function getNationData(nation: ICoronaDataPoint, states: ITotalBreakdown): ICoronaBreakdown {
-    const allDatapointsMerged = Object.values(states)
+    const allStateDatapointsMerged = Object.values(states)
         .map(dataPoint => dataPoint.stateTotal)
         .filter(dataPoint => dataPoint !== undefined) as ICoronaDataPoint[];
+
+    if (allStateDatapointsMerged.length < 52) {
+        const stateNames = allStateDatapointsMerged.map(point => point.state);
+        const missingStates = Object.values(STATE).filter(state => !stateNames.includes(state));
+
+        PIPELINE_LOGGER.log({ level: "error", message: `Missing some states: ${missingStates.join(", ")}` });
+    }
 
     return {
         description: "United States",
         totalData: nation,
-        breakdown: lodash.keyBy(allDatapointsMerged, dataPoint => dataPoint?.fipsCode),
+        breakdown: lodash.keyBy(allStateDatapointsMerged, dataPoint => dataPoint?.fipsCode),
     };
 }
 

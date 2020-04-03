@@ -4,7 +4,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 import { debounce } from "lodash-es";
-import { IGeography, IDataEntry } from "../../typings";
+import { IGeography, IDataEntry, IDeviceType, IDevice } from "../../typings";
 import { Transitioner, DEFAULT_DATA_KEY } from "../../common";
 import { USMap } from "./usMap";
 import { nationTopology, stateTopology, getDataKeyFromGeography } from "../../utils";
@@ -12,13 +12,14 @@ import {
     IStoreState,
     ADD_DATA,
     UPDATE_GEOGRAPHY,
-    SET_HIGHLIGHTED_FIPS,
-    REMOVE_HIGHLIGHTED_FIPS,
+    SET_BASIC_INFO_FIPS,
+    REMOVE_BASIC_INFO_FIPS,
     SET_DEEP_DIVE_FIPS_CODE,
 } from "../../store";
 
 interface IStateProps {
     cachedData: { [key: string]: ICoronaBreakdown };
+    deviceType: IDeviceType | undefined;
     geography: IGeography;
 }
 
@@ -44,6 +45,7 @@ async function getDataForState(stateName: string, addData: (dataEntry: IDataEntr
 function UnconnectedVirusDataRenderer(props: IProps) {
     const {
         cachedData,
+        deviceType,
         geography,
         setDeepDiveFips,
         removeHighlightedFips,
@@ -74,10 +76,18 @@ function UnconnectedVirusDataRenderer(props: IProps) {
     };
 
     const onMouseEnter = (feature: GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>) => {
+        if (!IDevice.isBrowser(deviceType)) {
+            return;
+        }
+
         setHighlightedFips(feature.id?.toString());
     };
 
     const onMouseLeave = (feature: GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>) => {
+        if (!IDevice.isBrowser(deviceType)) {
+            return;
+        }
+
         removeHighlightedFips(feature.id?.toString());
     };
 
@@ -112,6 +122,7 @@ function UnconnectedVirusDataRenderer(props: IProps) {
 function mapStateToProps(state: IStoreState): IStateProps {
     return {
         cachedData: state.application.cachedData,
+        deviceType: state.interface.deviceType,
         geography: state.interface.geography,
     };
 }
@@ -120,8 +131,8 @@ function mapDispatchToProps(dispatch: Dispatch): IDispatchProps {
     return bindActionCreators(
         {
             addData: ADD_DATA.create,
-            removeHighlightedFips: REMOVE_HIGHLIGHTED_FIPS.create,
-            setHighlightedFips: SET_HIGHLIGHTED_FIPS.create,
+            removeHighlightedFips: REMOVE_BASIC_INFO_FIPS.create,
+            setHighlightedFips: SET_BASIC_INFO_FIPS.create,
             setDeepDiveFips: SET_DEEP_DIVE_FIPS_CODE.create,
             updateGeography: UPDATE_GEOGRAPHY.create,
         },

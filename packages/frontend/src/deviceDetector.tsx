@@ -1,21 +1,27 @@
 import { CoronaService } from "@corona/api";
+import { debounce } from "lodash-es";
 import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
-import { debounce } from "lodash-es";
+import { UAParser } from "ua-parser-js";
 import { v4 } from "uuid";
-import { VirusDataRenderer, Panels } from "./components";
-import { ADD_DATA, SET_DEEP_DIVE_FIPS_CODE } from "./store";
-import { IDataEntry } from "./typings";
+import { Browser } from "./devices/browser";
 import { DEFAULT_DATA_KEY } from "./common";
-import styles from "./mainApplication.module.scss";
+import styles from "./deviceDetector.module.scss";
+import { ADD_DATA, SET_DEVICE_TYPE, IStoreState } from "./store";
+import { TabletOrMobile } from "./devices/tabletOrMobile";
+import { IDataEntry, IDevice, IDeviceType } from "./typings";
+
+interface IStateProps {
+    deviceType: IDeviceType | undefined;
+}
 
 interface IDispatchProps {
     addData: (dataEntry: IDataEntry) => void;
-    removeDeepDive: () => void;
+    setDeviceType: (deviceType: IDeviceType) => void;
 }
 
-type IProps = IDispatchProps;
+type IProps = IStateProps & IDispatchProps;
 
 interface IState {
     error: string | undefined;
@@ -36,15 +42,16 @@ class UnconnectedMainApplication extends React.PureComponent<IProps, IState> {
     }
 
     public componentDidMount() {
-        const { addData } = this.props;
+        const { addData, setDeviceType } = this.props;
         this.getUnitedStatesData(addData);
 
-        document.addEventListener("keydown", this.handleKeyDown);
         window.addEventListener("resize", this.debounceResize);
+
+        const userDevice = new UAParser().getDevice();
+        setDeviceType(IDevice.getDeviceType(userDevice.type));
     }
 
     public componentWillUnmount() {
-        document.removeEventListener("keydown", this.handleKeyDown);
         window.removeEventListener("resize", this.debounceResize);
     }
 
@@ -58,21 +65,23 @@ class UnconnectedMainApplication extends React.PureComponent<IProps, IState> {
             return <div className={styles.centerError}>{error}</div>;
         }
 
-        return (
-            <div key={resizeId}>
-                <Panels />
-                <VirusDataRenderer />
-            </div>
-        );
-    }
-
-    private handleKeyDown = (event: KeyboardEvent) => {
-        const { removeDeepDive } = this.props;
-
-        if (event.keyCode === 27) {
-            removeDeepDive();
+        const { deviceType } = this.props;
+        if (deviceType === undefined) {
+            return null;
         }
-    };
+
+        return IDevice.visitor(deviceType, {
+            browser: () => <Browser key={resizeId} />,
+            mobile: () => <TabletOrMobile key={resizeId} />,
+            tablet: () => <TabletOrMobile key={resizeId} />,
+            unknown: () => (
+                <div>
+                    Unfortunately you&apos;re using an unsupported device. Please try again on a desktop, laptop,
+                    mobile, or tablet.
+                </div>
+            ),
+        });
+    }
 
     private handleResize = () => this.setState({ resizeId: v4() });
 
@@ -86,11 +95,16 @@ class UnconnectedMainApplication extends React.PureComponent<IProps, IState> {
     }
 }
 
-function mapDispatchToProps(dispatch: Dispatch): IDispatchProps {
+function mapStateToProps(state: IStoreState): IStateProps {
     return {
-        ...bindActionCreators({ addData: ADD_DATA.create }, dispatch),
-        removeDeepDive: () => dispatch(SET_DEEP_DIVE_FIPS_CODE.create(undefined)),
+        deviceType: state.interface.deviceType,
     };
 }
 
-export const MainApplication = connect(undefined, mapDispatchToProps)(UnconnectedMainApplication);
+function mapDispatchToProps(dispatch: Dispatch): IDispatchProps {
+    return {
+        ...bindActionCreators({ addData: ADD_DATA.create, setDeviceType: SET_DEVICE_TYPE.create }, dispatch),
+    };
+}
+
+export const DeviceDetector = connect(mapStateToProps, mapDispatchToProps)(UnconnectedMainApplication);
