@@ -1,6 +1,6 @@
 import { ICoronaBreakdown, ICoronaDataPoint, STATE } from "@corona/api";
 import lodash from "lodash";
-import { twoLetterCodeToFips, convertStateToTwoLetterCode } from "@corona/utils";
+import { stateToFips } from "@corona/utils";
 import { PIPELINE_LOGGER } from "@corona/logger";
 import { getCoronaDataArc } from "./getCoronaDataArc";
 import { getCoronaDataCoronaScraper } from "./getCoronaDataCoronaScraper";
@@ -25,7 +25,14 @@ function addTimeSeriesDataToDataPoint(
 
 function mergeCoronaDatapoints(dataPointA?: ICoronaDataPoint, dataPointB?: ICoronaDataPoint): ICoronaDataPoint {
     if (dataPointA === undefined && dataPointB === undefined) {
-        throw new Error("Something went wrong in the data pipeline, attempted to merge two undefined data points.");
+        PIPELINE_LOGGER.log({
+            level: "error",
+            message: "Something went wrong in the data pipeline, attempted to merge two undefined data points.",
+        });
+        return {
+            fipsCode: "",
+            totalCases: 0,
+        };
     }
 
     return lodash.mergeWith(dataPointA, dataPointB, (a, b) => {
@@ -100,7 +107,7 @@ function verifyDatapoints(totalBreakdown: ITotalBreakdown): ITotalBreakdown {
                         deaths: getHigherValueFromCounties(counties, "deaths", stateTotal?.deaths),
                         recovered: getHigherValueFromCounties(counties, "recovered", stateTotal?.recovered),
                         totalCases: getHigherValueFromCounties(counties, "totalCases", stateTotal?.totalCases),
-                        fipsCode: stateTotal?.fipsCode ?? twoLetterCodeToFips(convertStateToTwoLetterCode(state)),
+                        fipsCode: stateTotal?.fipsCode ?? stateToFips(state),
                     },
                 },
             };

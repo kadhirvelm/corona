@@ -1,6 +1,6 @@
 import { ICoronaDataPoint } from "@corona/api";
-import { convertTwoLetterCodeToState } from "@corona/utils";
 import fetch from "node-fetch";
+import { BACKEND_LOGGER } from "@corona/logger";
 import { cleanCountyName } from "../utils/cleanCountyName";
 import { getCoronaDataScraperFipsCode } from "../utils/getCoronaDataScraperFipsCode";
 import { getTotalBreakdowns, ICountiesKeyed, IStatesKeyed, ITotalBreakdown } from "./shared";
@@ -44,10 +44,10 @@ function cleanRawCoronaDataScraperDatapoint(dataPoint: ICoronaDataScraperData): 
         activeCases: dataPoint.active,
         county: cleanedCountyName,
         deaths: dataPoint.deaths,
-        fipsCode: getCoronaDataScraperFipsCode(dataPoint.state, cleanedCountyName),
+        fipsCode: getCoronaDataScraperFipsCode(dataPoint.state, cleanedCountyName, dataPoint.city),
         lastUpdated: undefined,
         recovered: dataPoint.recovered,
-        state: convertTwoLetterCodeToState(dataPoint.state ?? ""),
+        state: dataPoint.state,
         totalCases: dataPoint.cases,
     };
 }
@@ -58,11 +58,18 @@ function separateIntoNationStatesAndCounties(data: ICoronaDataScraperData[]) {
     const counties: ICountiesKeyed = {};
 
     data.forEach(dataPoint => {
-        if (dataPoint.country !== "USA") {
+        if (dataPoint.country !== "United States") {
             return;
         }
 
         const cleanedDataPoint = cleanRawCoronaDataScraperDatapoint(dataPoint);
+
+        if (cleanedDataPoint.fipsCode === undefined) {
+            BACKEND_LOGGER.log({
+                level: "error",
+                message: `CoronaScraper --> ${cleanedDataPoint.state}, ${cleanedDataPoint.county} producing undefined.`,
+            });
+        }
 
         if (
             cleanedDataPoint.state !== undefined &&
