@@ -111,7 +111,6 @@ function setupGraph(datapoints: ICleanedPoint[]) {
 }
 
 export function Timeseries(props: IProps) {
-    console.log(props.timeseries);
     React.useEffect(() => setupGraph(cleanDataPoint(props.timeseries)), []);
 
     return <svg className={styles.svgContainer} id="line-graph" />;
