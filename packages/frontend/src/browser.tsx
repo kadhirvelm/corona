@@ -25,7 +25,7 @@ interface IState {
     resizeId: string;
 }
 
-class UnconnectedMainApplication extends React.PureComponent<IProps, IState> {
+class UnconnectedBrowser extends React.PureComponent<IProps, IState> {
     public state: IState = {
         resizeId: v4(),
     };
@@ -79,4 +79,4 @@ function mapDispatchToProps(dispatch: Dispatch): IDispatchProps {
     };
 }
 
-export const MainApplication = connect(undefined, mapDispatchToProps)(UnconnectedMainApplication);
+export const Browser = connect(undefined, mapDispatchToProps)(UnconnectedBrowser);
