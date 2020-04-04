@@ -35,11 +35,16 @@ function UnconnectedVirusDataRenderer(props: IProps) {
 
     React.useEffect(() => {
         const { addData } = props;
-        if (IGeography.isNationGeography(geography) || cachedData[geography.name] !== undefined) {
+        if (IGeography.isNationGeography(geography)) {
             return;
         }
 
-        getDataForState(geography.name, addData);
+        const geographyName = IGeography.isStateGeography(geography) ? geography.name : geography.stateGeography.name;
+        if (cachedData[geographyName] !== undefined) {
+            return;
+        }
+
+        getDataForState(geographyName, addData);
     }, [geography]);
 
     const onFeatureSelect = (feature: GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>) => {

@@ -15,7 +15,7 @@ export interface IInterfaceState {
 }
 
 export const EMPTY_INTERFACE_STATE: IInterfaceState = {
-    geography: IGeography.stateGeography({ fipsCode: "06", name: "California" }),
+    geography: IGeography.nationGeography(),
     deviceType: undefined,
 };
 

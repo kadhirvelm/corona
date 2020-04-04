@@ -6,9 +6,13 @@ declare namespace CurrentPathModuleScssModule {
         breadcrumbContainer: string;
         breadcrumbIcon: string;
         breadcrumbTopContainer: string;
+        browser: string;
         end: string;
         fadeIn: string;
+        goToMyCounty: string;
+        goToMyCountyMargin: string;
         middle: string;
+        nationalBreadcrumbContainer: string;
         selectableBreadcrumb: string;
         start: string;
     }

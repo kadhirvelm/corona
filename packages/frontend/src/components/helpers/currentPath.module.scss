@@ -2,20 +2,47 @@
 
 .breadcrumb-container {
     display: flex;
-    flex-direction: column;
+    align-items: center;
     padding: 10px;
     box-shadow: 0 1px $box-shadow;
+
+    &.browser {
+        flex-direction: column;
+    }
 }
 
 .breadcrumb-top-container {
     display: flex;
-    padding-bottom: 5px;
+
+    &.browser {
+        padding-bottom: 5px;
+    }
 }
 
 .breadcrumb-bottom-container {
     display: flex;
     font-size: 20px;
     font-weight: 600;
+}
+
+.national-breadcrumb-container {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 10px;
+    font-size: 20px;
+    font-weight: 600;
+    box-shadow: 0 1px $box-shadow;
+}
+
+.go-to-my-county {
+    display: flex;
+    flex-direction: column;
+    max-width: 250px;
+}
+
+.go-to-my-county-margin {
+    margin-top: 5px;
 }
 
 .breadcrumb {

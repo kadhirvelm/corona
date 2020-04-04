@@ -66,6 +66,16 @@ function getClassNamesForFeature(
     });
 }
 
+function addHighlightClassNames(props: IProps) {
+    const { data, id, highlightFips } = props;
+
+    const svg = select(`#${id}`);
+
+    svg.selectAll("path").attr("class", (feature: any) => {
+        return getClassNamesForFeature(data, feature?.id, highlightFips);
+    });
+}
+
 function renderMap(
     props: IProps,
     svg: Selection<BaseType, unknown, HTMLElement, any>,
@@ -73,7 +83,7 @@ function renderMap(
     path: GeoPath<any, GeoPermissibleObjects>,
     mapOptions: IMapOptions,
 ) {
-    const { data, onFeatureSelect, onMouseEnter, onMouseLeave } = props;
+    const { data, highlightFips, onFeatureSelect, onMouseEnter, onMouseLeave } = props;
     const { colorScale, dimensions } = mapOptions;
 
     svg.selectAll("path")
@@ -81,7 +91,7 @@ function renderMap(
         .enter()
         .append("path")
         .attr("class", (feature: any) => {
-            return getClassNamesForFeature(data, feature?.id);
+            return getClassNamesForFeature(data, feature?.id, highlightFips);
         })
         .attr("fill", feature => {
             const cases: number | undefined = data?.breakdown[feature.id ?? ""]?.totalCases;
@@ -117,16 +127,6 @@ async function setupMap(props: IProps, setLoading: (isLoading: boolean) => void,
     const path = geoPath().projection(projection);
 
     renderMap(props, svg, features, path, mapOptions);
-}
-
-function addHighlightClassNames(props: IProps) {
-    const { data, id, highlightFips } = props;
-
-    const svg = select(`#${id}`);
-
-    svg.selectAll("path").attr("class", (feature: any) => {
-        return getClassNamesForFeature(data, feature?.id, highlightFips);
-    });
 }
 
 function maybeRenderLoadingState(isLoading: boolean) {

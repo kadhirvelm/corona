@@ -1,14 +1,16 @@
 import * as React from "react";
 import { Dispatch, bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import { Icon } from "@blueprintjs/core";
+import { Icon, Button, Tooltip } from "@blueprintjs/core";
 import classNames from "classnames";
-import { IGeography } from "../../typings";
+import { IGeography, IDeviceType, IDevice } from "../../typings";
 import { IStoreState, UPDATE_GEOGRAPHY } from "../../store";
 import styles from "./currentPath.module.scss";
+import { goToUserCounty } from "../../utils";
 
 interface IStateProps {
     geography: IGeography;
+    deviceType: IDeviceType | undefined;
 }
 
 interface IDispatchProps {
@@ -29,7 +31,7 @@ function renderBreadcrumb(text: string, onClick?: () => void, hasNext?: boolean)
 }
 
 function UnconnectedCurrentPath(props: IProps) {
-    const { geography, updateGeography } = props;
+    const { geography, deviceType, updateGeography } = props;
 
     const nationalBreadcrumb = renderBreadcrumb(
         "United States",
@@ -37,17 +39,34 @@ function UnconnectedCurrentPath(props: IProps) {
         true,
     );
 
+    const goToMyCounty = () => goToUserCounty(updateGeography);
+
+    const tooltipContet = (
+        <div className={styles.goToMyCounty}>
+            <span>Goes to your county, based on your browser&apos;s IP address.</span>
+            <span className={styles.goToMyCountyMargin}>
+                We use a public service from the FCC to locate this information. We do not store it or use the location
+                information for anything.
+            </span>
+        </div>
+    );
+
     if (IGeography.isNationGeography(geography)) {
         return (
-            <div className={classNames(styles.breadcrumbContainer, styles.breadcrumbBottomContainer)}>
+            <div className={styles.nationalBreadcrumbContainer}>
                 {renderBreadcrumb("United States")}
+                <Tooltip className={styles.goToMyCounty} content={tooltipContet} position="right">
+                    <Button minimal icon="locate" onClick={goToMyCounty} text="My county" />
+                </Tooltip>
             </div>
         );
     }
 
     if (IGeography.isStateGeography(geography)) {
         return (
-            <div className={styles.breadcrumbContainer}>
+            <div
+                className={classNames(styles.breadcrumbContainer, { [styles.browser]: IDevice.isBrowser(deviceType) })}
+            >
                 <div className={styles.breadcrumbTopContainer}>{nationalBreadcrumb}</div>
                 <div className={styles.breadcrumbBottomContainer}>{renderBreadcrumb(geography.name)}</div>
             </div>
@@ -55,7 +74,7 @@ function UnconnectedCurrentPath(props: IProps) {
     }
 
     return (
-        <div className={styles.breadcrumbContainer}>
+        <div className={classNames(styles.breadcrumbContainer, { [styles.browser]: IDevice.isBrowser(deviceType) })}>
             <div className={styles.breadcrumbTopContainer}>
                 {nationalBreadcrumb}
                 {renderBreadcrumb(geography.stateGeography.name, () => updateGeography(geography.stateGeography), true)}
@@ -68,6 +87,7 @@ function UnconnectedCurrentPath(props: IProps) {
 function mapStateToProps(state: IStoreState): IStateProps {
     return {
         geography: state.interface.geography,
+        deviceType: state.interface.deviceType,
     };
 }
 
