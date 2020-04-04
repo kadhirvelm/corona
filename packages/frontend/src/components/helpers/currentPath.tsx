@@ -62,11 +62,14 @@ function UnconnectedCurrentPath(props: IProps) {
         );
     }
 
+    const sharedClassName = classNames(styles.breadcrumbContainer, {
+        [styles.browser]: IDevice.isBrowser(deviceType),
+        [styles.mobile]: IDevice.isMobile(deviceType) || IDevice.isTablet(deviceType),
+    });
+
     if (IGeography.isStateGeography(geography)) {
         return (
-            <div
-                className={classNames(styles.breadcrumbContainer, { [styles.browser]: IDevice.isBrowser(deviceType) })}
-            >
+            <div className={sharedClassName}>
                 <div className={styles.breadcrumbTopContainer}>{nationalBreadcrumb}</div>
                 <div className={styles.breadcrumbBottomContainer}>{renderBreadcrumb(geography.name)}</div>
             </div>
@@ -74,7 +77,7 @@ function UnconnectedCurrentPath(props: IProps) {
     }
 
     return (
-        <div className={classNames(styles.breadcrumbContainer, { [styles.browser]: IDevice.isBrowser(deviceType) })}>
+        <div className={sharedClassName}>
             <div className={styles.breadcrumbTopContainer}>
                 {nationalBreadcrumb}
                 {renderBreadcrumb(geography.stateGeography.name, () => updateGeography(geography.stateGeography), true)}

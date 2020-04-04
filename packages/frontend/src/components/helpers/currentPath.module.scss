@@ -2,9 +2,12 @@
 
 .breadcrumb-container {
     display: flex;
-    align-items: center;
     padding: 10px;
     box-shadow: 0 1px $box-shadow;
+
+    &.mobile {
+        align-items: center;
+    }
 
     &.browser {
         flex-direction: column;

@@ -12,6 +12,7 @@ declare namespace CurrentPathModuleScssModule {
         goToMyCounty: string;
         goToMyCountyMargin: string;
         middle: string;
+        mobile: string;
         nationalBreadcrumbContainer: string;
         selectableBreadcrumb: string;
         start: string;
