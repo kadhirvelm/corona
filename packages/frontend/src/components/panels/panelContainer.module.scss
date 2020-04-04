@@ -13,7 +13,7 @@
 
     :global(.bp3-tab-list) {
         padding: 5px 10px 0;
-        box-shadow: 0 1px $box-shadow;
+        border-bottom: 1px solid $box-shadow;
     }
 
     :global(.bp3-tab-panel) {

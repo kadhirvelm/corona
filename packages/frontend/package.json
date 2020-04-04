@@ -5,8 +5,8 @@
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "scripts": {
-    "dev": "webpack-dev-server",
-    "dev:watch": "webpack --watch",
+    "dev:watch": "webpack-dev-server",
+    "dev": "webpack --watch",
     "lint": "eslint . --ext .ts,.tsx",
     "build": "webpack"
   },

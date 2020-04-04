@@ -7,6 +7,7 @@ export function Stats() {
     return (
         <div className={styles.statsContainer}>
             <BasicInfo />
+            <div className={styles.divider} />
             <GrowthCurve />
         </div>
     );

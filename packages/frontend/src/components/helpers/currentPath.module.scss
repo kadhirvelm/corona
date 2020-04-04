@@ -2,24 +2,30 @@
 
 .breadcrumb-container {
     display: flex;
+    flex-shrink: 0;
     padding: 10px;
-    box-shadow: 0 1px $box-shadow;
 
     &.mobile {
         align-items: center;
+
+        .breadcrumb-top-container {
+            align-items: center;
+            font-size: 20px;
+        }
     }
 
     &.browser {
         flex-direction: column;
+        min-height: 50px;
+
+        .breadcrumb-top-container {
+            padding-bottom: 5px;
+        }
     }
 }
 
 .breadcrumb-top-container {
     display: flex;
-
-    &.browser {
-        padding-bottom: 5px;
-    }
 }
 
 .breadcrumb-bottom-container {
@@ -30,12 +36,12 @@
 
 .national-breadcrumb-container {
     display: flex;
+    flex-shrink: 0;
     align-items: baseline;
     justify-content: space-between;
     padding: 10px;
     font-size: 20px;
     font-weight: 600;
-    box-shadow: 0 1px $box-shadow;
 }
 
 .go-to-my-county {
@@ -50,6 +56,7 @@
 
 .breadcrumb {
     display: flex;
+    align-items: center;
     padding-right: 10px;
 }
 

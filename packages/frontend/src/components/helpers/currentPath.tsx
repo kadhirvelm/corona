@@ -55,7 +55,12 @@ function UnconnectedCurrentPath(props: IProps) {
         return (
             <div className={styles.nationalBreadcrumbContainer}>
                 {renderBreadcrumb("United States")}
-                <Tooltip className={styles.goToMyCounty} content={tooltipContet} position="right">
+                <Tooltip
+                    className={styles.goToMyCounty}
+                    content={tooltipContet}
+                    disabled={!IDevice.isBrowser(deviceType)}
+                    position="right"
+                >
                     <Button minimal icon="locate" onClick={goToMyCounty} text="My county" />
                 </Tooltip>
             </div>
