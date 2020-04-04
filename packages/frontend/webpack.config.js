@@ -18,7 +18,7 @@ module.exports = {
         compress: true,
         hot: true,
         inline: true,
-        host: "0.0.0.0",
+        host: process.env.DEV_ADDRESS || "0.0.0.0",
         port: 3001,
         stats: {
             colors: true,

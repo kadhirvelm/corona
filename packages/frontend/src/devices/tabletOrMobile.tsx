@@ -5,15 +5,17 @@ import { PanelContainer, VirusDataRenderer } from "../components";
 import styles from "./tabletOrMobile.module.scss";
 
 let temporaryWindowHeight = 0;
+let temporaryWindowWidth = 0;
 
 export function TabletOrMobile() {
     const [resizeId, setResizeId] = React.useState(v4());
 
     const handleResize = () => {
-        if (window.innerHeight > temporaryWindowHeight) {
+        if (window.innerHeight > temporaryWindowHeight * 1.1 && window.innerWidth > temporaryWindowWidth * 1.1) {
             setResizeId(v4());
         } else {
             temporaryWindowHeight = window.innerHeight;
+            temporaryWindowWidth = window.innerWidth;
         }
     };
 
