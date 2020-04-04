@@ -18,6 +18,7 @@ module.exports = {
         compress: true,
         hot: true,
         inline: true,
+        host: "0.0.0.0",
         port: 3001,
         stats: {
             colors: true,

@@ -5,7 +5,7 @@ import { Dispatch } from "redux";
 import { Button, NonIdealState } from "@blueprintjs/core";
 import { Transitioner } from "../../common";
 import { IStoreState, maybeGetDataForDeepDiveFips, SET_DEEP_DIVE_FIPS_CODE } from "../../store";
-import styles from "./deepDivePanel.module.scss";
+import styles from "./growthCurve.module.scss";
 import { Timeseries } from "../visualization";
 
 interface IStateProps {
@@ -41,31 +41,24 @@ function renderTitle(county?: string, state?: string) {
     return "USA growth curves";
 }
 
-function UnconnectedDeepDivePanel(props: IProps) {
-    const [temporaryCopy, setTemporaryCopy] = React.useState<ICoronaDataPoint | undefined>(undefined);
-
+function UnconnectedGrowthCurve(props: IProps) {
     const { closeDeepDiveInfo, deepDiveInfo } = props;
-
-    React.useEffect(() => {
-        if (props.deepDiveInfo === undefined) {
-            return;
-        }
-
-        setTemporaryCopy(props.deepDiveInfo);
-    }, [deepDiveInfo]);
-
-    const deepDiveInfoFinal = deepDiveInfo ?? temporaryCopy;
 
     return (
         <div className={styles.internalContainer}>
-            <Transitioner show={deepDiveInfo !== undefined}>
-                <div className={styles.deepDiveContainer}>
-                    <div className={styles.title}>
-                        {renderTitle(deepDiveInfoFinal?.county, deepDiveInfoFinal?.state)}
-                        <Button icon="cross" minimal onClick={closeDeepDiveInfo} />
+            <Transitioner<ICoronaDataPoint | undefined>
+                show={deepDiveInfo !== undefined}
+                transitionProps={deepDiveInfo}
+            >
+                {deepDiveInfoCopy => (
+                    <div className={styles.deepDiveContainer}>
+                        <div className={styles.title}>
+                            {renderTitle(deepDiveInfoCopy?.county, deepDiveInfoCopy?.state)}
+                            <Button icon="cross" minimal onClick={closeDeepDiveInfo} />
+                        </div>
+                        {maybeRenderGrowthCurve(deepDiveInfoCopy?.timeseries, deepDiveInfoCopy?.fipsCode)}
                     </div>
-                    {maybeRenderGrowthCurve(deepDiveInfoFinal?.timeseries, deepDiveInfoFinal?.fipsCode)}
-                </div>
+                )}
             </Transitioner>
         </div>
     );
@@ -83,4 +76,4 @@ function mapDispatchToProps(dispatch: Dispatch): IDispatchProps {
     };
 }
 
-export const DeepDivePanel = connect(mapStateToProps, mapDispatchToProps)(UnconnectedDeepDivePanel);
+export const GrowthCurve = connect(mapStateToProps, mapDispatchToProps)(UnconnectedGrowthCurve);

@@ -1,8 +1,9 @@
 // eslint-disable-next-line max-classes-per-file
-export type IGeographyTypes = "nation" | "state";
+export type IGeographyTypes = "nation" | "state" | "county";
 
 interface IGenericGeography {
     type: IGeographyTypes;
+    fipsCode: string;
 }
 
 /**
@@ -10,6 +11,7 @@ interface IGenericGeography {
  */
 export interface INationGeography extends IGenericGeography {
     type: "nation";
+    fipsCode: "999";
 }
 
 /**
@@ -17,14 +19,25 @@ export interface INationGeography extends IGenericGeography {
  */
 export interface IStateGeography extends IGenericGeography {
     type: "state";
-    stateFipsCode: string;
+    nationGeography: INationGeography;
+    fipsCode: string;
+    name: string;
+}
+
+/**
+ * Provides information related to which county to render.
+ */
+export interface ICountyGeography extends IGenericGeography {
+    type: "county";
+    stateGeography: IStateGeography;
+    fipsCode: string;
     name: string;
 }
 
 /**
  * The different kinds of geographies the USMap can render.
  */
-export type IGeography = INationGeography | IStateGeography;
+export type IGeography = INationGeography | IStateGeography | ICountyGeography;
 
 /**
  * Some instantiator methods and type guards.
@@ -36,18 +49,35 @@ export namespace IGeography {
     export const nationGeography = (): INationGeography => {
         return {
             type: "nation",
+            fipsCode: "999",
         };
     };
     /**
      * Returns a state geography provided the state's fips code and the state's name.
      */
-    export const stateGeography = (entry: { stateFipsCode: string; name: string }): IStateGeography => {
-        const { name, stateFipsCode } = entry;
+    export const stateGeography = (entry: { fipsCode: string; name: string }): IStateGeography => {
+        const { name, fipsCode } = entry;
 
         return {
             name,
-            stateFipsCode,
+            nationGeography: nationGeography(),
+            fipsCode,
             type: "state",
+        };
+    };
+    /** Returns a county geography provided its state's fips code, the county's fips code, and the county's name. */
+    export const countyGeography = (entry: {
+        countyStateGeography: IStateGeography;
+        fipsCode: string;
+        name: string;
+    }): ICountyGeography => {
+        const { countyStateGeography, fipsCode, name } = entry;
+
+        return {
+            fipsCode,
+            name,
+            stateGeography: countyStateGeography,
+            type: "county",
         };
     };
     /**
@@ -61,5 +91,11 @@ export namespace IGeography {
      */
     export const isStateGeography = (geography: IGeography): geography is IStateGeography => {
         return geography.type === "state";
+    };
+    /**
+     * Type guard for county geographies.
+     */
+    export const isCountyGeography = (geography: IGeography): geography is ICountyGeography => {
+        return geography.type === "county";
     };
 }

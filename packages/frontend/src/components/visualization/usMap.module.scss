@@ -1,3 +1,5 @@
+@import "../../utils/variables";
+
 $default-gray: #CCD1D1;
 
 .state {
@@ -6,7 +8,7 @@ $default-gray: #CCD1D1;
     cursor: pointer;
 
     &:hover {
-        fill: #85C1E9;
+        fill: $selected-hover-background;
         stroke: #1A5276;
     }
 }
@@ -19,6 +21,11 @@ $default-gray: #CCD1D1;
         fill: #99A3A4;
         stroke: #5D6D7E;
     }
+}
+
+.highlight-feature {
+    fill: $selected-background;
+    stroke: #1F618D;
 }
 
 .center-spinner {

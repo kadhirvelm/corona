@@ -1,6 +1,6 @@
 @import "../../utils/variables";
 
-.stats-panel-container {
+.breakdown-list-container {
     display: flex;
     flex: 1;
     flex-direction: column;
@@ -83,13 +83,9 @@
 }
 
 .is-open {
-    background: #2E86C1;
+    background: $selected-background;
 
     &.single-breakdown:hover {
-        background: #2E86C1;
-    }
-
-    .text {
-        color: #FDFEFE;
+        background: $selected-hover-background;
     }
 }

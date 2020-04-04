@@ -1,30 +1,36 @@
 import * as React from "react";
 import classNames from "classnames";
+import { clone } from "lodash-es";
 import styles from "./transitioner.module.scss";
 
-interface IProps extends React.Props<{}> {
+interface IProps<T = {}> extends React.Props<{}> {
     className?: string;
     show: boolean;
+    transitionProps: T;
+    children: (props: T | undefined) => React.ReactNode;
 }
 
-export function Transitioner(props: IProps) {
-    const { children, className, show } = props;
+export function Transitioner<T = {}>(props: IProps<T>) {
+    const { children, className, show, transitionProps } = props;
 
-    const [shouldRender, setRender] = React.useState(false);
+    const [renderOptions, setRender] = React.useState<{ shouldRender: Boolean; transitionProps: T | undefined }>({
+        shouldRender: false,
+        transitionProps: undefined,
+    });
 
     React.useEffect(() => {
         if (show) {
-            setRender(true);
+            setRender({ shouldRender: true, transitionProps: clone(transitionProps) });
         }
     }, [show]);
 
     const onAnimationEnd = () => {
         if (!show) {
-            setRender(false);
+            setRender({ shouldRender: false, transitionProps: undefined });
         }
     };
 
-    if (!shouldRender) {
+    if (!renderOptions.shouldRender) {
         return null;
     }
 
@@ -33,7 +39,7 @@ export function Transitioner(props: IProps) {
             className={classNames({ [styles.fadeIn]: show, [styles.fadeOut]: !show }, className)}
             onAnimationEnd={onAnimationEnd}
         >
-            {children}
+            {children(transitionProps ?? renderOptions.transitionProps)}
         </div>
     );
 }

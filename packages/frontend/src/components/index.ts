@@ -1,3 +1,3 @@
 export * from "./helpers";
 export * from "./visualization";
-export * from "./sidePanels";
+export * from "./panels";

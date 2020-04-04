@@ -3,31 +3,19 @@ import { isValidState } from "@corona/utils";
 import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
-import { debounce } from "lodash-es";
-import { IGeography, IDataEntry, IDeviceType, IDevice } from "../../typings";
-import { Transitioner, DEFAULT_DATA_KEY } from "../../common";
+import { DEFAULT_DATA_KEY, Transitioner } from "../../common";
+import { ADD_DATA, IStoreState, UPDATE_GEOGRAPHY } from "../../store";
+import { IDataEntry, IGeography } from "../../typings";
+import { getDataKeyFromGeography, nationTopology, stateTopology } from "../../utils";
 import { USMap } from "./usMap";
-import { nationTopology, stateTopology, getDataKeyFromGeography } from "../../utils";
-import {
-    IStoreState,
-    ADD_DATA,
-    UPDATE_GEOGRAPHY,
-    SET_BASIC_INFO_FIPS,
-    REMOVE_BASIC_INFO_FIPS,
-    SET_DEEP_DIVE_FIPS_CODE,
-} from "../../store";
 
 interface IStateProps {
     cachedData: { [key: string]: ICoronaBreakdown };
-    deviceType: IDeviceType | undefined;
     geography: IGeography;
 }
 
 interface IDispatchProps {
     addData: (newData: { key: string; data: ICoronaBreakdown }) => void;
-    removeHighlightedFips: (fipsCode: string | undefined) => void;
-    setHighlightedFips: (fipsCode: string | undefined) => void;
-    setDeepDiveFips: (fipsCode: string | undefined) => void;
     updateGeography: (geography: IGeography) => void;
 }
 
@@ -43,15 +31,7 @@ async function getDataForState(stateName: string, addData: (dataEntry: IDataEntr
 }
 
 function UnconnectedVirusDataRenderer(props: IProps) {
-    const {
-        cachedData,
-        deviceType,
-        geography,
-        setDeepDiveFips,
-        removeHighlightedFips,
-        setHighlightedFips,
-        updateGeography,
-    } = props;
+    const { cachedData, geography, updateGeography } = props;
 
     React.useEffect(() => {
         const { addData } = props;
@@ -66,54 +46,44 @@ function UnconnectedVirusDataRenderer(props: IProps) {
         if (feature.id?.toString().length === 2) {
             updateGeography(
                 IGeography.stateGeography({
-                    stateFipsCode: feature.id?.toString() ?? "",
+                    fipsCode: feature.id?.toString() ?? "",
                     name: feature.properties?.name ?? "",
                 }),
             );
-        } else if (feature.id?.toString().length === 5) {
-            setDeepDiveFips(feature.id?.toString());
+        } else if (
+            feature.id?.toString().length === 5 &&
+            (IGeography.isStateGeography(geography) || IGeography.isCountyGeography(geography))
+        ) {
+            updateGeography(
+                IGeography.countyGeography({
+                    countyStateGeography: IGeography.isStateGeography(geography) ? geography : geography.stateGeography,
+                    fipsCode: feature.id?.toString() ?? "",
+                    name: feature.properties?.name ?? "",
+                }),
+            );
         }
-    };
-
-    const onMouseEnter = (feature: GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>) => {
-        if (!IDevice.isBrowser(deviceType)) {
-            return;
-        }
-
-        setHighlightedFips(feature.id?.toString());
-    };
-
-    const onMouseLeave = (feature: GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>) => {
-        if (!IDevice.isBrowser(deviceType)) {
-            return;
-        }
-
-        removeHighlightedFips(feature.id?.toString());
     };
 
     const sharedProps = {
+        highlightFips: IGeography.isCountyGeography(geography) ? geography.fipsCode : undefined,
         onFeatureSelect,
-        onMouseEnter: debounce(onMouseEnter, 100),
-        onMouseLeave: debounce(onMouseLeave, 300),
     };
 
     return (
         <>
-            <Transitioner show={IGeography.isNationGeography(geography)}>
-                <USMap
-                    id="nation"
-                    mapTopology={nationTopology()}
-                    data={cachedData[DEFAULT_DATA_KEY]}
-                    {...sharedProps}
-                />
+            <Transitioner<ICoronaBreakdown>
+                show={IGeography.isNationGeography(geography)}
+                transitionProps={cachedData[DEFAULT_DATA_KEY]}
+            >
+                {dataCopy => <USMap id="nation" mapTopology={nationTopology()} data={dataCopy} {...sharedProps} />}
             </Transitioner>
-            <Transitioner show={IGeography.isStateGeography(geography)}>
-                <USMap
-                    id="state"
-                    mapTopology={stateTopology(geography)}
-                    data={cachedData[getDataKeyFromGeography(geography)]}
-                    {...sharedProps}
-                />
+            <Transitioner<ICoronaBreakdown>
+                show={IGeography.isStateGeography(geography) || IGeography.isCountyGeography(geography)}
+                transitionProps={cachedData[getDataKeyFromGeography(geography)]}
+            >
+                {dataCopy => (
+                    <USMap id="state" mapTopology={stateTopology(geography)} data={dataCopy} {...sharedProps} />
+                )}
             </Transitioner>
         </>
     );
@@ -122,7 +92,6 @@ function UnconnectedVirusDataRenderer(props: IProps) {
 function mapStateToProps(state: IStoreState): IStateProps {
     return {
         cachedData: state.application.cachedData,
-        deviceType: state.interface.deviceType,
         geography: state.interface.geography,
     };
 }
@@ -131,9 +100,6 @@ function mapDispatchToProps(dispatch: Dispatch): IDispatchProps {
     return bindActionCreators(
         {
             addData: ADD_DATA.create,
-            removeHighlightedFips: REMOVE_BASIC_INFO_FIPS.create,
-            setHighlightedFips: SET_BASIC_INFO_FIPS.create,
-            setDeepDiveFips: SET_DEEP_DIVE_FIPS_CODE.create,
             updateGeography: UPDATE_GEOGRAPHY.create,
         },
         dispatch,

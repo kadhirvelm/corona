@@ -2,7 +2,7 @@ import * as React from "react";
 import { ICoronaDataPoint } from "@corona/api";
 import { connect } from "react-redux";
 import { IStoreState, maybeGetDataForHighlightedFips } from "../../store";
-import styles from "./basicInfoPanel.module.scss";
+import styles from "./basicInfo.module.scss";
 import { Transitioner } from "../../common";
 
 interface IStateProps {
@@ -55,38 +55,32 @@ function maybeRenderPopulationPercent(totalCases?: number, population?: number) 
 function UnconnectedBasicInfo(props: IProps) {
     const { basicInfoDataPoint } = props;
 
-    const [temporaryCopy, setTemporaryCopy] = React.useState<ICoronaDataPoint | undefined>(undefined);
-
-    React.useEffect(() => {
-        if (props.basicInfoDataPoint === undefined) {
-            return;
-        }
-
-        setTemporaryCopy(props.basicInfoDataPoint);
-    }, [basicInfoDataPoint]);
-
-    const finalbasicInfoDataPoint = basicInfoDataPoint ?? temporaryCopy;
-
     return (
         <div className={styles.internalContainer}>
-            <Transitioner className={styles.transitioner} show={basicInfoDataPoint !== undefined}>
-                <div className={styles.hoverInfo}>
-                    <div className={styles.title}>
-                        {finalbasicInfoDataPoint?.county ?? finalbasicInfoDataPoint?.state ?? "None selected"}
+            <Transitioner<ICoronaDataPoint | undefined>
+                className={styles.transitioner}
+                show={basicInfoDataPoint !== undefined}
+                transitionProps={basicInfoDataPoint}
+            >
+                {basicInfoDataPointCopy => (
+                    <div className={styles.hoverInfo}>
+                        <div className={styles.title}>
+                            {basicInfoDataPointCopy?.county ?? basicInfoDataPointCopy?.state ?? "None selected"}
+                        </div>
+                        <div className={styles.infoContainer}>
+                            {renderSingleLabel("Total", basicInfoDataPointCopy?.totalCases.toLocaleString())}
+                            {renderSingleLabel("Recovered", basicInfoDataPointCopy?.recovered?.toLocaleString())}
+                            {renderSingleLabel("Active", basicInfoDataPointCopy?.activeCases?.toLocaleString())}
+                            {renderSingleLabel("Deaths", basicInfoDataPointCopy?.deaths?.toLocaleString())}
+                            {renderSingleLabel("Population", basicInfoDataPointCopy?.population?.toLocaleString())}
+                            {maybeRenderPopulationPercent(
+                                basicInfoDataPointCopy?.totalCases,
+                                basicInfoDataPointCopy?.population,
+                            )}
+                            {renderLastUpdated(basicInfoDataPointCopy?.lastUpdated)}
+                        </div>
                     </div>
-                    <div className={styles.infoContainer}>
-                        {renderSingleLabel("Total", finalbasicInfoDataPoint?.totalCases.toLocaleString())}
-                        {renderSingleLabel("Recovered", finalbasicInfoDataPoint?.recovered?.toLocaleString())}
-                        {renderSingleLabel("Active", finalbasicInfoDataPoint?.activeCases?.toLocaleString())}
-                        {renderSingleLabel("Deaths", finalbasicInfoDataPoint?.deaths?.toLocaleString())}
-                        {renderSingleLabel("Population", finalbasicInfoDataPoint?.population?.toLocaleString())}
-                        {maybeRenderPopulationPercent(
-                            finalbasicInfoDataPoint?.totalCases,
-                            finalbasicInfoDataPoint?.population,
-                        )}
-                        {renderLastUpdated(finalbasicInfoDataPoint?.lastUpdated)}
-                    </div>
-                </div>
+                )}
             </Transitioner>
         </div>
     );

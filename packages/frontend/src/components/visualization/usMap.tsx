@@ -6,6 +6,7 @@ import { BaseType, select, Selection } from "d3-selection";
 import GeoJSON from "geojson";
 import * as React from "react";
 import { connect } from "react-redux";
+import { noop } from "lodash-es";
 import { IStoreState } from "../../store";
 import { IDeviceType, IMapOptions, IMapTopology } from "../../typings";
 import { getDimensionsForMap, getLinearColorScale, getTotalDimensionSpacing } from "../../utils";
@@ -28,6 +29,10 @@ interface IOwnProps {
      */
     data?: ICoronaBreakdown;
     /**
+     * If a feature matches the highlight fips ID, it will render as a highlighted value.
+     */
+    highlightFips: string | undefined;
+    /**
      * Provides information related to how to render this map with d3-geo, specifically where to get the topology from
      * and how to extract the features from said topology.
      */
@@ -39,14 +44,27 @@ interface IOwnProps {
     /**
      * Callback when the user hovers over a feature.
      */
-    onMouseEnter: (feature: GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>) => void;
+    onMouseEnter?: (feature: GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>) => void;
     /**
      * Callback when the user hovers out of a feature.
      */
-    onMouseLeave: (feature: GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>) => void;
+    onMouseLeave?: (feature: GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>) => void;
 }
 
 type IProps = IStateProps & IOwnProps;
+
+function getClassNamesForFeature(
+    data: ICoronaBreakdown | undefined,
+    featureId: string | undefined,
+    highlightFips?: string,
+) {
+    const cases: number | undefined = data?.breakdown[featureId ?? ""]?.totalCases;
+
+    return classNames(styles.state, {
+        [styles.stateNoData]: cases === undefined,
+        [styles.highlightFeature]: featureId !== undefined && featureId === highlightFips,
+    });
+}
 
 function renderMap(
     props: IProps,
@@ -58,23 +76,15 @@ function renderMap(
     const { data, onFeatureSelect, onMouseEnter, onMouseLeave } = props;
     const { colorScale, dimensions } = mapOptions;
 
-    if (data === undefined) {
-        throw new Error("Should not reach here");
-    }
-
     svg.selectAll("path")
         .data(features)
         .enter()
         .append("path")
-        .attr("class", feature => {
-            const cases: number | undefined = data.breakdown[feature.id ?? ""]?.totalCases;
-
-            return classNames(styles.state, {
-                [styles.stateNoData]: cases === undefined,
-            });
+        .attr("class", (feature: any) => {
+            return getClassNamesForFeature(data, feature?.id);
         })
         .attr("fill", feature => {
-            const cases: number | undefined = data.breakdown[feature.id ?? ""]?.totalCases;
+            const cases: number | undefined = data?.breakdown[feature.id ?? ""]?.totalCases;
 
             if (cases === undefined) {
                 return styles.defaultGray;
@@ -83,8 +93,8 @@ function renderMap(
             return colorScale(cases);
         })
         .on("click", onFeatureSelect)
-        .on("mouseenter", onMouseEnter)
-        .on("mouseleave", onMouseLeave)
+        .on("mouseenter", onMouseEnter ?? noop)
+        .on("mouseleave", onMouseLeave ?? noop)
         .attr("d", path)
         .attr("transform", `translate(${dimensions.margin?.left ?? 0}, ${dimensions.margin?.top ?? 0})`);
 }
@@ -109,6 +119,16 @@ async function setupMap(props: IProps, setLoading: (isLoading: boolean) => void,
     renderMap(props, svg, features, path, mapOptions);
 }
 
+function addHighlightClassNames(props: IProps) {
+    const { data, id, highlightFips } = props;
+
+    const svg = select(`#${id}`);
+
+    svg.selectAll("path").attr("class", (feature: any) => {
+        return getClassNamesForFeature(data, feature?.id, highlightFips);
+    });
+}
+
 function maybeRenderLoadingState(isLoading: boolean) {
     if (!isLoading) {
         return null;
@@ -118,7 +138,7 @@ function maybeRenderLoadingState(isLoading: boolean) {
 }
 
 function UnconnectedUSMap(props: IProps) {
-    const { data, deviceType, id } = props;
+    const { data, deviceType, highlightFips, id } = props;
 
     if (data === undefined) {
         return <Spinner className={styles.centerSpinner} />;
@@ -132,6 +152,10 @@ function UnconnectedUSMap(props: IProps) {
     React.useEffect(() => {
         setupMap(props, setLoading, { colorScale, dimensions });
     }, []);
+
+    React.useEffect(() => {
+        addHighlightClassNames(props);
+    }, [highlightFips]);
 
     return (
         <>

@@ -1,9 +1,11 @@
+import { debounce } from "lodash-es";
 import * as React from "react";
 import { connect } from "react-redux";
 import { Dispatch } from "redux";
+import { v4 } from "uuid";
+import { BasicInfo, BreakdownList, GrowthCurve, VirusDataRenderer } from "../components";
 import { SET_DEEP_DIVE_FIPS_CODE } from "../store";
 import styles from "./browser.module.scss";
-import { VirusDataRenderer, DeepDivePanel, StatsPanel, BasicInfo } from "../components";
 
 interface IDispatchProps {
     removeDeepDive: () => void;
@@ -11,27 +13,46 @@ interface IDispatchProps {
 
 type IProps = IDispatchProps;
 
-class UnconnectedBrowser extends React.PureComponent<IProps> {
+interface IState {
+    resizeId: string;
+}
+
+class UnconnectedBrowser extends React.PureComponent<IProps, IState> {
+    public state: IState = {
+        resizeId: v4(),
+    };
+
+    private debounceResize: () => void;
+
+    public constructor(props: IProps, context: any) {
+        super(props, context);
+        this.debounceResize = debounce(this.handleResize, 500);
+    }
+
     public componentDidMount() {
         document.addEventListener("keydown", this.handleKeyDown);
+        window.addEventListener("resize", this.debounceResize);
     }
 
     public componentWillUnmount() {
         document.removeEventListener("keydown", this.handleKeyDown);
+        window.removeEventListener("resize", this.debounceResize);
     }
 
     public render() {
+        const { resizeId } = this.state;
+
         return (
-            <>
+            <div className={styles.browserContainer} key={resizeId}>
                 <div className={styles.panelContainer}>
-                    <StatsPanel />
-                    <DeepDivePanel />
+                    <BreakdownList />
+                    <GrowthCurve />
                 </div>
                 <div className={styles.basicInfoContainer}>
                     <BasicInfo />
                 </div>
                 <VirusDataRenderer />
-            </>
+            </div>
         );
     }
 
@@ -42,6 +63,8 @@ class UnconnectedBrowser extends React.PureComponent<IProps> {
             removeDeepDive();
         }
     };
+
+    private handleResize = () => this.setState({ resizeId: v4() });
 }
 
 function mapDispatchToProps(dispatch: Dispatch): IDispatchProps {

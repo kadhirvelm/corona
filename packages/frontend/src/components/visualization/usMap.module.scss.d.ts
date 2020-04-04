@@ -4,6 +4,10 @@ declare namespace UsMapModuleScssModule {
         center: string;
         centerSpinner: string;
         defaultGray: string;
+        end: string;
+        highlightFeature: string;
+        middle: string;
+        start: string;
         state: string;
         stateNoData: string;
         svgMap: string;

@@ -1,9 +1,10 @@
+import { NonIdealState } from "@blueprintjs/core";
 import * as React from "react";
 import { connect } from "react-redux";
-import { NonIdealState } from "@blueprintjs/core";
-import { StatsPanel, VirusDataRenderer, DeepDivePanel, BasicInfo } from "../components";
-import styles from "./tabletOrMobile.module.scss";
+import { BasicInfo, BreakdownList, GrowthCurve, VirusDataRenderer } from "../components";
+import { CurrentPath } from "../components/helpers/currentPath";
 import { IStoreState } from "../store";
+import styles from "./tabletOrMobile.module.scss";
 
 interface IStateProps {
     deepDiveFipsCode: string | undefined;
@@ -27,12 +28,13 @@ function UnconnectedTabletOrMobile(props: IProps) {
                 <VirusDataRenderer />
             </div>
             <div className={styles.statsContainer}>
+                <CurrentPath />
                 <div className={styles.leftContainer}>
-                    <StatsPanel />
+                    <BreakdownList />
                 </div>
                 <div className={styles.rightContainer}>
                     {maybeRenderNonIdealState()}
-                    <DeepDivePanel />
+                    <GrowthCurve />
                     <div className={styles.basicInfoContainer}>
                         <BasicInfo />
                     </div>
