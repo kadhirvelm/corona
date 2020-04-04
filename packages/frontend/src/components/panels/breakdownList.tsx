@@ -1,12 +1,12 @@
-import * as React from "react";
+import { InputGroup } from "@blueprintjs/core";
 import { ICoronaBreakdown, ICoronaDataPoint } from "@corona/api";
-import { connect } from "react-redux";
-import { InputGroup, Button } from "@blueprintjs/core";
-import { Dispatch, bindActionCreators } from "redux";
 import classNames from "classnames";
-import { IStoreState, maybeGetDataForGeography, getSortedDataBreakdown, UPDATE_GEOGRAPHY } from "../../store";
+import * as React from "react";
+import { connect } from "react-redux";
+import { bindActionCreators, Dispatch } from "redux";
+import { getDataBreakdown, IStoreState, maybeGetDataForGeography, UPDATE_GEOGRAPHY } from "../../store";
+import { IDataBreakdown, IDevice, IDeviceType, IGeography } from "../../typings";
 import styles from "./breakdownList.module.scss";
-import { IGeography, IDataBreakdown, IDeviceType, IDevice } from "../../typings";
 
 interface IStateProps {
     geography: IGeography;
@@ -67,25 +67,17 @@ function renderDataBreakdown(dataBreakdown: IDataBreakdown[], dataBreakdownProps
                     onClick={handleClick(breakdown.dataPoint)}
                 >
                     <span>{breakdown.name}</span>
-                    <span>{breakdown.dataPoint.totalCases.toLocaleString()}</span>
+                    <span className={styles.totalCasesColumn}>{breakdown.dataPoint.totalCases.toLocaleString()}</span>
                 </div>
             ))}
         </div>
     );
 }
 
-function maybeRenderBackButton(geography: IGeography, backToNation: () => void) {
-    if (IGeography.isNationGeography(geography)) {
-        return null;
-    }
-
-    return <Button className={styles.titleBackButton} icon="arrow-left" minimal onClick={backToNation} />;
-}
-
 function UnconnectedBreakdownList(props: IProps) {
     const [filter, setFilter] = React.useState("");
 
-    const { data, dataBreakdown, backToNation, geography } = props;
+    const { data, dataBreakdown } = props;
     if (data === undefined) {
         return <div className={styles.breakdownListContainer} />;
     }
@@ -94,15 +86,12 @@ function UnconnectedBreakdownList(props: IProps) {
 
     return (
         <div className={styles.breakdownListContainer}>
-            <div className={styles.titleContainer}>
-                {maybeRenderBackButton(geography, backToNation)}
-                <span className={styles.titleText}>{data.description}</span>
-            </div>
-            <div className={styles.totalCasesContainer}>
-                {data.totalData?.totalCases.toLocaleString() ?? "Unknown"} Total Cases
-            </div>
             <div className={styles.filterContainer}>
                 <InputGroup leftIcon="search" onChange={updateFilterValue} value={filter} />
+                <div className={styles.columnHeaders}>
+                    <div>Name</div>
+                    <div>Total cases</div>
+                </div>
             </div>
             {renderDataBreakdown(
                 dataBreakdown.filter(breakdown => breakdown.name.toLowerCase().includes(filter.toLowerCase())),
@@ -117,7 +106,7 @@ function mapStateToProps(state: IStoreState): IStateProps {
         geography: state.interface.geography,
         data: maybeGetDataForGeography(state),
         deviceType: state.interface.deviceType,
-        dataBreakdown: getSortedDataBreakdown(state),
+        dataBreakdown: getDataBreakdown(state),
     };
 }
 

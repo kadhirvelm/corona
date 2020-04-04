@@ -1,0 +1,37 @@
+@import "../../utils/variables";
+
+.breadcrumb-container {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    box-shadow: 0 1px $box-shadow;
+}
+
+.breadcrumb-top-container {
+    display: flex;
+    padding-bottom: 5px;
+}
+
+.breadcrumb-bottom-container {
+    display: flex;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.breadcrumb {
+    display: flex;
+    padding-right: 10px;
+}
+
+.selectable-breadcrumb {
+    cursor: pointer;
+    color: #1F618D;
+
+    &:hover {
+        color: #5DADE2;
+    }
+}
+
+.breadcrumb-icon {
+    margin-left: 10px;
+}

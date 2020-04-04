@@ -2,10 +2,11 @@ import * as React from "react";
 import { ICoronaDatapointTimeseriesDatapoint } from "@corona/api";
 import { scaleTime, scaleLinear } from "d3-scale";
 import { line, curveMonotoneX } from "d3-shape";
-import { select } from "d3-selection";
+import { select, Selection } from "d3-selection";
 import { extent } from "d3-array";
 import { axisBottom, axisLeft } from "d3-axis";
 import { timeFormat, timeParse } from "d3-time-format";
+import { NonIdealState } from "@blueprintjs/core";
 import styles from "./timeseries.module.scss";
 
 interface IProps {
@@ -23,18 +24,84 @@ interface ICleanedPoint {
 const parseTime = timeParse("%Y-%m-%d");
 
 function cleanDataPoint(timeseries: { [date: string]: ICoronaDatapointTimeseriesDatapoint }): ICleanedPoint[] {
-    return Object.entries(timeseries).map(entry => ({
-        x: parseTime(entry[0]),
-        cases: entry[1].cases ?? 0,
-        active: entry[1].active ?? 0,
-        deaths: entry[1].deaths ?? 0,
-        recovered: entry[1].recovered ?? 0,
-    }));
+    return Object.entries(timeseries)
+        .map(entry => ({
+            x: parseTime(entry[0]),
+            cases: entry[1].cases ?? 0,
+            active: entry[1].active ?? 0,
+            deaths: entry[1].deaths ?? 0,
+            recovered: entry[1].recovered ?? 0,
+        }))
+        .filter(dataPoint => dataPoint.cases > 0);
 }
 
-const WIDTH = 430;
-const HEIGHT = 300;
-const PADDING = { top: 20, right: 20, bottom: 50, left: 50 };
+const WIDTH = 230;
+const HEIGHT = 250;
+const PADDING = { top: 20, right: 20, bottom: 100, left: 50 };
+
+function addLegend(graph: Selection<SVGGElement, unknown, HTMLElement, any>) {
+    const legend = graph.append("g");
+
+    legend
+        .append("circle")
+        .attr("cx", 0)
+        .attr("cy", HEIGHT + 60)
+        .attr("r", 4)
+        .style("fill", "#5DADE2");
+
+    legend
+        .append("text")
+        .attr("x", 10)
+        .attr("y", HEIGHT + 65)
+        .text("Total cases")
+        .style("fill", "#5DADE2")
+        .attr("text-anchor", "left");
+
+    legend
+        .append("circle")
+        .attr("cx", 0)
+        .attr("cy", HEIGHT + 80)
+        .attr("r", 4)
+        .style("fill", "#B03A2E");
+
+    legend
+        .append("text")
+        .attr("x", 10)
+        .attr("y", HEIGHT + 85)
+        .text("Active cases")
+        .style("fill", "#B03A2E")
+        .attr("text-anchor", "left");
+
+    legend
+        .append("circle")
+        .attr("cx", 130)
+        .attr("cy", HEIGHT + 60)
+        .attr("r", 4)
+        .style("fill", "#52BE80");
+
+    legend
+        .append("text")
+        .attr("x", 140)
+        .attr("y", HEIGHT + 65)
+        .text("Recovered")
+        .style("fill", "#52BE80")
+        .attr("text-anchor", "left");
+
+    legend
+        .append("circle")
+        .attr("cx", 130)
+        .attr("cy", HEIGHT + 80)
+        .attr("r", 4)
+        .style("fill", "#566573");
+
+    legend
+        .append("text")
+        .attr("x", 140)
+        .attr("y", HEIGHT + 85)
+        .text("Deaths")
+        .style("fill", "#566573")
+        .attr("text-anchor", "left");
+}
 
 function setupGraph(datapoints: ICleanedPoint[]) {
     const xValues = datapoints.map(point => point.x);
@@ -108,10 +175,19 @@ function setupGraph(datapoints: ICleanedPoint[]) {
         .data([datapoints])
         .attr("class", styles.recovered)
         .attr("d", recoveredLine as any);
+
+    addLegend(graph);
 }
 
 export function Timeseries(props: IProps) {
-    React.useEffect(() => setupGraph(cleanDataPoint(props.timeseries)), []);
+    const { timeseries } = props;
+    const cleanedDataPoints = cleanDataPoint(timeseries);
+
+    if (cleanedDataPoints.length === 0) {
+        return <NonIdealState description="No timeseries data to display." />;
+    }
+
+    React.useEffect(() => setupGraph(cleanedDataPoints), []);
 
     return <svg className={styles.svgContainer} id="line-graph" />;
 }

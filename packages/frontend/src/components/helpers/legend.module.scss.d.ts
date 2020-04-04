@@ -2,6 +2,7 @@
 declare namespace LegendModuleScssModule {
     export interface ILegendModuleScss {
         end: string;
+        fadeIn: string;
         legend: string;
         legendContainer: string;
         legendTicks: string;

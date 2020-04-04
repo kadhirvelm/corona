@@ -5,6 +5,7 @@ declare namespace UsMapModuleScssModule {
         centerSpinner: string;
         defaultGray: string;
         end: string;
+        fadeIn: string;
         highlightFeature: string;
         middle: string;
         start: string;

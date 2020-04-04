@@ -43,25 +43,23 @@ function UnconnectedVirusDataRenderer(props: IProps) {
     }, [geography]);
 
     const onFeatureSelect = (feature: GeoJSON.Feature<GeoJSON.Geometry, GeoJSON.GeoJsonProperties>) => {
-        if (feature.id?.toString().length === 2) {
+        if (IGeography.isNationGeography(geography)) {
             updateGeography(
                 IGeography.stateGeography({
                     fipsCode: feature.id?.toString() ?? "",
                     name: feature.properties?.name ?? "",
                 }),
             );
-        } else if (
-            feature.id?.toString().length === 5 &&
-            (IGeography.isStateGeography(geography) || IGeography.isCountyGeography(geography))
-        ) {
-            updateGeography(
-                IGeography.countyGeography({
-                    countyStateGeography: IGeography.isStateGeography(geography) ? geography : geography.stateGeography,
-                    fipsCode: feature.id?.toString() ?? "",
-                    name: feature.properties?.name ?? "",
-                }),
-            );
+            return;
         }
+
+        updateGeography(
+            IGeography.countyGeography({
+                countyStateGeography: IGeography.isStateGeography(geography) ? geography : geography.stateGeography,
+                fipsCode: feature.id?.toString() ?? "",
+                name: feature.properties?.name ?? "",
+            }),
+        );
     };
 
     const sharedProps = {

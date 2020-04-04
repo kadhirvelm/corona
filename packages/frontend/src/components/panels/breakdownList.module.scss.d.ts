@@ -4,16 +4,15 @@ declare namespace BreakdownListModuleScssModule {
         breakdownListContainer: string;
         browser: string;
         caseBreakdownContainer: string;
+        columnHeaders: string;
         end: string;
+        fadeIn: string;
         filterContainer: string;
         isOpen: string;
         middle: string;
         singleBreakdown: string;
         start: string;
-        titleBackButton: string;
-        titleContainer: string;
-        titleText: string;
-        totalCasesContainer: string;
+        totalCasesColumn: string;
     }
 }
 

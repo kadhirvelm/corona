@@ -40,6 +40,15 @@ export interface ICountyGeography extends IGenericGeography {
 export type IGeography = INationGeography | IStateGeography | ICountyGeography;
 
 /**
+ * Used for the visitor pattern.
+ */
+interface IVisitor<T = any> {
+    nation: (geography: INationGeography) => T;
+    state: (geography: IStateGeography) => T;
+    county: (geography: ICountyGeography) => T;
+}
+
+/**
  * Some instantiator methods and type guards.
  */
 export namespace IGeography {
@@ -97,5 +106,19 @@ export namespace IGeography {
      */
     export const isCountyGeography = (geography: IGeography): geography is ICountyGeography => {
         return geography.type === "county";
+    };
+    /**
+     * Used to visit each type of geography.
+     */
+    export const visit = <T = any>(geography: IGeography, callbacks: IVisitor<T>) => {
+        if (isNationGeography(geography)) {
+            return callbacks.nation(geography);
+        }
+
+        if (isStateGeography(geography)) {
+            return callbacks.state(geography);
+        }
+
+        return callbacks.county(geography);
     };
 }

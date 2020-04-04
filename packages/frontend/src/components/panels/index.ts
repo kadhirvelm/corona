@@ -1,3 +1,1 @@
-export * from "./growthCurve";
-export * from "./basicInfo";
-export * from "./breakdownList";
+export * from "./panelContainer";
