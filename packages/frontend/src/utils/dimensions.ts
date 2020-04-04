@@ -3,7 +3,7 @@ import { IDimensions, IDeviceType, IDevice } from "../typings";
 export function getTotalDimensionSpacing(dimensions: IDimensions): { widthSpacing: number; heightSpacing: number } {
     return {
         widthSpacing: (dimensions.margin?.left ?? 0) + (dimensions.margin?.right ?? 0),
-        heightSpacing: (dimensions.margin?.left ?? 0) + (dimensions.margin?.right ?? 0),
+        heightSpacing: (dimensions.margin?.top ?? 0) + (dimensions.margin?.bottom ?? 0),
     };
 }
 
@@ -28,12 +28,12 @@ export function getDimensionsForTimeseries(deviceType: IDeviceType | undefined) 
             margin: { top: 20, right: 20, bottom: 100, left: 50 },
         }),
         mobile: () => ({
-            height: 350,
+            height: 400,
             width: window.innerWidth * 0.8,
-            margin: { top: 20, right: 100, bottom: 100, left: 100 },
+            margin: { top: 20, right: 100, bottom: 120, left: 100 },
         }),
         tablet: () => ({
-            height: 350,
+            height: 150,
             width: window.innerWidth * 0.8,
             margin: { top: 20, right: 100, bottom: 100, left: 100 },
         }),

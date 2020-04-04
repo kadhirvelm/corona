@@ -1,5 +1,13 @@
+@import "../../utils/variables";
+
 .stats-container {
     display: flex;
     flex: 1;
     flex-direction: column;
+}
+
+.divider {
+    display: flex;
+    height: 1px;
+    background: $box-shadow;
 }

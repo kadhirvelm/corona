@@ -5,8 +5,8 @@
     flex-direction: column;
     margin-top: 10px;
     padding: 10px;
-    box-shadow: 0 1px $box-shadow;
     animation: fade-in 250ms ease-out;
+    max-width: 300px;
 
     > :not(:last-child) {
         margin-bottom: 5px;

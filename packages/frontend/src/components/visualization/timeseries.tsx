@@ -51,14 +51,14 @@ function addLegend(graph: Selection<SVGGElement, unknown, HTMLElement, any>, dim
     legend
         .append("circle")
         .attr("cx", 0)
-        .attr("cy", dimensions.height + 60)
+        .attr("cy", dimensions.height + (dimensions.margin?.bottom ?? 0) - 40)
         .attr("r", 4)
         .style("fill", "#5DADE2");
 
     legend
         .append("text")
         .attr("x", 10)
-        .attr("y", dimensions.height + 65)
+        .attr("y", dimensions.height + (dimensions.margin?.bottom ?? 0) - 35)
         .text("Total cases")
         .style("fill", "#5DADE2")
         .attr("text-anchor", "left");
@@ -66,14 +66,14 @@ function addLegend(graph: Selection<SVGGElement, unknown, HTMLElement, any>, dim
     legend
         .append("circle")
         .attr("cx", 0)
-        .attr("cy", dimensions.height + 80)
+        .attr("cy", dimensions.height + (dimensions.margin?.bottom ?? 0) - 20)
         .attr("r", 4)
         .style("fill", "#B03A2E");
 
     legend
         .append("text")
         .attr("x", 10)
-        .attr("y", dimensions.height + 85)
+        .attr("y", dimensions.height + (dimensions.margin?.bottom ?? 0) - 15)
         .text("Active cases")
         .style("fill", "#B03A2E")
         .attr("text-anchor", "left");
@@ -81,14 +81,14 @@ function addLegend(graph: Selection<SVGGElement, unknown, HTMLElement, any>, dim
     legend
         .append("circle")
         .attr("cx", 130)
-        .attr("cy", dimensions.height + 60)
+        .attr("cy", dimensions.height + (dimensions.margin?.bottom ?? 0) - 40)
         .attr("r", 4)
         .style("fill", "#52BE80");
 
     legend
         .append("text")
         .attr("x", 140)
-        .attr("y", dimensions.height + 65)
+        .attr("y", dimensions.height + (dimensions.margin?.bottom ?? 0) - 35)
         .text("Recovered")
         .style("fill", "#52BE80")
         .attr("text-anchor", "left");
@@ -96,14 +96,14 @@ function addLegend(graph: Selection<SVGGElement, unknown, HTMLElement, any>, dim
     legend
         .append("circle")
         .attr("cx", 130)
-        .attr("cy", dimensions.height + 80)
+        .attr("cy", dimensions.height + (dimensions.margin?.bottom ?? 0) - 20)
         .attr("r", 4)
         .style("fill", "#566573");
 
     legend
         .append("text")
         .attr("x", 140)
-        .attr("y", dimensions.height + 85)
+        .attr("y", dimensions.height + (dimensions.margin?.bottom ?? 0) - 15)
         .text("Deaths")
         .style("fill", "#566573")
         .attr("text-anchor", "left");
