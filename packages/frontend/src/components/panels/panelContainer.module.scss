@@ -1,0 +1,24 @@
+@import "../../utils/variables";
+
+.panel-container {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    box-shadow: -1px 0 $box-shadow, 1px 0 $box-shadow, 0 1px $box-shadow, 0 -1px $box-shadow;
+    background: $background;
+}
+
+.tabs {
+    height: 100%;
+
+    :global(.bp3-tab-list) {
+        padding: 5px 10px 0;
+        box-shadow: 0 1px $box-shadow;
+    }
+
+    :global(.bp3-tab-panel) {
+        display: flex;
+        height: 100%;
+        margin-top: 0;
+    }
+}

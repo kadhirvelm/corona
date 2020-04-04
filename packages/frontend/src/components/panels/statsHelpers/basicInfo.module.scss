@@ -1,34 +1,13 @@
-@import "../../utils/variables";
+@import "../../../utils/variables";
 
-.internal-container {
+.basic-info {
     display: flex;
     flex-direction: column;
-    position: relative;
-    z-index: 1;
-}
-
-.transitioner {
-    width: 100%;
-}
-
-.hover-info {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    border-radius: 3px;
     margin-top: 10px;
     padding: 10px;
-    background: $background;
-    box-shadow: 1px 0 $box-shadow, -1px 0 $box-shadow, 0 1px $box-shadow, 0 -1px $box-shadow;
-}
+    box-shadow: 0 1px $box-shadow;
+    animation: fade-in 250ms ease-out;
 
-.title {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 10px;
-}
-
-.info-container {
     > :not(:last-child) {
         margin-bottom: 5px;
     }
@@ -68,13 +47,11 @@
 .date-label {
     display: flex;
     flex: 1;
-    font-size: 8px;
 }
 
 .date-value {
     display: flex;
     flex: 1;
     justify-content: flex-end;
-    font-size: 10px;
     font-weight: 550;
 }

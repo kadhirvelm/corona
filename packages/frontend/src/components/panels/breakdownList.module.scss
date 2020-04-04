@@ -1,40 +1,19 @@
 @import "../../utils/variables";
 
-.stats-panel-container {
+.breakdown-list-container {
     display: flex;
     flex: 1;
     flex-direction: column;
     background: $background;
-    box-shadow: 1px 0 $box-shadow;
-}
 
-.title-container {
-    display: flex;
-    align-items: center;
-    font-size: 20px;
-    font-weight: 600;
-    box-shadow: 0 1px $box-shadow;
-}
-
-.title-text {
-    margin: 10px;
-}
-
-.title-back-button {
-    margin-left: 5px;
-}
-
-.total-cases-container {
-    display: flex;
-    font-size: 15px;
-    padding: 10px;
-    box-shadow: 0 1px $box-shadow;
+    animation: fade-in 200ms ease-out;
 }
 
 .filter-container {
     display: flex;
+    flex-direction: column;
     padding: 10px 5px;
-    box-shadow: 0 1px $box-shadow;
+    border-bottom: 2px solid #34495E;
 
     :global(.bp3-input-group) {
         display: flex;
@@ -42,12 +21,19 @@
     }
 }
 
+.column-headers {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 5px 0;
+}
+
 .case-breakdown-container {
     display: flex;
     flex: 1;
     flex-direction: column;
     overflow-y: auto;
-    margin-top: 1px;
 
     &.browser {
         &::-webkit-scrollbar {
@@ -82,14 +68,14 @@
     }
 }
 
+.total-cases-column {
+    margin-left: 5px;
+}
+
 .is-open {
-    background: #2E86C1;
+    background: $selected-background;
 
     &.single-breakdown:hover {
-        background: #2E86C1;
-    }
-
-    .text {
-        color: #FDFEFE;
+        background: $selected-hover-background;
     }
 }

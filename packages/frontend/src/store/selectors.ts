@@ -46,43 +46,18 @@ export const getDataBreakdown = createSelector(
     },
 );
 
-export const getSortedDataBreakdown = createSelector(getDataBreakdown, (data: IDataBreakdown[]) => {
-    return data.sort((a, b) => (a.dataPoint.totalCases > b.dataPoint.totalCases ? -1 : 1));
-});
-
-export const maybeGetDataForHighlightedFips = createSelector(
+export const getCurrentCoronaDataPointFromGeography = createSelector(
     maybeGetDataForGeography,
-    (state: IStoreState) => state.interface.basicInfoFipsCode,
-    (data: ICoronaBreakdown | undefined, highlightedFips: string | undefined): ICoronaDataPoint | undefined => {
-        if (data === undefined || highlightedFips === undefined) {
-            return undefined;
-        }
-
-        return data.breakdown[highlightedFips];
-    },
-);
-
-export const maybeGetDataForDeepDiveFips = createSelector(
-    maybeGetDataForGeography,
-    (state: IStoreState) => state.interface.deepDiveFipsCode,
     (state: IStoreState) => state.interface.geography,
-    (
-        data: ICoronaBreakdown | undefined,
-        deepDiveFipsCode: string | undefined,
-        geography: IGeography,
-    ): ICoronaDataPoint | undefined => {
-        if (data === undefined || deepDiveFipsCode === undefined) {
+    (data: ICoronaBreakdown | undefined, geography: IGeography): ICoronaDataPoint | undefined => {
+        if (data === undefined) {
             return undefined;
         }
 
-        if (IGeography.isNationGeography(geography) && deepDiveFipsCode === "999") {
+        if (IGeography.isNationGeography(geography) || IGeography.isStateGeography(geography)) {
             return data.totalData;
         }
 
-        if (IGeography.isStateGeography(geography) && deepDiveFipsCode === data.totalData?.fipsCode) {
-            return data.totalData;
-        }
-
-        return data.breakdown[deepDiveFipsCode];
+        return data.breakdown[geography.fipsCode];
     },
 );

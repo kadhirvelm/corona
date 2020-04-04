@@ -1,0 +1,67 @@
+@import "../../utils/variables";
+
+.breadcrumb-container {
+    display: flex;
+    padding: 10px;
+    box-shadow: 0 1px $box-shadow;
+
+    &.mobile {
+        align-items: center;
+    }
+
+    &.browser {
+        flex-direction: column;
+    }
+}
+
+.breadcrumb-top-container {
+    display: flex;
+
+    &.browser {
+        padding-bottom: 5px;
+    }
+}
+
+.breadcrumb-bottom-container {
+    display: flex;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.national-breadcrumb-container {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 10px;
+    font-size: 20px;
+    font-weight: 600;
+    box-shadow: 0 1px $box-shadow;
+}
+
+.go-to-my-county {
+    display: flex;
+    flex-direction: column;
+    max-width: 250px;
+}
+
+.go-to-my-county-margin {
+    margin-top: 5px;
+}
+
+.breadcrumb {
+    display: flex;
+    padding-right: 10px;
+}
+
+.selectable-breadcrumb {
+    cursor: pointer;
+    color: #1F618D;
+
+    &:hover {
+        color: #5DADE2;
+    }
+}
+
+.breadcrumb-icon {
+    margin-left: 10px;
+}

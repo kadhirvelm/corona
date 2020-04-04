@@ -35,18 +35,22 @@ export function stateTopology(geography: IGeography): IMapTopology {
         return nationTopology();
     }
 
+    const stateFipsCode = IGeography.isCountyGeography(geography)
+        ? geography.stateGeography.fipsCode
+        : geography.fipsCode;
+
     return {
         // NOTE: in production, the JSON import gets turned into a location string
         topologyLocation: (usCounties as unknown) as string,
         extractFeatures: json => {
             const state = (topology.feature(json, json.objects.states) as any).features.find(
-                (feature: any) => feature.id === geography.stateFipsCode,
+                (feature: any) => feature.id === stateFipsCode,
             );
 
             return [
                 state,
                 ...(topology.feature(json, json.objects.counties) as any).features.filter((feature: any) =>
-                    feature.id.startsWith(geography.stateFipsCode),
+                    feature.id.startsWith(stateFipsCode),
                 ),
             ];
         },

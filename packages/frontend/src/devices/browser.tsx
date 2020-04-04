@@ -1,53 +1,45 @@
+import { debounce } from "lodash-es";
 import * as React from "react";
-import { connect } from "react-redux";
-import { Dispatch } from "redux";
-import { SET_DEEP_DIVE_FIPS_CODE } from "../store";
+import { v4 } from "uuid";
+import { PanelContainer, VirusDataRenderer } from "../components";
 import styles from "./browser.module.scss";
-import { VirusDataRenderer, DeepDivePanel, StatsPanel, BasicInfo } from "../components";
 
-interface IDispatchProps {
-    removeDeepDive: () => void;
+interface IState {
+    resizeId: string;
 }
 
-type IProps = IDispatchProps;
+export class Browser extends React.PureComponent<{}, IState> {
+    public state: IState = {
+        resizeId: v4(),
+    };
 
-class UnconnectedBrowser extends React.PureComponent<IProps> {
+    private debounceResize: () => void;
+
+    public constructor(props: {}, context: any) {
+        super(props, context);
+        this.debounceResize = debounce(this.handleResize, 500);
+    }
+
     public componentDidMount() {
-        document.addEventListener("keydown", this.handleKeyDown);
+        window.addEventListener("resize", this.debounceResize);
     }
 
     public componentWillUnmount() {
-        document.removeEventListener("keydown", this.handleKeyDown);
+        window.removeEventListener("resize", this.debounceResize);
     }
 
     public render() {
+        const { resizeId } = this.state;
+
         return (
-            <>
+            <div className={styles.browserContainer} key={resizeId}>
                 <div className={styles.panelContainer}>
-                    <StatsPanel />
-                    <DeepDivePanel />
-                </div>
-                <div className={styles.basicInfoContainer}>
-                    <BasicInfo />
+                    <PanelContainer />
                 </div>
                 <VirusDataRenderer />
-            </>
+            </div>
         );
     }
 
-    private handleKeyDown = (event: KeyboardEvent) => {
-        const { removeDeepDive } = this.props;
-
-        if (event.keyCode === 27) {
-            removeDeepDive();
-        }
-    };
+    private handleResize = () => this.setState({ resizeId: v4() });
 }
-
-function mapDispatchToProps(dispatch: Dispatch): IDispatchProps {
-    return {
-        removeDeepDive: () => dispatch(SET_DEEP_DIVE_FIPS_CODE.create(undefined)),
-    };
-}
-
-export const Browser = connect(undefined, mapDispatchToProps)(UnconnectedBrowser);

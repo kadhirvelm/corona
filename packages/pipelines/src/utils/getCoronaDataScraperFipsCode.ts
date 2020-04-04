@@ -28,6 +28,7 @@ export function getCoronaDataScraperFipsCode(state?: string, county?: string, ci
         !cleanedCountyName?.includes("unassigned") &&
         !cleanedCountyName?.includes("Counties") &&
         !cleanedCountyName?.includes(",") &&
+        !cleanedCountyName?.includes("CensusArea") &&
         !IGNORED_COUNTIES.includes(cleanedCountyName ?? "")
     ) {
         PIPELINE_LOGGER.log({

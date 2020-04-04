@@ -1,15 +1,13 @@
 import { CoronaService } from "@corona/api";
-import { debounce } from "lodash-es";
 import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 import { UAParser } from "ua-parser-js";
-import { v4 } from "uuid";
-import { Browser } from "./devices/browser";
 import { DEFAULT_DATA_KEY } from "./common";
 import styles from "./deviceDetector.module.scss";
-import { ADD_DATA, SET_DEVICE_TYPE, IStoreState } from "./store";
+import { Browser } from "./devices/browser";
 import { TabletOrMobile } from "./devices/tabletOrMobile";
+import { ADD_DATA, IStoreState, SET_DEVICE_TYPE } from "./store";
 import { IDataEntry, IDevice, IDeviceType } from "./typings";
 
 interface IStateProps {
@@ -25,34 +23,19 @@ type IProps = IStateProps & IDispatchProps;
 
 interface IState {
     error: string | undefined;
-    resizeId: string;
 }
 
 class UnconnectedMainApplication extends React.PureComponent<IProps, IState> {
     public state: IState = {
         error: undefined,
-        resizeId: v4(),
     };
-
-    private debounceResize: () => void;
-
-    public constructor(props: IProps, context: any) {
-        super(props, context);
-        this.debounceResize = debounce(this.handleResize, 500);
-    }
 
     public componentDidMount() {
         const { addData, setDeviceType } = this.props;
         this.getUnitedStatesData(addData);
 
-        window.addEventListener("resize", this.debounceResize);
-
         const userDevice = new UAParser().getDevice();
         setDeviceType(IDevice.getDeviceType(userDevice.type));
-    }
-
-    public componentWillUnmount() {
-        window.removeEventListener("resize", this.debounceResize);
     }
 
     public componentDidCatch() {
@@ -60,7 +43,7 @@ class UnconnectedMainApplication extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
-        const { error, resizeId } = this.state;
+        const { error } = this.state;
         if (error !== undefined) {
             return <div className={styles.centerError}>{error}</div>;
         }
@@ -71,9 +54,9 @@ class UnconnectedMainApplication extends React.PureComponent<IProps, IState> {
         }
 
         return IDevice.visitor(deviceType, {
-            browser: () => <Browser key={resizeId} />,
-            mobile: () => <TabletOrMobile key={resizeId} />,
-            tablet: () => <TabletOrMobile key={resizeId} />,
+            browser: () => <Browser />,
+            mobile: () => <TabletOrMobile />,
+            tablet: () => <TabletOrMobile />,
             unknown: () => (
                 <div>
                     Unfortunately you&apos;re using an unsupported device. Please try again on a desktop, laptop,
@@ -82,8 +65,6 @@ class UnconnectedMainApplication extends React.PureComponent<IProps, IState> {
             ),
         });
     }
-
-    private handleResize = () => this.setState({ resizeId: v4() });
 
     private async getUnitedStatesData(addData: (dataEntry: IDataEntry) => void) {
         try {

@@ -2,15 +2,26 @@ import * as React from "react";
 import { ICoronaDatapointTimeseriesDatapoint } from "@corona/api";
 import { scaleTime, scaleLinear } from "d3-scale";
 import { line, curveMonotoneX } from "d3-shape";
-import { select } from "d3-selection";
+import { select, Selection } from "d3-selection";
 import { extent } from "d3-array";
 import { axisBottom, axisLeft } from "d3-axis";
 import { timeFormat, timeParse } from "d3-time-format";
+import { NonIdealState } from "@blueprintjs/core";
+import { connect } from "react-redux";
 import styles from "./timeseries.module.scss";
+import { IDeviceType, IDimensions } from "../../typings";
+import { IStoreState } from "../../store";
+import { getDimensionsForTimeseries, getTotalDimensionSpacing } from "../../utils";
 
-interface IProps {
+interface IStateProps {
+    deviceType: IDeviceType | undefined;
+}
+
+interface IOwnProps {
     timeseries: { [date: string]: ICoronaDatapointTimeseriesDatapoint };
 }
+
+type IProps = IStateProps & IOwnProps;
 
 interface ICleanedPoint {
     x: Date | null;
@@ -23,28 +34,93 @@ interface ICleanedPoint {
 const parseTime = timeParse("%Y-%m-%d");
 
 function cleanDataPoint(timeseries: { [date: string]: ICoronaDatapointTimeseriesDatapoint }): ICleanedPoint[] {
-    return Object.entries(timeseries).map(entry => ({
-        x: parseTime(entry[0]),
-        cases: entry[1].cases ?? 0,
-        active: entry[1].active ?? 0,
-        deaths: entry[1].deaths ?? 0,
-        recovered: entry[1].recovered ?? 0,
-    }));
+    return Object.entries(timeseries)
+        .map(entry => ({
+            x: parseTime(entry[0]),
+            cases: entry[1].cases ?? 0,
+            active: entry[1].active ?? 0,
+            deaths: entry[1].deaths ?? 0,
+            recovered: entry[1].recovered ?? 0,
+        }))
+        .filter(dataPoint => dataPoint.cases > 0);
 }
 
-const WIDTH = 430;
-const HEIGHT = 300;
-const PADDING = { top: 20, right: 20, bottom: 50, left: 50 };
+function addLegend(graph: Selection<SVGGElement, unknown, HTMLElement, any>, dimensions: IDimensions) {
+    const legend = graph.append("g");
 
-function setupGraph(datapoints: ICleanedPoint[]) {
+    legend
+        .append("circle")
+        .attr("cx", 0)
+        .attr("cy", dimensions.height + 60)
+        .attr("r", 4)
+        .style("fill", "#5DADE2");
+
+    legend
+        .append("text")
+        .attr("x", 10)
+        .attr("y", dimensions.height + 65)
+        .text("Total cases")
+        .style("fill", "#5DADE2")
+        .attr("text-anchor", "left");
+
+    legend
+        .append("circle")
+        .attr("cx", 0)
+        .attr("cy", dimensions.height + 80)
+        .attr("r", 4)
+        .style("fill", "#B03A2E");
+
+    legend
+        .append("text")
+        .attr("x", 10)
+        .attr("y", dimensions.height + 85)
+        .text("Active cases")
+        .style("fill", "#B03A2E")
+        .attr("text-anchor", "left");
+
+    legend
+        .append("circle")
+        .attr("cx", 130)
+        .attr("cy", dimensions.height + 60)
+        .attr("r", 4)
+        .style("fill", "#52BE80");
+
+    legend
+        .append("text")
+        .attr("x", 140)
+        .attr("y", dimensions.height + 65)
+        .text("Recovered")
+        .style("fill", "#52BE80")
+        .attr("text-anchor", "left");
+
+    legend
+        .append("circle")
+        .attr("cx", 130)
+        .attr("cy", dimensions.height + 80)
+        .attr("r", 4)
+        .style("fill", "#566573");
+
+    legend
+        .append("text")
+        .attr("x", 140)
+        .attr("y", dimensions.height + 85)
+        .text("Deaths")
+        .style("fill", "#566573")
+        .attr("text-anchor", "left");
+}
+
+function setupGraph(datapoints: ICleanedPoint[], deviceType: IDeviceType | undefined) {
+    const dimensions = getDimensionsForTimeseries(deviceType);
+    const { widthSpacing, heightSpacing } = getTotalDimensionSpacing(dimensions);
+
     const xValues = datapoints.map(point => point.x);
     const yValues = datapoints.map(point => point.cases);
 
     const x = scaleTime()
-        .range([0, WIDTH])
+        .range([0, dimensions.width])
         .domain(extent(xValues as any) as any);
     const y = scaleLinear()
-        .range([HEIGHT, 0])
+        .range([dimensions.height, 0])
         .domain([0, Math.max(...yValues)]);
 
     const casesLine = line()
@@ -68,14 +144,14 @@ function setupGraph(datapoints: ICleanedPoint[]) {
         .curve(curveMonotoneX);
 
     const graph = select("#line-graph")
-        .attr("width", WIDTH + PADDING.left + PADDING.right)
-        .attr("height", HEIGHT + PADDING.top + PADDING.bottom)
+        .attr("width", dimensions.width + widthSpacing)
+        .attr("height", dimensions.height + heightSpacing)
         .append("g")
-        .attr("transform", `translate(${PADDING.left}, ${PADDING.top})`);
+        .attr("transform", `translate(${dimensions.margin?.left ?? 0}, ${dimensions.margin?.top ?? 0})`);
 
     graph
         .append("g")
-        .attr("transform", `translate(0, ${HEIGHT})`)
+        .attr("transform", `translate(0, ${dimensions.height})`)
         .call(axisBottom(x).tickFormat(timeFormat("%m-%d") as any) as any)
         .selectAll("text")
         .style("text-anchor", "end")
@@ -108,10 +184,27 @@ function setupGraph(datapoints: ICleanedPoint[]) {
         .data([datapoints])
         .attr("class", styles.recovered)
         .attr("d", recoveredLine as any);
+
+    addLegend(graph, dimensions);
 }
 
-export function Timeseries(props: IProps) {
-    React.useEffect(() => setupGraph(cleanDataPoint(props.timeseries)), []);
+function UnconnectedTimeseries(props: IProps) {
+    const { deviceType, timeseries } = props;
+    const cleanedDataPoints = cleanDataPoint(timeseries);
+
+    if (cleanedDataPoints.length === 0) {
+        return <NonIdealState description="No timeseries data to display." />;
+    }
+
+    React.useEffect(() => setupGraph(cleanedDataPoints, deviceType), []);
 
     return <svg className={styles.svgContainer} id="line-graph" />;
 }
+
+function mapStateToProps(state: IStoreState): IStateProps {
+    return {
+        deviceType: state.interface.deviceType,
+    };
+}
+
+export const TimeSeries = connect(mapStateToProps)(UnconnectedTimeseries);

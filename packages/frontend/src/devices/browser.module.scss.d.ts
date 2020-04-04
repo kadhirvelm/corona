@@ -2,6 +2,7 @@
 declare namespace BrowserModuleScssModule {
     export interface IBrowserModuleScss {
         basicInfoContainer: string;
+        browserContainer: string;
         panelContainer: string;
     }
 }

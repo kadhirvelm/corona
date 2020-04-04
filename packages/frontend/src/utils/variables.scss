@@ -1,9 +1,24 @@
 $box-shadow: rgba(#34495E, 0.25);
 $background: #F2F4F4;
 
-$start: #FEF9E7; // #F7DC6F;
+$start: #FEF9E7;
 $middle: #F39C12; 
 $end: #641E16;
+
+$selected-background: #AED6F1;
+$selected-hover-background: #85C1E9;
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
 
 :export {
     start: $start;
