@@ -45,6 +45,16 @@ function sharedChecks(service: string, states: IStatesKeyed, counties: ICounties
 export function logArcgisAnomalies(states: IStatesKeyed, counties: ICountiesKeyed) {
     return new Promise(() => {
         sharedChecks("arcgis", states, counties);
+
+        if (Object.keys(counties).length < Object.keys(states).length) {
+            PIPELINE_LOGGER.log({
+                level: "error",
+                message: `Some states look like they're missing counties from arcgis --> ${lodash.difference(
+                    Object.keys(counties),
+                    Object.keys(states),
+                )}`,
+            });
+        }
     });
 }
 
@@ -63,6 +73,16 @@ export function logCoronaScraperAnomalies(nation: ICoronaDataPoint[], states: IS
             PIPELINE_LOGGER.log({
                 level: "error",
                 message: `First nation entry not getting the right FIPS code: ${nation[0].fipsCode}`,
+            });
+        }
+
+        if (Object.keys(counties).length < Object.keys(states).length) {
+            PIPELINE_LOGGER.log({
+                level: "error",
+                message: `Some states look like they're missing counties from corona data scraper --> ${lodash.difference(
+                    Object.keys(states),
+                    Object.keys(counties),
+                )}`,
             });
         }
     });
