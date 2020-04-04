@@ -13,6 +13,7 @@
   "scripts": {
     "build": "tsc -d",
     "dev": "tsc -d --watch",
+    "dev:mobile": "tsc -d --watch",
     "lint": "eslint . --ext .ts,.tsx"
   },
   "devDependencies": {

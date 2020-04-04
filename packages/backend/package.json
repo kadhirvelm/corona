@@ -26,6 +26,7 @@
     "start:production": "sudo -E yarn pm2 start ../../ecosystem.config.js --env production --name='corona-service'",
     "watch:all": "yarn build:watch & yarn start:watch",
     "dev": "yarn build && yarn watch:all",
+    "dev:mobile": "yarn build && yarn watch:all",
     "lint": "eslint . --ext .ts,.tsx"
   },
   "devDependencies": {

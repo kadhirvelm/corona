@@ -6,7 +6,7 @@
   "typings": "dist/index.d.ts",
   "scripts": {
     "dev": "webpack-dev-server",
-    "dev:watch": "webpack --watch",
+    "dev:mobile": "webpack --watch",
     "lint": "eslint . --ext .ts,.tsx",
     "build": "webpack"
   },
