@@ -36,7 +36,7 @@ export function TabletOrMobile() {
         <div className={classNames(styles.tabletContainer, "mobile")} key={resizeId}>
             <div className={styles.mapContainer}>
                 <VirusDataRenderer />
-                <Information className={styles.information} text="About" />
+                <Information className={styles.information} />
             </div>
             <div className={styles.statsContainer}>
                 <PanelContainer />

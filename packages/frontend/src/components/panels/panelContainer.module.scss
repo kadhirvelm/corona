@@ -8,6 +8,19 @@
     background: $background;
 }
 
+:global(.mobile) {
+    .tabs {
+        :global(.bp3-tab-list) {
+            max-width: 100vw;
+            overflow-x: auto;
+
+            > :last-child {
+                padding-right: 20px;
+            }
+        }
+    }
+}
+
 .tabs {
     height: 100%;
 

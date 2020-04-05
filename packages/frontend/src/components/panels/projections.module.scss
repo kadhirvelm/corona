@@ -21,6 +21,8 @@
     flex: 1;
     flex-direction: column;
     animation: fade-in 200ms ease-out;
+    overflow-y: auto;
+    padding-bottom: 75px;
 }
 
 .projections-data-container {

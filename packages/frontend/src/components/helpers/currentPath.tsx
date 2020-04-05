@@ -80,7 +80,7 @@ function UnconnectedCurrentPath(props: IProps) {
 
     const getName = (name: string) => {
         if (name.length > 30) {
-            return `${name.slice(30)}…`;
+            return `${name.slice(0, 30)}…`;
         }
 
         return name;

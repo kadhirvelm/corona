@@ -39,7 +39,7 @@ export class Browser extends React.PureComponent<{}, IState> {
                     <PanelContainer />
                 </div>
                 <VirusDataRenderer />
-                <Information className={styles.infoContainer} />
+                <Information className={styles.infoContainer} text="About" />
             </div>
         );
     }

@@ -1,6 +1,5 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { NonIdealState } from "@blueprintjs/core";
 import { BasicInfo } from "./statsHelpers/basicInfo";
 import { GrowthCurve } from "./statsHelpers/growthCurve";
 import styles from "./stats.module.scss";

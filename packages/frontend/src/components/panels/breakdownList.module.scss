@@ -28,27 +28,32 @@
     padding: 10px 5px 0;
 }
 
+:global(.browser) {
+    .case-breakdown-container {
+        &::-webkit-scrollbar {
+            width: 5px;
+        }
+    
+        &::-webkit-scrollbar-track {
+            background: rgba(#AEB6BF, 0.25);
+        }
+    
+        &::-webkit-scrollbar-thumb {
+            width: 5px;
+            background-color: rgba(#616A6B, 0.5);
+        }
+    }
+}
+
 .case-breakdown-container {
     display: flex;
     flex: 1;
     flex-direction: column;
     overflow-y: auto;
+    padding-bottom: 90px;
 
     > :nth-child(odd) {
         background: #E5E8E8;
-    }
-
-    &::-webkit-scrollbar {
-        width: 5px;
-    }
-
-    &::-webkit-scrollbar-track {
-        background: rgba(#AEB6BF, 0.25);
-    }
-
-    &::-webkit-scrollbar-thumb {
-        width: 5px;
-        background-color: rgba(#616A6B, 0.5);
     }
 }
 

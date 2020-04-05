@@ -12,9 +12,22 @@
     margin-top: 5px;
 }
 
+:global(.mobile) {
+    .legend {
+        height: 10px;
+        width: 125px;
+    }
+}
+
+:global(.browser) {
+    .legend {
+        height: 20px;
+        width: 250px;
+    }
+}
+
 .legend {
     height: 20px;
-    width: 250px;
     background: linear-gradient(to right, $start, $middle, $end);
     border-radius: 3px;
 }
