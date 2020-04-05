@@ -6,23 +6,23 @@ import {
 } from "../common/index";
 
 export interface ICoronaDatapointTimeseriesDatapoint {
-    cases?: number;
-    deaths?: number;
-    recovered?: number;
-    active?: number;
-    growthFactor?: number;
+    cases?: number | "N/A";
+    deaths?: number | "N/A";
+    recovered?: number | "N/A";
+    active?: number | "N/A";
+    growthFactor?: number | "N/A";
 }
 
 export interface ICoronaDataPoint {
-    activeCases?: number;
+    activeCases?: number | "N/A";
     county?: string;
-    deaths?: number;
+    deaths?: number | "N/A";
     fipsCode: string;
     lastUpdated?: Date;
-    recovered?: number;
+    recovered?: number | "N/A";
     state?: string;
-    totalCases: number;
-    population?: number;
+    totalCases: number | "N/A";
+    population?: number | "N/A";
     timeseries?: {
         [date: string]: ICoronaDatapointTimeseriesDatapoint;
     };

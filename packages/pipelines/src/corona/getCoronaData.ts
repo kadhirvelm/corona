@@ -1,11 +1,12 @@
-import { ICoronaBreakdown, ICoronaDataPoint, STATE } from "@corona/api";
-import lodash from "lodash";
-import { stateToFips } from "@corona/utils";
+import { ICoronaBreakdown, ICoronaDataPoint, STATE, ICoronaDatapointTimeseriesDatapoint } from "@corona/api";
 import { PIPELINE_LOGGER } from "@corona/logger";
+import { stateToFips } from "@corona/utils";
+import lodash from "lodash";
 import { getCoronaDataArc } from "./getCoronaDataArc";
 import { getCoronaDataCoronaScraper } from "./getCoronaDataCoronaScraper";
-import { getCoronaDataTimeseries, ICoronaDataScraperTimeseriesBreakdown } from "./getCoronaTimeseries";
-import { ISingleBreakdown, ITotalBreakdown } from "./shared";
+import { ISingleBreakdown, ITotalBreakdown, ITimeseriesBreakdown, ISingleTimeseriesBreakdown } from "./shared";
+import { getTimeseriesCoronaScraper } from "./getTimeseriesCoronaScraper";
+import { getTimeseriesNYTimes } from "./getTimeseriesNYTimes";
 
 export interface IStateCoronaData {
     [stateName: string]: ICoronaBreakdown;
@@ -14,13 +15,6 @@ export interface IStateCoronaData {
 export interface ICoronaData {
     nation: ICoronaBreakdown;
     states: IStateCoronaData;
-}
-
-function addTimeSeriesDataToDataPoint(
-    dataPoint: ICoronaDataPoint,
-    timeSeriesData: ICoronaDataScraperTimeseriesBreakdown,
-): ICoronaDataPoint {
-    return { ...dataPoint, ...timeSeriesData[dataPoint?.fipsCode ?? ""] };
 }
 
 function mergeCoronaDatapoints(dataPointA?: ICoronaDataPoint, dataPointB?: ICoronaDataPoint): ICoronaDataPoint {
@@ -53,26 +47,61 @@ function mergeCoronaDatapoints(dataPointA?: ICoronaDataPoint, dataPointB?: ICoro
     }) as ICoronaDataPoint;
 }
 
-function mergeCoronaDatasets(
-    usDataArc: ITotalBreakdown,
-    usDataCoronaScraper: ITotalBreakdown,
-    timeSeriesData: ICoronaDataScraperTimeseriesBreakdown,
-): ITotalBreakdown {
+function mergeCoronaDatasets(usDataArc: ITotalBreakdown, usDataCoronaScraper: ITotalBreakdown): ITotalBreakdown {
     return lodash.mergeWith(
         usDataArc,
         usDataCoronaScraper,
-        (dataArcState: ISingleBreakdown, coronaScraperState: ISingleBreakdown): ISingleBreakdown => {
-            const stateDataMerged = mergeCoronaDatapoints(dataArcState.stateTotal, coronaScraperState.stateTotal);
+        (dataArcState?: ISingleBreakdown, coronaScraperState?: ISingleBreakdown): ISingleBreakdown => {
+            const stateDataMerged = mergeCoronaDatapoints(dataArcState?.stateTotal, coronaScraperState?.stateTotal);
 
             return {
-                stateTotal: addTimeSeriesDataToDataPoint(stateDataMerged, timeSeriesData),
-                countiesBreakdown: lodash.mergeWith(
-                    dataArcState.countiesBreakdown,
-                    coronaScraperState.countiesBreakdown,
-                    (dataArcCounty: ICoronaDataPoint, coronaScraperCounty: ICoronaDataPoint): ICoronaDataPoint => {
-                        const countyDataMerged = mergeCoronaDatapoints(dataArcCounty, coronaScraperCounty);
+                stateTotal: stateDataMerged,
+                countiesBreakdown:
+                    lodash.mergeWith(
+                        dataArcState?.countiesBreakdown,
+                        coronaScraperState?.countiesBreakdown,
+                        (
+                            dataArcCounty?: ICoronaDataPoint,
+                            coronaScraperCounty?: ICoronaDataPoint,
+                        ): ICoronaDataPoint => {
+                            return mergeCoronaDatapoints(dataArcCounty, coronaScraperCounty);
+                        },
+                    ) ?? {},
+            };
+        },
+    );
+}
 
-                        return addTimeSeriesDataToDataPoint(countyDataMerged, timeSeriesData);
+function mergeTimeseriesDatasets(
+    coronaScraper: ITimeseriesBreakdown,
+    nyTimes: ITimeseriesBreakdown,
+): ITimeseriesBreakdown {
+    return lodash.mergeWith(
+        coronaScraper,
+        nyTimes,
+        (
+            coronaScraperPoint: ISingleTimeseriesBreakdown,
+            nyTimesPoint: ISingleTimeseriesBreakdown,
+        ): ISingleTimeseriesBreakdown => {
+            return {
+                fipsCode: coronaScraperPoint?.fipsCode ?? nyTimesPoint?.fipsCode,
+                state: coronaScraperPoint?.state ?? nyTimesPoint?.state,
+                county: coronaScraperPoint?.county ?? nyTimesPoint?.county,
+                population: coronaScraperPoint?.population ?? nyTimesPoint?.population,
+                timeseries: lodash.mergeWith(
+                    coronaScraperPoint?.timeseries,
+                    nyTimesPoint?.timeseries,
+                    (
+                        coronaScraperDatePoint?: ICoronaDatapointTimeseriesDatapoint,
+                        nyTimesDatePoint?: ICoronaDatapointTimeseriesDatapoint,
+                    ): ICoronaDatapointTimeseriesDatapoint => {
+                        return {
+                            cases: coronaScraperDatePoint?.cases ?? nyTimesDatePoint?.cases ?? "N/A",
+                            deaths: coronaScraperDatePoint?.deaths ?? nyTimesDatePoint?.deaths ?? "N/A",
+                            recovered: coronaScraperDatePoint?.recovered ?? "N/A",
+                            active: coronaScraperDatePoint?.active ?? "N/A",
+                            growthFactor: coronaScraperDatePoint?.growthFactor ?? "N/A",
+                        };
                     },
                 ),
             };
@@ -80,13 +109,25 @@ function mergeCoronaDatasets(
     );
 }
 
+function getNumber(num: number | "N/A" | undefined) {
+    if (num === undefined) {
+        return undefined;
+    }
+
+    if (num === "N/A") {
+        return 0;
+    }
+
+    return num;
+}
+
 function getHigherValueFromCounties(
     counties: ICoronaDataPoint[],
     key: "activeCases" | "deaths" | "recovered" | "totalCases",
-    originalNumber?: number,
+    originalNumber?: number | "N/A",
 ) {
-    const aggregatedValue = counties.reduce((previous, next) => previous + (next[key] ?? 0), 0);
-    return Math.max(originalNumber ?? 0, aggregatedValue);
+    const aggregatedValue = counties.reduce((previous, next) => previous + (getNumber(next[key]) ?? 0), 0);
+    return Math.max(getNumber(originalNumber) ?? 0, aggregatedValue);
 }
 
 function verifyDatapoints(totalBreakdown: ITotalBreakdown): ITotalBreakdown {
@@ -114,6 +155,71 @@ function verifyDatapoints(totalBreakdown: ITotalBreakdown): ITotalBreakdown {
             };
         })
         .reduce((previous, next) => ({ ...previous, ...next }), {});
+}
+
+function addTimeseriesDataPoint(
+    dataPoint?: ICoronaDataPoint,
+    timeseriesBreakdown?: ISingleTimeseriesBreakdown,
+): ICoronaDataPoint {
+    if (timeseriesBreakdown === undefined && dataPoint === undefined) {
+        return { fipsCode: "N/A", totalCases: "N/A" };
+    }
+
+    if (timeseriesBreakdown === undefined && dataPoint !== undefined) {
+        return dataPoint;
+    }
+
+    const mostRecent = Object.entries(timeseriesBreakdown?.timeseries ?? {}).sort((a, b) =>
+        new Date(a[0]).valueOf() > new Date(b[0]).valueOf() ? -1 : 1,
+    )[0];
+
+    return {
+        ...timeseriesBreakdown,
+        ...dataPoint,
+        activeCases: dataPoint?.activeCases ?? mostRecent[1].active ?? "N/A",
+        deaths: dataPoint?.deaths ?? mostRecent[1].deaths ?? "N/A",
+        fipsCode: dataPoint?.fipsCode ?? timeseriesBreakdown?.fipsCode ?? "N/A",
+        lastUpdated: dataPoint?.lastUpdated ?? new Date(mostRecent[0]),
+        recovered: dataPoint?.recovered ?? mostRecent[1].recovered,
+        totalCases: dataPoint?.totalCases ?? mostRecent[1].cases ?? "N/A",
+    };
+}
+
+function addTimeSeriesData(
+    dataPoints: { nation: ICoronaDataPoint; verifiedDataPoints: ITotalBreakdown },
+    timeseries: ITimeseriesBreakdown,
+) {
+    return {
+        nation: addTimeseriesDataPoint(dataPoints.nation, timeseries["999"]),
+        states: lodash.mapValues(
+            dataPoints.verifiedDataPoints,
+            (statePoint): ISingleBreakdown => {
+                const finalStateTotal = addTimeseriesDataPoint(
+                    statePoint.stateTotal,
+                    timeseries[statePoint.stateTotal?.fipsCode ?? ""],
+                );
+
+                return {
+                    stateTotal: finalStateTotal,
+                    countiesBreakdown: lodash.mergeWith(
+                        statePoint.countiesBreakdown,
+                        lodash.pickBy(
+                            timeseries,
+                            key =>
+                                (key.fipsCode.startsWith(finalStateTotal.fipsCode) && key.fipsCode.length === 5) ||
+                                key.fipsCode.includes(finalStateTotal.state ?? finalStateTotal.fipsCode),
+                        ),
+                        (
+                            dataCountyPoint?: ICoronaDataPoint,
+                            timeseriesPoint?: ISingleTimeseriesBreakdown,
+                        ): ICoronaDataPoint => {
+                            return addTimeseriesDataPoint(dataCountyPoint, timeseriesPoint);
+                        },
+                    ),
+                };
+            },
+        ),
+    };
 }
 
 function getNationData(nation: ICoronaDataPoint, states: ITotalBreakdown): ICoronaBreakdown {
@@ -147,23 +253,31 @@ function getStateData(mergedStateData: ITotalBreakdown): IStateCoronaData {
         .reduce((previous, next) => ({ ...previous, ...next }), {}) as IStateCoronaData;
 }
 
-export async function getCoronaData(): Promise<ICoronaData> {
-    const [usDataArc, usDataCoronaScraper, usTimeSeries] = await Promise.all([
-        getCoronaDataArc(),
-        getCoronaDataCoronaScraper(),
-        getCoronaDataTimeseries(),
-    ]);
+async function getMergedCoronaDatasets() {
+    const [arcGis, coronaDataScraper] = await Promise.all([getCoronaDataArc(), getCoronaDataCoronaScraper()]);
 
     PIPELINE_LOGGER.log({ level: "info", message: "Fetched data from arcgis and coronadatascraper." });
 
-    const mergedStateData = mergeCoronaDatasets(usDataArc, usDataCoronaScraper.states, usTimeSeries);
-    const verifiedDataPoints = verifyDatapoints(mergedStateData);
+    const mergedDataPoints = mergeCoronaDatasets(arcGis, coronaDataScraper.states);
+
+    return { nation: coronaDataScraper.nation, verifiedDataPoints: verifyDatapoints(mergedDataPoints) };
+}
+
+async function getMergedCoronaTimeseries() {
+    const [coronaDataScraper, nyTimes] = await Promise.all([getTimeseriesCoronaScraper(), getTimeseriesNYTimes()]);
+
+    PIPELINE_LOGGER.log({ level: "info", message: "Fetched timeseries from coronascraper and nytimes." });
+
+    return mergeTimeseriesDatasets(coronaDataScraper, nyTimes);
+}
+
+export async function getCoronaData(): Promise<ICoronaData> {
+    const [dataPoints, timeseries] = await Promise.all([getMergedCoronaDatasets(), getMergedCoronaTimeseries()]);
+
+    const withTimeSeries = addTimeSeriesData(dataPoints, timeseries);
 
     return {
-        nation: getNationData(
-            addTimeSeriesDataToDataPoint(usDataCoronaScraper.nation, usTimeSeries),
-            verifiedDataPoints,
-        ),
-        states: getStateData(verifiedDataPoints),
+        nation: getNationData(withTimeSeries.nation, withTimeSeries.states),
+        states: getStateData(withTimeSeries.states),
     };
 }

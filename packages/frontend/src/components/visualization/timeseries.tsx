@@ -11,7 +11,7 @@ import { connect } from "react-redux";
 import styles from "./timeseries.module.scss";
 import { IDeviceType, IDimensions } from "../../typings";
 import { IStoreState } from "../../store";
-import { getDimensionsForTimeseries, getTotalDimensionSpacing } from "../../utils";
+import { getDimensionsForTimeseries, getTotalDimensionSpacing, getNumber } from "../../utils";
 
 interface IStateProps {
     deviceType: IDeviceType | undefined;
@@ -37,10 +37,10 @@ function cleanDataPoint(timeseries: { [date: string]: ICoronaDatapointTimeseries
     return Object.entries(timeseries)
         .map(entry => ({
             x: parseTime(entry[0]),
-            cases: entry[1].cases ?? 0,
-            active: entry[1].active ?? 0,
-            deaths: entry[1].deaths ?? 0,
-            recovered: entry[1].recovered ?? 0,
+            cases: getNumber(entry[1].cases),
+            active: getNumber(entry[1].active),
+            deaths: getNumber(entry[1].deaths),
+            recovered: getNumber(entry[1].recovered),
         }))
         .filter(dataPoint => dataPoint.cases > 0);
 }

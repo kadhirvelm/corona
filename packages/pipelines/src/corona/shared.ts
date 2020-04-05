@@ -1,4 +1,4 @@
-import { ICoronaDataPoint, STATE } from "@corona/api";
+import { ICoronaDataPoint, STATE, ICoronaDatapointTimeseriesDatapoint } from "@corona/api";
 import lodash from "lodash";
 
 export interface IStatesKeyed {
@@ -29,4 +29,18 @@ export function getTotalBreakdowns(stateData: IStatesKeyed, counties: ICountiesK
     });
 
     return totalBreakdown;
+}
+
+export interface ISingleTimeseriesBreakdown {
+    population?: number;
+    fipsCode: string;
+    state?: string;
+    county?: string;
+    timeseries: {
+        [dates: string]: ICoronaDatapointTimeseriesDatapoint;
+    };
+}
+
+export interface ITimeseriesBreakdown {
+    [fipsCode: string]: ISingleTimeseriesBreakdown;
 }
