@@ -98,17 +98,3 @@
 .date {
     margin-left: 50px;
 }
-
-.mobile {
-    &.projection-container {
-        flex-direction: row;
-    }
-
-    .projections-data-container {
-        flex: 1;
-    }
-
-    .interventions-container {
-        flex: 1;
-    }
-}

@@ -12,7 +12,6 @@ declare namespace ProjectionsModuleScssModule {
         interventionsContainer: string;
         interventionsTitle: string;
         middle: string;
-        mobile: string;
         nonIdealState: string;
         projectionContainer: string;
         projectionsDataContainer: string;

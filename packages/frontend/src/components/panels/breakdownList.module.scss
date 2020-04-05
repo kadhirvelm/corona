@@ -38,19 +38,17 @@
         background: #E5E8E8;
     }
 
-    &.browser {
-        &::-webkit-scrollbar {
-            width: 5px;
-        }
-    
-        &::-webkit-scrollbar-track {
-            background: rgba(#AEB6BF, 0.25);
-        }
-    
-        &::-webkit-scrollbar-thumb {
-            width: 5px;
-            background-color: rgba(#616A6B, 0.5);
-        }
+    &::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: rgba(#AEB6BF, 0.25);
+    }
+
+    &::-webkit-scrollbar-thumb {
+        width: 5px;
+        background-color: rgba(#616A6B, 0.5);
     }
 }
 
@@ -63,10 +61,8 @@
     min-height: 40px;
     cursor: pointer;
 
-    &.browser {
-        &:hover {
-            background: rgba(#85C1E9, 0.75);
-        }
+    &:hover {
+        background: rgba(#85C1E9, 0.75);
     }
 }
 

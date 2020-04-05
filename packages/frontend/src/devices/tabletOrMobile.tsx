@@ -1,6 +1,7 @@
 import * as React from "react";
 import { debounce } from "lodash-es";
 import { v4 } from "uuid";
+import classNames from "classnames";
 import { PanelContainer, VirusDataRenderer } from "../components";
 import styles from "./tabletOrMobile.module.scss";
 import { Information } from "../components/information/information";
@@ -32,10 +33,10 @@ export function TabletOrMobile() {
     });
 
     return (
-        <div className={styles.tabletContainer} key={resizeId}>
+        <div className={classNames(styles.tabletContainer, "mobile")} key={resizeId}>
             <div className={styles.mapContainer}>
                 <VirusDataRenderer />
-                <Information className={styles.information} dialogClassName={styles.infoDialog} text="About" />
+                <Information className={styles.information} text="About" />
             </div>
             <div className={styles.statsContainer}>
                 <PanelContainer />

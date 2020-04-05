@@ -25,4 +25,5 @@ export function setReactRoutes(app: express.Express) {
     }
 
     app.use(express.static("../frontend/dist", { extensions: ["html"] }));
+    app.use(express.static("../frontend/public"));
 }

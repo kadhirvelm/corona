@@ -114,6 +114,15 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             filename: "index.html",
+            favicon: process.env.NODE_ENV === "production" ? "/favicon.ico" : "./public/favicon.ico",
+            meta: {
+                copyright: "Copyright 2020",
+                description: "Allows a person to view nation, state, and county level corona-related information for the united states.",
+                "og:title": "United States Corona Dashboard",
+                "og:image": process.env.NODE_ENV === "production" ? "/og-image.png" : "./public/og-image.png",
+                title: "United states corona dashboard.",
+                viewport: "width=device-width, initial-scale=1.0",
+            },
             template: "./src/index.html",
         }),
         new miniCssExtractPlugin({

@@ -4,24 +4,6 @@
     display: flex;
     flex-shrink: 0;
     padding: 10px;
-
-    &.mobile {
-        align-items: center;
-
-        .breadcrumb-top-container {
-            align-items: center;
-            font-size: 20px;
-        }
-    }
-
-    &.browser {
-        flex-direction: column;
-        min-height: 50px;
-
-        .breadcrumb-top-container {
-            padding-bottom: 5px;
-        }
-    }
 }
 
 .breadcrumb-top-container {

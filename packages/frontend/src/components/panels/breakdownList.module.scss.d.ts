@@ -2,7 +2,6 @@
 declare namespace BreakdownListModuleScssModule {
     export interface IBreakdownListModuleScss {
         breakdownListContainer: string;
-        browser: string;
         caseBreakdownContainer: string;
         columnHeaders: string;
         end: string;

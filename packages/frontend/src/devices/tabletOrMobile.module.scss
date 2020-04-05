@@ -26,14 +26,6 @@
     z-index: 1;
 }
 
-.info-dialog {
-    font-size: 20px;
-
-    :global(.bp3-dialog-body) {
-        line-height: 20px;
-    }
-}
-
 .stats-container {
     display: flex;
     flex: 1 0 50%;

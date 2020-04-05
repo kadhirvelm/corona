@@ -6,12 +6,11 @@ import { isValidProjection } from "@corona/utils";
 import { Spinner, NonIdealState, Icon } from "@blueprintjs/core";
 import classNames from "classnames";
 import { IStoreState, ADD_PROJECTION_DATA, maybeGetProjectionData } from "../../store";
-import { IGeography, IDeviceType, IDevice } from "../../typings";
+import { IGeography } from "../../typings";
 import { getDateString, getGeograhyTitle, PARSE_TIME } from "../../utils";
 import styles from "./projections.module.scss";
 
 interface IStateProps {
-    deviceType: IDeviceType | undefined;
     geography: IGeography;
     projection: IProjectionPoint | undefined;
 }
@@ -131,7 +130,7 @@ function renderInterventions(interventions: IIntervention[], geography: IGeograp
 }
 
 function UnconnectedProjections(props: IProps) {
-    const { addProjectionData, deviceType, geography, projection } = props;
+    const { addProjectionData, geography, projection } = props;
 
     const [isLoading, setIsLoading] = React.useState(false);
 
@@ -164,11 +163,7 @@ function UnconnectedProjections(props: IProps) {
     }
 
     return (
-        <div
-            className={classNames(styles.projectionContainer, {
-                [styles.mobile]: IDevice.isMobile(deviceType) || IDevice.isTablet(deviceType),
-            })}
-        >
+        <div className={classNames(styles.projectionContainer)}>
             {renderProjections(projection?.projections ?? {})}
             {renderInterventions(projection?.interventions ?? [], geography)}
         </div>
@@ -177,7 +172,6 @@ function UnconnectedProjections(props: IProps) {
 
 function mapStateToProps(state: IStoreState): IStateProps {
     return {
-        deviceType: state.interface.deviceType,
         geography: state.interface.geography,
         projection: maybeGetProjectionData(state),
     };

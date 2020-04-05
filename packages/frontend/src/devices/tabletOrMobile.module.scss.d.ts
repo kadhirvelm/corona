@@ -3,7 +3,6 @@ declare namespace TabletOrMobileModuleScssModule {
     export interface ITabletOrMobileModuleScss {
         end: string;
         fadeIn: string;
-        infoDialog: string;
         information: string;
         mapContainer: string;
         middle: string;

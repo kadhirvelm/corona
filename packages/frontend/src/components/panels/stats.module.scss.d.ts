@@ -4,6 +4,7 @@ declare namespace StatsModuleScssModule {
         divider: string;
         end: string;
         fadeIn: string;
+        growthCurveNonIdeal: string;
         middle: string;
         start: string;
         statsContainer: string;

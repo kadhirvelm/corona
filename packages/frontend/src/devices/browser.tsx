@@ -1,6 +1,7 @@
 import { debounce } from "lodash-es";
 import * as React from "react";
 import { v4 } from "uuid";
+import classNames from "classnames";
 import { PanelContainer, VirusDataRenderer } from "../components";
 import styles from "./browser.module.scss";
 import { Information } from "../components/information/information";
@@ -33,7 +34,7 @@ export class Browser extends React.PureComponent<{}, IState> {
         const { resizeId } = this.state;
 
         return (
-            <div className={styles.browserContainer} key={resizeId}>
+            <div className={classNames(styles.browserContainer, "browser")} key={resizeId}>
                 <div className={styles.panelContainer}>
                     <PanelContainer />
                 </div>

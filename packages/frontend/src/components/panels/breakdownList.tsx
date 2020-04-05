@@ -5,13 +5,12 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
 import { getDataBreakdown, IStoreState, maybeGetDataForGeography, UPDATE_GEOGRAPHY } from "../../store";
-import { IDataBreakdown, IDevice, IDeviceType, IGeography } from "../../typings";
+import { IDataBreakdown, IGeography } from "../../typings";
 import styles from "./breakdownList.module.scss";
 
 interface IStateProps {
     geography: IGeography;
     data: ICoronaBreakdown | undefined;
-    deviceType: IDeviceType | undefined;
     dataBreakdown: IDataBreakdown[];
 }
 
@@ -23,7 +22,7 @@ interface IDispatchProps {
 type IProps = IStateProps & IDispatchProps;
 
 function renderDataBreakdown(dataBreakdown: IDataBreakdown[], dataBreakdownProps: IProps) {
-    const { deviceType, geography, updateGeography } = dataBreakdownProps;
+    const { geography, updateGeography } = dataBreakdownProps;
 
     const handleClick = (dataPoint: ICoronaDataPoint) => () => {
         if (IGeography.isNationGeography(geography) && geography.fipsCode !== dataPoint.fipsCode) {
@@ -57,12 +56,11 @@ function renderDataBreakdown(dataBreakdown: IDataBreakdown[], dataBreakdownProps
     };
 
     return (
-        <div className={classNames(styles.caseBreakdownContainer, { [styles.browser]: IDevice.isBrowser(deviceType) })}>
+        <div className={classNames(styles.caseBreakdownContainer)}>
             {dataBreakdown.map(breakdown => (
                 <div
                     className={classNames(styles.singleBreakdown, {
                         [styles.isOpen]: geography.fipsCode === breakdown.dataPoint.fipsCode,
-                        [styles.browser]: IDevice.isBrowser(deviceType),
                     })}
                     onClick={handleClick(breakdown.dataPoint)}
                 >
@@ -108,7 +106,6 @@ function mapStateToProps(state: IStoreState): IStateProps {
     return {
         geography: state.interface.geography,
         data: maybeGetDataForGeography(state),
-        deviceType: state.interface.deviceType,
         dataBreakdown: getDataBreakdown(state),
     };
 }
