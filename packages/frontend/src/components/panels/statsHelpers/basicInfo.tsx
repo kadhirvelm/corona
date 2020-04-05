@@ -43,9 +43,9 @@ function renderSingleLabel(label: string, value?: string) {
     );
 }
 
-function maybeRenderPopulationPercent(totalCases?: number, population?: number) {
-    if (totalCases === undefined || population === undefined) {
-        return null;
+function maybeRenderPopulationPercent(totalCases?: number | "N/A", population?: number | "N/A") {
+    if (totalCases === undefined || totalCases === "N/A" || population === undefined || population === "N/A") {
+        return "N/A";
     }
 
     return renderSingleLabel("Infection rate", `${Math.abs((totalCases / population) * 100).toFixed(3)}%`);

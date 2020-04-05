@@ -9,7 +9,7 @@ import { connect } from "react-redux";
 import { noop } from "lodash-es";
 import { IStoreState } from "../../store";
 import { IDeviceType, IMapOptions, IMapTopology } from "../../typings";
-import { getDimensionsForMap, getLinearColorScale, getTotalDimensionSpacing } from "../../utils";
+import { getDimensionsForMap, getLinearColorScale, getTotalDimensionSpacing, getNumber } from "../../utils";
 import { getTopology } from "../../utils/mapDataCache";
 import { MapHelpers } from "../helpers";
 import styles from "./usMap.module.scss";
@@ -58,10 +58,10 @@ function getClassNamesForFeature(
     featureId: string | undefined,
     highlightFips?: string,
 ) {
-    const cases: number | undefined = data?.breakdown[featureId ?? ""]?.totalCases;
+    const cases = data?.breakdown[featureId ?? ""]?.totalCases;
 
     return classNames(styles.state, {
-        [styles.stateNoData]: cases === undefined,
+        [styles.stateNoData]: cases === undefined || cases === "N/A",
         [styles.highlightFeature]: featureId !== undefined && featureId === highlightFips,
     });
 }
@@ -94,7 +94,7 @@ function renderMap(
             return getClassNamesForFeature(data, feature?.id, highlightFips);
         })
         .attr("fill", feature => {
-            const cases: number | undefined = data?.breakdown[feature.id ?? ""]?.totalCases;
+            const cases = getNumber(data?.breakdown[feature.id ?? ""]?.totalCases);
 
             if (cases === undefined) {
                 return styles.defaultGray;

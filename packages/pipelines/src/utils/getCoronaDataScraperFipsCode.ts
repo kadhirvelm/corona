@@ -11,6 +11,10 @@ function getFinalFipsCode(state: string, county: string): { cleanedCountyName: s
 }
 
 export function getCoronaDataScraperFipsCode(state?: string, county?: string, city?: string) {
+    if (state === "iso2:US-NY") {
+        return "New York_NewYorkCity";
+    }
+
     if (city !== undefined) {
         return city;
     }

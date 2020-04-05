@@ -121,6 +121,7 @@ module.exports = {
             chunkFilename: "[id].[hash].css",
         }),
         new webpack.DefinePlugin({
+            "process.env.DEV_ADDRESS": JSON.stringify(process.env.DEV_ADDRESS),
             "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
             "process.env.PRODUCTION_HOST": JSON.stringify(process.env.PRODUCTION_HOST),
         }),

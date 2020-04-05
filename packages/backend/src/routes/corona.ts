@@ -1,7 +1,6 @@
 import { CoronaService } from "@corona/api";
 import { Express } from "express";
 import { isValidState } from "@corona/utils";
-import { getCoronaDataTimeseries } from "@corona/pipeline/dist/corona/getCoronaTimeseries";
 import { BACKEND_LOGGER } from "@corona/logger";
 import { getStateCoronaData, getCountryCoronaData } from "../coronaData/getCoronaData";
 
@@ -25,10 +24,5 @@ export function setCoronaRoutes(app: Express) {
         }
 
         CoronaService.getStateData.backend(state, response, getStateCoronaData);
-    });
-
-    app.get("/test", async (_, response) => {
-        const test = await getCoronaDataTimeseries();
-        response.send(test);
     });
 }
