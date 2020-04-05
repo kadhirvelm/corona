@@ -2,6 +2,7 @@ import Express from "express";
 import { BACKEND_LOGGER } from "@corona/logger";
 import { setCoronaRoutes } from "./corona";
 import { setReactRoutes } from "./frontend";
+import { setProjectionRoutes } from "./projections";
 
 export function setRoutes(app: Express.Express) {
     app.get("/", (_, res) => {
@@ -15,5 +16,6 @@ export function setRoutes(app: Express.Express) {
     });
 
     setCoronaRoutes(app);
+    setProjectionRoutes(app);
     setReactRoutes(app);
 }
