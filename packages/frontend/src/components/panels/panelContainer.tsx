@@ -7,6 +7,7 @@ import { Stats } from "./stats";
 import styles from "./panelContainer.module.scss";
 import { IStoreState } from "../../store";
 import { IGeography } from "../../typings";
+import { Projections } from "./projections";
 
 interface IStateProps {
     geography: IGeography;
@@ -14,7 +15,7 @@ interface IStateProps {
 
 type IProps = IStateProps;
 
-type IValidTabs = "list" | "stats";
+type IValidTabs = "stats" | "projections" | "list";
 
 function UnconnectedPanelContainer(props: IProps) {
     const { geography } = props;
@@ -58,6 +59,12 @@ function UnconnectedPanelContainer(props: IProps) {
                 selectedTabId={tabId}
             >
                 <Tab id="stats" title={`${typeOfStats()} Stats`} panel={<Stats />} />
+                <Tab
+                    id="projections"
+                    disabled={IGeography.isCountyGeography(geography)}
+                    title={`${typeOfStats()} Projections`}
+                    panel={<Projections />}
+                />
                 <Tab id="list" title={`${typeOfList()} List`} panel={<BreakdownList />} />
             </Tabs>
         </div>

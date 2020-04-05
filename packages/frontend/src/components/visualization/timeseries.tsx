@@ -5,13 +5,13 @@ import { line, curveMonotoneX } from "d3-shape";
 import { select, Selection } from "d3-selection";
 import { extent } from "d3-array";
 import { axisBottom, axisLeft } from "d3-axis";
-import { timeFormat, timeParse } from "d3-time-format";
+import { timeFormat } from "d3-time-format";
 import { NonIdealState } from "@blueprintjs/core";
 import { connect } from "react-redux";
 import styles from "./timeseries.module.scss";
 import { IDeviceType, IDimensions } from "../../typings";
 import { IStoreState } from "../../store";
-import { getDimensionsForTimeseries, getTotalDimensionSpacing, getNumber } from "../../utils";
+import { getDimensionsForTimeseries, getTotalDimensionSpacing, getNumber, PARSE_TIME } from "../../utils";
 
 interface IStateProps {
     deviceType: IDeviceType | undefined;
@@ -31,12 +31,10 @@ interface ICleanedPoint {
     recovered: number;
 }
 
-const parseTime = timeParse("%Y-%m-%d");
-
 function cleanDataPoint(timeseries: { [date: string]: ICoronaDatapointTimeseriesDatapoint }): ICleanedPoint[] {
     return Object.entries(timeseries)
         .map(entry => ({
-            x: parseTime(entry[0]),
+            x: PARSE_TIME(entry[0]),
             cases: getNumber(entry[1].cases),
             active: getNumber(entry[1].active),
             deaths: getNumber(entry[1].deaths),

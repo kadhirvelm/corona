@@ -3,6 +3,7 @@ import { ICoronaDataPoint } from "@corona/api";
 import { connect } from "react-redux";
 import { IStoreState, getCurrentCoronaDataPointFromGeography } from "../../../store";
 import styles from "./basicInfo.module.scss";
+import { getDateTimeString } from "../../../utils";
 
 interface IStateProps {
     dataPointForBasicInfo: ICoronaDataPoint | undefined;
@@ -10,25 +11,11 @@ interface IStateProps {
 
 type IProps = IStateProps;
 
-function maybeGetDateString(date?: Date) {
-    if (date === undefined) {
-        return "N/A";
-    }
-
-    return new Intl.DateTimeFormat("en-US", {
-        year: "2-digit",
-        month: "numeric",
-        day: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-    }).format(new Date(date));
-}
-
-function renderLastUpdated(date: Date | undefined) {
+function renderLastUpdated(date: string | undefined) {
     return (
         <div className={styles.dateInfo}>
             <div className={styles.dateLabel}>Last updated</div>
-            <div className={styles.dateValue}>{maybeGetDateString(date)}</div>
+            <div className={styles.dateValue}>{getDateTimeString(date)}</div>
         </div>
     );
 }
@@ -55,7 +42,7 @@ function UnconnectedBasicInfo(props: IProps) {
     const { dataPointForBasicInfo } = props;
 
     return (
-        <div className={styles.basicInfo} key={dataPointForBasicInfo?.fipsCode}>
+        <div className={styles.basicInfo}>
             {renderSingleLabel("Total", dataPointForBasicInfo?.totalCases.toLocaleString())}
             {renderSingleLabel("Recovered", dataPointForBasicInfo?.recovered?.toLocaleString())}
             {renderSingleLabel("Active", dataPointForBasicInfo?.activeCases?.toLocaleString())}

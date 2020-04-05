@@ -26,7 +26,7 @@ function renderDataBreakdown(dataBreakdown: IDataBreakdown[], dataBreakdownProps
     const { deviceType, geography, updateGeography } = dataBreakdownProps;
 
     const handleClick = (dataPoint: ICoronaDataPoint) => () => {
-        if (IGeography.isNationGeography(geography)) {
+        if (IGeography.isNationGeography(geography) && geography.fipsCode !== dataPoint.fipsCode) {
             updateGeography(
                 IGeography.stateGeography({
                     fipsCode: dataPoint.fipsCode,
@@ -35,7 +35,7 @@ function renderDataBreakdown(dataBreakdown: IDataBreakdown[], dataBreakdownProps
             );
         }
 
-        if (IGeography.isStateGeography(geography)) {
+        if (IGeography.isStateGeography(geography) && geography.fipsCode !== dataPoint.fipsCode) {
             updateGeography(
                 IGeography.countyGeography({
                     countyStateGeography: geography,
@@ -45,7 +45,7 @@ function renderDataBreakdown(dataBreakdown: IDataBreakdown[], dataBreakdownProps
             );
         }
 
-        if (IGeography.isCountyGeography(geography)) {
+        if (IGeography.isCountyGeography(geography) && geography.fipsCode !== dataPoint.fipsCode) {
             updateGeography(
                 IGeography.countyGeography({
                     countyStateGeography: geography.stateGeography,
@@ -75,7 +75,7 @@ function renderDataBreakdown(dataBreakdown: IDataBreakdown[], dataBreakdownProps
 }
 
 function UnconnectedBreakdownList(props: IProps) {
-    const { data, dataBreakdown, geography } = props;
+    const { data, dataBreakdown } = props;
 
     const [filter, setFilter] = React.useState("");
 
@@ -86,7 +86,7 @@ function UnconnectedBreakdownList(props: IProps) {
     const updateFilterValue = (event: React.ChangeEvent<HTMLInputElement>) => setFilter(event.currentTarget.value);
 
     return (
-        <div className={styles.breakdownListContainer} key={geography.fipsCode}>
+        <div className={styles.breakdownListContainer}>
             <div className={styles.filterContainer}>
                 <InputGroup leftIcon="search" onChange={updateFilterValue} value={filter} />
                 <div className={styles.columnHeaders}>

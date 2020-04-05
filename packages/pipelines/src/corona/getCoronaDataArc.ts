@@ -42,7 +42,7 @@ function cleanRawArcDatapoint(dataPoint: IArcCoronaData): ICoronaDataPoint {
         county: maybeGetCounty(dataPoint.Admin2),
         deaths: dataPoint.Deaths,
         fipsCode: finalFipsCode,
-        lastUpdated: new Date(dataPoint.Last_Update),
+        lastUpdated: dataPoint.Last_Update,
         recovered: dataPoint.Recovered,
         state: dataPoint.Province_State,
         totalCases: dataPoint.Confirmed,

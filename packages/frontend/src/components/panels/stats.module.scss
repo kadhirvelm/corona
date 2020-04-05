@@ -8,6 +8,6 @@
 
 .divider {
     display: flex;
-    height: 1px;
+    min-height: 1px;
     background: $box-shadow;
 }
