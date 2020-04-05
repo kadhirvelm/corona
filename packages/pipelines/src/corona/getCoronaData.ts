@@ -179,7 +179,7 @@ function addTimeseriesDataPoint(
         activeCases: dataPoint?.activeCases ?? mostRecent[1].active ?? "N/A",
         deaths: dataPoint?.deaths ?? mostRecent[1].deaths ?? "N/A",
         fipsCode: dataPoint?.fipsCode ?? timeseriesBreakdown?.fipsCode ?? "N/A",
-        lastUpdated: dataPoint?.lastUpdated ?? new Date(mostRecent[0]),
+        lastUpdated: dataPoint?.lastUpdated ?? mostRecent[0],
         recovered: dataPoint?.recovered ?? mostRecent[1].recovered,
         totalCases: dataPoint?.totalCases ?? mostRecent[1].cases ?? "N/A",
     };

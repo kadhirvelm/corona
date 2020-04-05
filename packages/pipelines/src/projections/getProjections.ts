@@ -86,7 +86,6 @@ function addMaxProjectionTimes(cleanedResponses: {
 }): { [measure: string]: ISingleProjectionMeasure } {
     return lodash.mapValues(cleanedResponses, singleMeasure => {
         const peakPoint = lodash.maxBy(singleMeasure.timeseries, point => point.mean);
-
         return {
             description: "Something here",
             // NOTE: the frontend is having a hard time rendering these dates with a time period of 00:00:00
@@ -115,7 +114,8 @@ async function getInterventionData(projectionId: number): Promise<IIntervention[
 
     return response.map(
         (rawIntervention): IIntervention => ({
-            date: rawIntervention.date_reported,
+            // NOTE: the frontend is having a hard time rendering these dates with a time period of 00:00:00
+            date: rawIntervention.date_reported.split(" ")[0],
             measureId: rawIntervention.covid_intervention_measure_id,
             measureDescription: rawIntervention.covid_intervention_measure_name,
         }),

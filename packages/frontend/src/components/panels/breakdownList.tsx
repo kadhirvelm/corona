@@ -26,7 +26,7 @@ function renderDataBreakdown(dataBreakdown: IDataBreakdown[], dataBreakdownProps
     const { deviceType, geography, updateGeography } = dataBreakdownProps;
 
     const handleClick = (dataPoint: ICoronaDataPoint) => () => {
-        if (IGeography.isNationGeography(geography)) {
+        if (IGeography.isNationGeography(geography) && geography.fipsCode !== dataPoint.fipsCode) {
             updateGeography(
                 IGeography.stateGeography({
                     fipsCode: dataPoint.fipsCode,
@@ -35,7 +35,7 @@ function renderDataBreakdown(dataBreakdown: IDataBreakdown[], dataBreakdownProps
             );
         }
 
-        if (IGeography.isStateGeography(geography)) {
+        if (IGeography.isStateGeography(geography) && geography.fipsCode !== dataPoint.fipsCode) {
             updateGeography(
                 IGeography.countyGeography({
                     countyStateGeography: geography,
@@ -45,7 +45,7 @@ function renderDataBreakdown(dataBreakdown: IDataBreakdown[], dataBreakdownProps
             );
         }
 
-        if (IGeography.isCountyGeography(geography)) {
+        if (IGeography.isCountyGeography(geography) && geography.fipsCode !== dataPoint.fipsCode) {
             updateGeography(
                 IGeography.countyGeography({
                     countyStateGeography: geography.stateGeography,

@@ -42,7 +42,8 @@ module.exports = {
       "object-curly-newline": 0,
       "react/no-did-update-set-state": 0,
       "operator-linebreak": 0,
-      "react/jsx-props-no-spreading": 0
+      "react/jsx-props-no-spreading": 0,
+      "no-console": 2,
     },
 
     settings: {

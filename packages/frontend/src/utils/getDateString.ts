@@ -3,8 +3,6 @@ export function getDateTimeString(date?: string | undefined | null) {
         return "N/A";
     }
 
-    console.log(date);
-
     return new Intl.DateTimeFormat("en-US", {
         year: "2-digit",
         month: "numeric",
