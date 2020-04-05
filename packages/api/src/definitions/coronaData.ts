@@ -18,7 +18,7 @@ export interface ICoronaDataPoint {
     county?: string;
     deaths?: number | "N/A";
     fipsCode: string;
-    lastUpdated?: Date;
+    lastUpdated?: string;
     recovered?: number | "N/A";
     state?: string;
     totalCases: number | "N/A";

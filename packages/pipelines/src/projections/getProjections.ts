@@ -30,16 +30,31 @@ interface IInterventionRaw {
 const TRANSLATE_KEY = {
     deaths: "Deaths per day",
     total_death: "Total deaths",
-    covid_all_bed: "All hospital beds needed",
-    covid_ICU_bed: "All ICU beds needed",
-    invasive_ventilation: "Total invasive ventilators needed",
+    covid_all_bed: "Hospital beds needed",
+    covid_ICU_bed: "ICU beds needed",
+    invasive_ventilation: "Invasive ventilators needed",
     bedover: "Bed shortage",
-    icuover: "ICU shortage",
-    peak_resource_usage: "Peak resource usage",
+    icuover: "Intensive care unit shortage",
+    peak_resource_usage: "Overall resource usage",
 };
 
 function translateMeasureName(name: string): string {
     return (TRANSLATE_KEY as any)[name] ?? name;
+}
+
+const TRANSLATE_KEY_TO_PRIORITY = {
+    deaths: 7,
+    total_death: 6,
+    covid_all_bed: 1,
+    covid_ICU_bed: 3,
+    invasive_ventilation: 5,
+    bedover: 2,
+    icuover: 4,
+    peak_resource_usage: 1,
+};
+
+function translateMeasureNameToPriority(name: string): number {
+    return (TRANSLATE_KEY_TO_PRIORITY as any)[name] ?? 99;
 }
 
 function cleanProjectionPoint(rawPoint: IProjectionPointRaw): ISingleProjectionPoint {
@@ -56,6 +71,7 @@ function assembleBasicProjection(rawPoints: IProjectionPointRaw[]): { [measure: 
 
     rawPoints.forEach(point => {
         cleanedResponses[translateMeasureName(point.covid_measure_name)] = {
+            priority: translateMeasureNameToPriority(point.covid_measure_name),
             timeseries: (cleanedResponses[translateMeasureName(point.covid_measure_name)]?.timeseries ?? []).concat(
                 cleanProjectionPoint(point),
             ),
@@ -73,8 +89,10 @@ function addMaxProjectionTimes(cleanedResponses: {
 
         return {
             description: "Something here",
-            peak: peakPoint?.date,
+            // NOTE: the frontend is having a hard time rendering these dates with a time period of 00:00:00
+            peak: peakPoint?.date.split(" ")[0],
             peak_number: peakPoint?.mean,
+            priority: singleMeasure.priority,
             timeseries: singleMeasure.timeseries,
         };
     });

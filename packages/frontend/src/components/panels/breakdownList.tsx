@@ -75,7 +75,7 @@ function renderDataBreakdown(dataBreakdown: IDataBreakdown[], dataBreakdownProps
 }
 
 function UnconnectedBreakdownList(props: IProps) {
-    const { data, dataBreakdown, geography } = props;
+    const { data, dataBreakdown } = props;
 
     const [filter, setFilter] = React.useState("");
 
@@ -86,7 +86,7 @@ function UnconnectedBreakdownList(props: IProps) {
     const updateFilterValue = (event: React.ChangeEvent<HTMLInputElement>) => setFilter(event.currentTarget.value);
 
     return (
-        <div className={styles.breakdownListContainer} key={geography.fipsCode}>
+        <div className={styles.breakdownListContainer}>
             <div className={styles.filterContainer}>
                 <InputGroup leftIcon="search" onChange={updateFilterValue} value={filter} />
                 <div className={styles.columnHeaders}>

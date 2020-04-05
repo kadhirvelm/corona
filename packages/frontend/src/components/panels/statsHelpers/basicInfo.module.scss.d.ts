@@ -11,6 +11,7 @@ declare namespace BasicInfoModuleScssModule {
         info: string;
         label: string;
         middle: string;
+        mobile: string;
         start: string;
         value: string;
     }

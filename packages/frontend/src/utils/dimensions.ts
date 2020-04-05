@@ -12,7 +12,7 @@ export function getDimensionsForMap(deviceType: IDeviceType | undefined) {
         browser: () => ({
             height: window.innerHeight - 10,
             width: window.innerWidth - 5,
-            margin: { left: 170, top: 75 },
+            margin: { left: 350, top: 75 },
         }),
         mobile: () => ({ height: window.innerHeight * 0.5, width: window.innerWidth, margin: { right: 20 } }),
         tablet: () => ({ height: window.innerHeight * 0.5, width: window.innerWidth, margin: { right: 20 } }),
@@ -24,7 +24,7 @@ export function getDimensionsForTimeseries(deviceType: IDeviceType | undefined) 
     return IDevice.visitor<IDimensions>(deviceType, {
         browser: () => ({
             height: 250,
-            width: 230,
+            width: 380,
             margin: { top: 20, right: 20, bottom: 100, left: 50 },
         }),
         mobile: () => ({

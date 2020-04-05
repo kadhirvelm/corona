@@ -16,6 +16,7 @@ export interface ISingleProjectionMeasure {
     description?: string;
     peak?: string;
     peak_number?: number;
+    priority: number;
     timeseries?: ISingleProjectionPoint[];
 }
 
@@ -98,7 +99,7 @@ export const ProjectionService: IProjectionEndpoints = {
     getProjection: {
         backend: backendEndpointImplementation<PROJECTION, IProjectionPoint>(),
         endpoint: "/projection/:name",
-        frontend: frontendEndpointImplementation("/projection/:name"),
+        frontend: frontendEndpointImplementation("/projection"),
         method: "get",
     },
 };

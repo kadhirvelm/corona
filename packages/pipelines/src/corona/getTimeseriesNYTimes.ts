@@ -54,7 +54,7 @@ async function getCoronaNYTimesCounties() {
 }
 
 async function getCoronaNYTimesStates() {
-    const rawResponse = await fetch("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv");
+    const rawResponse = await fetch("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv");
     const response = await rawResponse.text();
 
     return cleanCSV(response, separatedPoints => ({

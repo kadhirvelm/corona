@@ -1,5 +1,6 @@
-import { ICoronaBreakdown, ICoronaDataPoint } from "@corona/api";
+import { ICoronaBreakdown, ICoronaDataPoint, PROJECTION, IProjectionPoint } from "@corona/api";
 import { createSelector } from "reselect";
+import { isValidProjection } from "@corona/utils";
 import { IDataBreakdown, IGeography } from "../typings";
 import { getDataKeyFromGeography } from "../utils/getDataKeyFromGeography";
 import { IStoreState } from "./state";
@@ -59,5 +60,24 @@ export const getCurrentCoronaDataPointFromGeography = createSelector(
         }
 
         return data.breakdown[geography.fipsCode];
+    },
+);
+
+export const maybeGetProjectionData = createSelector(
+    (state: IStoreState) => state.application.cachedProjectionData,
+    (state: IStoreState) => state.interface.geography,
+    (
+        cachedProjectionData: { [projection: string]: IProjectionPoint },
+        geography: IGeography,
+    ): IProjectionPoint | undefined => {
+        if (IGeography.isNationGeography(geography)) {
+            return cachedProjectionData[PROJECTION.UNITED_STATES];
+        }
+
+        if (IGeography.isStateGeography(geography) && isValidProjection(geography.name)) {
+            return cachedProjectionData[geography.name];
+        }
+
+        return undefined;
     },
 );
