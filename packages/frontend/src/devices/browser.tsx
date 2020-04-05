@@ -3,6 +3,7 @@ import * as React from "react";
 import { v4 } from "uuid";
 import { PanelContainer, VirusDataRenderer } from "../components";
 import styles from "./browser.module.scss";
+import { Information } from "../components/information/information";
 
 interface IState {
     resizeId: string;
@@ -37,6 +38,7 @@ export class Browser extends React.PureComponent<{}, IState> {
                     <PanelContainer />
                 </div>
                 <VirusDataRenderer />
+                <Information className={styles.infoContainer} />
             </div>
         );
     }

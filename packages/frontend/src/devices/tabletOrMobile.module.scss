@@ -19,6 +19,21 @@
     position: relative;
 }
 
+.information {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    z-index: 1;
+}
+
+.info-dialog {
+    font-size: 20px;
+
+    :global(.bp3-dialog-body) {
+        line-height: 20px;
+    }
+}
+
 .stats-container {
     display: flex;
     flex: 1 0 50%;
@@ -26,23 +41,4 @@
     min-height: 50vh;
     box-shadow: 0 -1px $box-shadow;
     padding-top: 1px;
-}
-
-.left-container {
-    display: flex;
-    flex: 1;
-}
-
-.right-container {
-    display: flex;
-    flex: 2;
-    padding: 10px;
-    position: relative;
-}
-
-.basic-info-container {
-    position: absolute;
-    top: 445px;
-    left: 20px;
-    width: 300px;
 }

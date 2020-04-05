@@ -1,6 +1,7 @@
 import { ICoronaBreakdown, STATE } from "@corona/api";
 import { getCoronaData, ICoronaData } from "@corona/pipeline";
 import LRU from "lru-cache";
+import { ITimeseriesBreakdown } from "@corona/pipeline/dist/corona/shared";
 
 const DATA_KEY = "data";
 
@@ -31,5 +32,12 @@ export async function getStateCoronaData(state: STATE): Promise<ICoronaBreakdown
     return new Promise(async resolve => {
         const data = await getValueFromCache();
         resolve(data.states[state]);
+    });
+}
+
+export async function getTimeseriesData(): Promise<ITimeseriesBreakdown | undefined> {
+    return new Promise(async resolve => {
+        const data = await getValueFromCache();
+        resolve(data.timeseries);
     });
 }

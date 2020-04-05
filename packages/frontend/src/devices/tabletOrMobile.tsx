@@ -3,6 +3,7 @@ import { debounce } from "lodash-es";
 import { v4 } from "uuid";
 import { PanelContainer, VirusDataRenderer } from "../components";
 import styles from "./tabletOrMobile.module.scss";
+import { Information } from "../components/information/information";
 
 let temporaryWindowHeight = 0;
 let temporaryWindowWidth = 0;
@@ -34,6 +35,7 @@ export function TabletOrMobile() {
         <div className={styles.tabletContainer} key={resizeId}>
             <div className={styles.mapContainer}>
                 <VirusDataRenderer />
+                <Information className={styles.information} dialogClassName={styles.infoDialog} text="About" />
             </div>
             <div className={styles.statsContainer}>
                 <PanelContainer />

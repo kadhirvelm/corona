@@ -14,13 +14,9 @@
     height: 100%;
 }
 
-.basic-info-container {
+.info-container {
     position: fixed;
-    bottom: 15px;
-    right: 15px;
-    display: flex;
-    flex-direction: column;
-    width: 250px;
-    height: 250px;
+    right: 10px;
+    bottom: 10px;
     z-index: 1;
 }
