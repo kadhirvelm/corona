@@ -67,10 +67,7 @@ function UnconnectedCurrentPath(props: IProps) {
         );
     }
 
-    const sharedClassName = classNames(styles.breadcrumbContainer, {
-        [styles.browser]: IDevice.isBrowser(deviceType),
-        [styles.mobile]: IDevice.isMobile(deviceType) || IDevice.isTablet(deviceType),
-    });
+    const sharedClassName = classNames(styles.breadcrumbContainer);
 
     if (IGeography.isStateGeography(geography)) {
         return (
@@ -81,13 +78,21 @@ function UnconnectedCurrentPath(props: IProps) {
         );
     }
 
+    const getName = (name: string) => {
+        if (name.length > 30) {
+            return `${name.slice(0, 30)}…`;
+        }
+
+        return name;
+    };
+
     return (
         <div className={sharedClassName}>
             <div className={styles.breadcrumbTopContainer}>
                 {nationalBreadcrumb}
                 {renderBreadcrumb(geography.stateGeography.name, () => updateGeography(geography.stateGeography), true)}
             </div>
-            <div className={styles.breadcrumbBottomContainer}>{renderBreadcrumb(geography.name)}</div>
+            <div className={styles.breadcrumbBottomContainer}>{renderBreadcrumb(getName(geography.name))}</div>
         </div>
     );
 }

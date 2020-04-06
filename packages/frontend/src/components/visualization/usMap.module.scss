@@ -2,9 +2,20 @@
 
 $default-gray: #CCD1D1;
 
+:global(.mobile) {
+    .state {
+        stroke-width: 0.35px;
+    }
+}
+
+:global(.browser) {
+    .state {
+        stroke-width: 0.75px;
+    }
+}
+
 .state {
     stroke: #34495E;
-    stroke-width: 0.75px;
     cursor: pointer;
 
     &:hover {

@@ -15,6 +15,7 @@ export interface IStateCoronaData {
 export interface ICoronaData {
     nation: ICoronaBreakdown;
     states: IStateCoronaData;
+    timeseries?: ITimeseriesBreakdown;
 }
 
 function mergeCoronaDatapoints(dataPointA?: ICoronaDataPoint, dataPointB?: ICoronaDataPoint): ICoronaDataPoint {
@@ -279,5 +280,6 @@ export async function getCoronaData(): Promise<ICoronaData> {
     return {
         nation: getNationData(withTimeSeries.nation, withTimeSeries.states),
         states: getStateData(withTimeSeries.states),
+        timeseries,
     };
 }
