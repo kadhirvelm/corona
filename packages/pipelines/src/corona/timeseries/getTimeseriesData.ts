@@ -1,9 +1,9 @@
 import { PIPELINE_LOGGER } from "@corona/logger";
 import { ICoronaDatapointTimeseriesDatapoint } from "@corona/api";
+import lodash from "lodash";
 import { getTimeseriesCoronaScraper } from "./getTimeseriesCoronaScraper";
 import { getTimeseriesNYTimes } from "./getTimeseriesNYTimes";
 import { ITimeseriesBreakdown, ISingleTimeseriesBreakdown } from "../shared";
-import lodash from "lodash";
 
 function mergeTimeseriesDatasets(
     coronaScraper: ITimeseriesBreakdown,

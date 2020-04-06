@@ -7,6 +7,7 @@ This projects gets its data from:
 2. https://coronavirus-disasterresponse.hub.arcgis.com/#get-data
 3. https://covid19.healthdata.org/projections
 4. https://github.com/nytimes/covid-19-data
+5. https://covidtracking.com/data
 
 Questions? Concerns? Requests?
 Email us at: covid19.map.2020@gmail.com
