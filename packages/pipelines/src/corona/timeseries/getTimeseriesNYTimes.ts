@@ -1,5 +1,5 @@
 import fetch from "node-fetch";
-import { ITimeseriesBreakdown } from "./shared";
+import { ITimeseriesBreakdown } from "../shared";
 
 interface ICleanedNYTimesPoint {
     date: string;

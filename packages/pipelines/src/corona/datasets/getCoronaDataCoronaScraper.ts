@@ -1,9 +1,9 @@
 import { ICoronaDataPoint } from "@corona/api";
 import fetch from "node-fetch";
-import { cleanCountyName } from "../utils/cleanCountyName";
-import { getCoronaDataScraperFipsCode } from "../utils/getCoronaDataScraperFipsCode";
-import { logCoronaScraperAnomalies } from "../utils/logAnomalies";
-import { getTotalBreakdowns, ICountiesKeyed, IStatesKeyed, ITotalBreakdown } from "./shared";
+import { cleanCountyName } from "../../utils/cleanCountyName";
+import { getCoronaDataScraperFipsCode } from "../../utils/getCoronaDataScraperFipsCode";
+import { logCoronaScraperAnomalies } from "../../utils/logAnomalies";
+import { getTotalBreakdowns, ICountiesKeyed, IStatesKeyed, ITotalBreakdown } from "../shared";
 
 interface ICoronaDataScraperData {
     city?: string;
@@ -52,6 +52,8 @@ function cleanRawCoronaDataScraperDatapoint(dataPoint: ICoronaDataScraperData): 
     };
 }
 
+const BLACKLISTED_FIPS = ["36061"];
+
 function separateIntoNationStatesAndCounties(data: ICoronaDataScraperData[]) {
     const nation: ICoronaDataPoint[] = [];
     const states: IStatesKeyed = {};
@@ -63,6 +65,10 @@ function separateIntoNationStatesAndCounties(data: ICoronaDataScraperData[]) {
         }
 
         const cleanedDataPoint = cleanRawCoronaDataScraperDatapoint(dataPoint);
+
+        if (BLACKLISTED_FIPS.includes(cleanedDataPoint.fipsCode)) {
+            return;
+        }
 
         if (
             cleanedDataPoint.state !== undefined &&

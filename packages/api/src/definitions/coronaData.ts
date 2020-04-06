@@ -13,6 +13,19 @@ export interface ICoronaDatapointTimeseriesDatapoint {
     growthFactor?: number | "N/A";
 }
 
+export interface ICoronaTestingInformation {
+    dataGrade: string;
+    death: number;
+    hospitalized: number | "N/A";
+    inIcu: number | "N/A";
+    onVentilator: number | "N/A";
+    lastUpdated: string;
+    negative: number;
+    positive: number;
+    pending: number | "N/A";
+    totalTests: number;
+}
+
 export interface ICoronaDataPoint {
     activeCases?: number | "N/A";
     county?: string;
@@ -21,6 +34,7 @@ export interface ICoronaDataPoint {
     lastUpdated?: string;
     recovered?: number | "N/A";
     state?: string;
+    testingInformation?: ICoronaTestingInformation;
     totalCases: number | "N/A";
     population?: number | "N/A";
     timeseries?: {

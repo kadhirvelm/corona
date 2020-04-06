@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ICoronaDataPoint } from "@corona/api";
+import { ICoronaDataPoint, ICoronaTestingInformation } from "@corona/api";
 import { connect } from "react-redux";
 import { IStoreState, getCurrentCoronaDataPointFromGeography } from "../../../store";
 import styles from "./basicInfo.module.scss";
@@ -38,18 +38,54 @@ function maybeRenderPopulationPercent(totalCases?: number | "N/A", population?: 
     return renderSingleLabel("Infection rate", `${Math.abs((totalCases / population) * 100).toFixed(3)}%`);
 }
 
+function maybeRenderTestingInformation(testingInformation: ICoronaTestingInformation | undefined) {
+    if (testingInformation === undefined) {
+        return null;
+    }
+
+    const formatTimeString = (time: string) => `${time.split(" ")[0]}/20`;
+
+    return (
+        <div className={styles.testingInformation}>
+            <span className={styles.title}>State level testing</span>
+            {renderSingleLabel("Total tested", testingInformation.totalTests.toLocaleString())}
+            {renderSingleLabel("Negative", testingInformation.negative.toLocaleString())}
+            {renderSingleLabel("Positive", testingInformation.positive.toLocaleString())}
+            {renderSingleLabel("Pending", testingInformation.pending.toLocaleString())}
+            {renderSingleLabel("Hospitalized", testingInformation.hospitalized.toLocaleString())}
+            {renderSingleLabel("In ICUs", testingInformation.inIcu.toLocaleString())}
+            {renderSingleLabel("On ventilators", testingInformation.onVentilator.toLocaleString())}
+            {renderLastUpdated(formatTimeString(testingInformation?.lastUpdated))}
+        </div>
+    );
+}
+
+function maybeRenderGeneralInformation(dataPoint: ICoronaDataPoint | undefined) {
+    if (dataPoint === undefined) {
+        return null;
+    }
+
+    return (
+        <div className={styles.generalInfo}>
+            <span className={styles.title}>General</span>
+            {renderSingleLabel("Total", dataPoint.totalCases.toLocaleString())}
+            {renderSingleLabel("Recovered", dataPoint.recovered?.toLocaleString())}
+            {renderSingleLabel("Active", dataPoint.activeCases?.toLocaleString())}
+            {renderSingleLabel("Deaths", dataPoint.deaths?.toLocaleString())}
+            {renderSingleLabel("Population", dataPoint.population?.toLocaleString())}
+            {maybeRenderPopulationPercent(dataPoint.totalCases, dataPoint.population)}
+            {renderLastUpdated(dataPoint.lastUpdated)}
+        </div>
+    );
+}
+
 function UnconnectedBasicInfo(props: IProps) {
     const { dataPointForBasicInfo } = props;
 
     return (
-        <div className={styles.basicInfo}>
-            {renderSingleLabel("Total", dataPointForBasicInfo?.totalCases.toLocaleString())}
-            {renderSingleLabel("Recovered", dataPointForBasicInfo?.recovered?.toLocaleString())}
-            {renderSingleLabel("Active", dataPointForBasicInfo?.activeCases?.toLocaleString())}
-            {renderSingleLabel("Deaths", dataPointForBasicInfo?.deaths?.toLocaleString())}
-            {renderSingleLabel("Population", dataPointForBasicInfo?.population?.toLocaleString())}
-            {maybeRenderPopulationPercent(dataPointForBasicInfo?.totalCases, dataPointForBasicInfo?.population)}
-            {renderLastUpdated(dataPointForBasicInfo?.lastUpdated)}
+        <div className={styles.basicInfoContainer}>
+            {maybeRenderGeneralInformation(dataPointForBasicInfo)}
+            {maybeRenderTestingInformation(dataPointForBasicInfo?.testingInformation)}
         </div>
     );
 }
