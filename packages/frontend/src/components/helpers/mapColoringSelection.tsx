@@ -7,8 +7,10 @@ import { IMapColoring } from "../../typings/mapType";
 import { IStoreState, SET_MAP_COLORING } from "../../store";
 import styles from "./mapColoringSelection.module.scss";
 import { MAP_COLORING_OPTIONS } from "../../constants";
+import { IDeviceType, IDevice } from "../../typings";
 
 interface IStateProps {
+    deviceType: IDeviceType | undefined;
     mapColoring: IMapColoring;
 }
 
@@ -18,7 +20,11 @@ interface IDispatchProps {
 
 type IProps = IStateProps & IDispatchProps;
 
-function renderMapColoringOptions(mapColoring: IMapColoring, setMapColoring: (newMapColoring: IMapColoring) => void) {
+function renderMapColoringOptions(
+    mapColoring: IMapColoring,
+    setMapColoring: (newMapColoring: IMapColoring) => void,
+    deviceType: IDeviceType | undefined,
+) {
     const setOption = (newColoring: IMapColoring) => () => setMapColoring(newColoring);
 
     return (
@@ -29,7 +35,7 @@ function renderMapColoringOptions(mapColoring: IMapColoring, setMapColoring: (ne
                     onClick={setOption(option)}
                 >
                     <span className={styles.title}>{option.label}</span>
-                    <span>{option.description}</span>
+                    {!IDevice.isMobile(deviceType) && <span>{option.description}</span>}
                 </div>
             ))}
         </div>
@@ -37,12 +43,17 @@ function renderMapColoringOptions(mapColoring: IMapColoring, setMapColoring: (ne
 }
 
 function UnconnectedMapColoringSelection(props: IProps) {
-    const { mapColoring, setMapColoring } = props;
+    const { deviceType, mapColoring, setMapColoring } = props;
+
+    const getText = () => (!IDevice.isMobile(deviceType) ? `Color by the ${mapColoring.label}` : "");
 
     return (
         <div className={styles.mapColorContainer}>
-            <Popover content={renderMapColoringOptions(mapColoring, setMapColoring)} position="left">
-                <Button rightIcon="edit" text={`Color by the ${mapColoring.label}`} minimal />
+            <Popover
+                content={renderMapColoringOptions(mapColoring, setMapColoring, deviceType)}
+                position={IDevice.isMobile(deviceType) ? "auto" : "left"}
+            >
+                <Button rightIcon="edit" text={getText()} minimal />
             </Popover>
         </div>
     );
@@ -50,6 +61,7 @@ function UnconnectedMapColoringSelection(props: IProps) {
 
 function mapStateToProps(state: IStoreState): IStateProps {
     return {
+        deviceType: state.interface.deviceType,
         mapColoring: state.interface.mapColoring,
     };
 }
