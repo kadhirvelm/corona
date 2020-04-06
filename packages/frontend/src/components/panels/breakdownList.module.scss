@@ -92,3 +92,9 @@
     color: #1F618D;
     margin-left: 10px;
 }
+
+:global(.mobile) {
+    .single-breakdown {
+        min-height: 40px;
+    }
+}

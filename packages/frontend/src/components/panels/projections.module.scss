@@ -22,7 +22,6 @@
     flex-direction: column;
     animation: fade-in 200ms ease-out;
     overflow-y: auto;
-    padding-bottom: 75px;
 }
 
 .projections-data-container {
@@ -33,8 +32,23 @@
 
 .single-projection-container {
     display: flex;
+    flex: 1;
     flex-direction: column;
     padding-bottom: 20px
+}
+
+:global(.mobile) {
+    .projection-container {
+        padding-bottom: 150px;
+    }
+
+    .single-projection-container {
+        min-height: 70px;
+    }
+
+    .single-intervention-container {
+        min-height: 70px;
+    }
 }
 
 .upper-text {
