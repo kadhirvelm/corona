@@ -114,12 +114,12 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             filename: "index.html",
-            favicon: "./public/favicon.ico",
+            favicon: path.resolve(__dirname, "public/favicon.ico"),
             meta: {
                 copyright: "Copyright 2020",
                 description: "Allows a person to view nation, state, and county level corona-related information for the united states.",
                 "og:title": "United States Corona Dashboard",
-                "og:image": "./public/og-image.png",
+                "og:image": path.resolve(__dirname, "public/og-image.png"),
                 title: "United States Corona Dashboard.",
                 viewport: "width=device-width, initial-scale=1.0",
             },
