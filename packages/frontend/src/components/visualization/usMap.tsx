@@ -4,12 +4,12 @@ import classNames from "classnames";
 import { geoAlbersUsa, geoPath, GeoPath, GeoPermissibleObjects } from "d3-geo";
 import { BaseType, select, Selection } from "d3-selection";
 import GeoJSON from "geojson";
+import { noop } from "lodash-es";
 import * as React from "react";
 import { connect } from "react-redux";
-import { noop } from "lodash-es";
 import { IStoreState } from "../../store";
 import { IDeviceType, IMapOptions, IMapTopology } from "../../typings";
-import { getDimensionsForMap, getLinearColorScale, getTotalDimensionSpacing, getNumber } from "../../utils";
+import { getDimensionsForMap, getLinearColorScale, getNumber, getTotalDimensionSpacing } from "../../utils";
 import { getTopology } from "../../utils/mapDataCache";
 import { MapHelpers } from "../helpers";
 import styles from "./usMap.module.scss";
@@ -112,13 +112,13 @@ function renderMap(
 async function setupMap(props: IProps, setLoading: (isLoading: boolean) => void, mapOptions: IMapOptions) {
     const { mapTopology, id } = props;
 
-    const svg = select(`#${id}`);
-
     const usTopology = await getTopology(mapTopology.topologyLocation, setLoading);
     const features = mapTopology.extractFeatures(usTopology);
 
     const { dimensions } = mapOptions;
     const { widthSpacing, heightSpacing } = getTotalDimensionSpacing(dimensions);
+
+    const svg = select(`#${id}`);
 
     const projection = geoAlbersUsa().fitSize(
         [dimensions.width - widthSpacing, dimensions.height - heightSpacing],
@@ -149,8 +149,10 @@ function UnconnectedUSMap(props: IProps) {
 
     const dimensions = getDimensionsForMap(deviceType);
 
+    const refreshGraph = () => setupMap(props, setLoading, { colorScale, dimensions });
+
     React.useEffect(() => {
-        setupMap(props, setLoading, { colorScale, dimensions });
+        refreshGraph();
     }, []);
 
     React.useEffect(() => {

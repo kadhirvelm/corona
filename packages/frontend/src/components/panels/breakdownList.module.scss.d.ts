@@ -10,6 +10,8 @@ declare namespace BreakdownListModuleScssModule {
         isOpen: string;
         middle: string;
         singleBreakdown: string;
+        sortContainer: string;
+        sortIcon: string;
         start: string;
         totalCasesColumn: string;
     }
