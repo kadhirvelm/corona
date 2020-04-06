@@ -5,6 +5,13 @@ import {
     IService,
 } from "../common/index";
 
+export interface IHospitalSummary {
+    totalLicensedBeds: number | "N/A";
+    staffedBeds: number | "N/A";
+    icuBeds: number | "N/A";
+    totalHospitals: number | "N/A";
+}
+
 export interface ICoronaDatapointTimeseriesDatapoint {
     cases?: number | "N/A";
     deaths?: number | "N/A";
@@ -18,6 +25,7 @@ export interface ICoronaDataPoint {
     county?: string;
     deaths?: number | "N/A";
     fipsCode: string;
+    hospitalSummary?: IHospitalSummary;
     lastUpdated?: string;
     recovered?: number | "N/A";
     state?: string;

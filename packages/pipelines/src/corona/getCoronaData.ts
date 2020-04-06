@@ -7,6 +7,7 @@ import { getCoronaDataCoronaScraper } from "./getCoronaDataCoronaScraper";
 import { ISingleBreakdown, ITotalBreakdown, ITimeseriesBreakdown, ISingleTimeseriesBreakdown } from "./shared";
 import { getTimeseriesCoronaScraper } from "./getTimeseriesCoronaScraper";
 import { getTimeseriesNYTimes } from "./getTimeseriesNYTimes";
+import { getHospitalData, IFipsToHospitalSummary } from "./getHospitalData";
 
 export interface IStateCoronaData {
     [stateName: string]: ICoronaBreakdown;
@@ -16,6 +17,11 @@ export interface ICoronaData {
     nation: ICoronaBreakdown;
     states: IStateCoronaData;
     timeseries?: ITimeseriesBreakdown;
+}
+
+interface IWithMetadata {
+    nation: ICoronaDataPoint;
+    states: { [fips: string]: ISingleBreakdown };
 }
 
 function mergeCoronaDatapoints(dataPointA?: ICoronaDataPoint, dataPointB?: ICoronaDataPoint): ICoronaDataPoint {
@@ -189,7 +195,7 @@ function addTimeseriesDataPoint(
 function addTimeSeriesData(
     dataPoints: { nation: ICoronaDataPoint; verifiedDataPoints: ITotalBreakdown },
     timeseries: ITimeseriesBreakdown,
-) {
+): IWithMetadata {
     return {
         nation: addTimeseriesDataPoint(dataPoints.nation, timeseries["999"]),
         states: lodash.mapValues(
@@ -216,6 +222,30 @@ function addTimeSeriesData(
                         ): ICoronaDataPoint => {
                             return addTimeseriesDataPoint(dataCountyPoint, timeseriesPoint);
                         },
+                    ),
+                };
+            },
+        ),
+    };
+}
+
+function addHospitalPoint(point: ICoronaDataPoint, hospitalData: IFipsToHospitalSummary): ICoronaDataPoint {
+    return { ...point, hospitalSummary: hospitalData[point.fipsCode] };
+}
+
+function addHospitalData(withTimeSeries: IWithMetadata, hospitalData: IFipsToHospitalSummary): IWithMetadata {
+    return {
+        nation: withTimeSeries.nation,
+        states: lodash.mapValues(
+            withTimeSeries.states,
+            (stateBreakdown): ISingleBreakdown => {
+                return {
+                    stateTotal:
+                        stateBreakdown.stateTotal !== undefined
+                            ? addHospitalPoint(stateBreakdown.stateTotal, hospitalData)
+                            : undefined,
+                    countiesBreakdown: lodash.mapValues(stateBreakdown.countiesBreakdown, countyBreakdown =>
+                        addHospitalPoint(countyBreakdown, hospitalData),
                     ),
                 };
             },
@@ -273,13 +303,18 @@ async function getMergedCoronaTimeseries() {
 }
 
 export async function getCoronaData(): Promise<ICoronaData> {
-    const [dataPoints, timeseries] = await Promise.all([getMergedCoronaDatasets(), getMergedCoronaTimeseries()]);
+    const [dataPoints, timeseries, hospitalData] = await Promise.all([
+        getMergedCoronaDatasets(),
+        getMergedCoronaTimeseries(),
+        getHospitalData(),
+    ]);
 
     const withTimeSeries = addTimeSeriesData(dataPoints, timeseries);
+    const withHospitalData = addHospitalData(withTimeSeries, hospitalData);
 
     return {
-        nation: getNationData(withTimeSeries.nation, withTimeSeries.states),
-        states: getStateData(withTimeSeries.states),
+        nation: getNationData(withHospitalData.nation, withHospitalData.states),
+        states: getStateData(withHospitalData.states),
         timeseries,
     };
 }
