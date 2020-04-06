@@ -109,7 +109,10 @@ function verifyDatapoints(totalBreakdown: ITotalBreakdown): ITotalBreakdown {
         .reduce((previous, next) => ({ ...previous, ...next }), {});
 }
 
-export async function getMergedCoronaDatasets() {
+export async function getMergedCoronaDatasets(): Promise<{
+    nation: ICoronaDataPoint;
+    verifiedDataPoints: ITotalBreakdown;
+}> {
     const [arcGis, coronaDataScraper] = await Promise.all([getCoronaDataArc(), getCoronaDataCoronaScraper()]);
 
     PIPELINE_LOGGER.log({ level: "info", message: "Fetched data from arcgis and coronadatascraper." });

@@ -1,5 +1,4 @@
 import fetch from "node-fetch";
-import { IHospitalSummary } from "@corona/api";
 import lodash from "lodash";
 import { getArcgisFipsCode } from "../../utils/getCoronaDataScraperFipsCode";
 
@@ -31,6 +30,13 @@ interface IHospitalDataPoint {
     licensedBeds: number;
     staffedBeds: number;
     icuBeds: number;
+}
+
+export interface IHospitalSummary {
+    totalLicensedBeds: number | "N/A";
+    staffedBeds: number | "N/A";
+    icuBeds: number | "N/A";
+    totalHospitals: number | "N/A";
 }
 
 export interface IFipsToHospitalSummary {

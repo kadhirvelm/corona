@@ -1,15 +1,32 @@
 @import "../../../utils/variables";
 
-.basic-info {
-    display: flex;
+:global(.mobile) {
+    .basic-info-container {
+        padding-bottom: 50px;
+    }
+}
+
+.basic-info-container {
     flex-direction: column;
     margin-top: 10px;
     padding: 10px;
     animation: fade-in 250ms ease-out;
+    overflow-y: auto;
+}
+
+.general-info {
+    display: flex;
+    flex-direction: column;
 
     > :not(:last-child) {
         margin-bottom: 5px;
     }
+}
+
+.title {
+    display: flex;
+    justify-content: center;
+    font-weight: 600;
 }
 
 .info {
@@ -26,7 +43,7 @@
     display: flex;
     flex: 1;
     height: 1px;
-    background: $box-shadow;
+    background: rgba(#D5D8DC, 0.75);
     margin: 0 10px;
 }
 
@@ -53,4 +70,14 @@
     flex: 1;
     justify-content: flex-end;
     font-weight: 550;
+}
+
+.testing-information {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+
+    > :not(:last-child) {
+        margin-bottom: 5px;
+    }
 }

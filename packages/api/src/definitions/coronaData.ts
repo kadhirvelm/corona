@@ -5,13 +5,6 @@ import {
     IService,
 } from "../common/index";
 
-export interface IHospitalSummary {
-    totalLicensedBeds: number | "N/A";
-    staffedBeds: number | "N/A";
-    icuBeds: number | "N/A";
-    totalHospitals: number | "N/A";
-}
-
 export interface ICoronaDatapointTimeseriesDatapoint {
     cases?: number | "N/A";
     deaths?: number | "N/A";
@@ -20,15 +13,28 @@ export interface ICoronaDatapointTimeseriesDatapoint {
     growthFactor?: number | "N/A";
 }
 
+export interface ICoronaTestingInformation {
+    dataGrade: string;
+    death: number;
+    hospitalized: number | "N/A";
+    inIcu: number | "N/A";
+    onVentilator: number | "N/A";
+    lastUpdated: string;
+    negative: number;
+    positive: number;
+    pending: number | "N/A";
+    totalTests: number;
+}
+
 export interface ICoronaDataPoint {
     activeCases?: number | "N/A";
     county?: string;
     deaths?: number | "N/A";
     fipsCode: string;
-    hospitalSummary?: IHospitalSummary;
     lastUpdated?: string;
     recovered?: number | "N/A";
     state?: string;
+    testingInformation?: ICoronaTestingInformation;
     totalCases: number | "N/A";
     population?: number | "N/A";
     timeseries?: {
