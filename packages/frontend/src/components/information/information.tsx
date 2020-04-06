@@ -10,8 +10,9 @@ function getInformationContent() {
                 The data is sourced from <a href="https://coronadatascraper.com/#home">Corona Data Scraper</a>,{" "}
                 <a href="https://coronavirus-disasterresponse.hub.arcgis.com/#get-data">Arcgis</a>,{" "}
                 <a href="https://covid19.healthdata.org/projections">Covid 19 Healthdata</a>,{" "}
-                <a href="https://github.com/nytimes/covid-19-data">The NY Times</a>, from health agency websites, county
-                and state websites, executive orders, and the CDC. It is updated every 3 hours.
+                <a href="https://github.com/nytimes/covid-19-data">The NY Times</a>,{" "}
+                <a href="https://covidtracking.com/data">The Covid Tracking Project</a>, from health agency websites,
+                county and state websites, executive orders, and the CDC. It is updated every 3 hours.
             </div>
             <div className={styles.contact}>
                 If you spot any issues, have feature requests, more data sources, or would like to just chat, please
