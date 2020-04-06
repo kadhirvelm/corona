@@ -9,11 +9,11 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { IStoreState } from "../../store";
 import { IDeviceType, IMapOptions, IMapTopology } from "../../typings";
-import { getDimensionsForMap, getLinearColorScale, getNumber, getTotalDimensionSpacing } from "../../utils";
+import { IMapColoring } from "../../typings/mapType";
+import { getDimensionsForMap, getLinearColorScale, getTotalDimensionSpacing } from "../../utils";
 import { getTopology } from "../../utils/mapDataCache";
 import { MapHelpers } from "../helpers";
 import styles from "./usMap.module.scss";
-import { IMapColoring } from "../../typings/mapType";
 
 interface IStateProps {
     deviceType: IDeviceType | undefined;
