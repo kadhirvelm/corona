@@ -114,12 +114,12 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             filename: "index.html",
-            favicon: process.env.NODE_ENV === "production" ? "/favicon.ico" : "./public/favicon.ico",
+            favicon: "./public/favicon.ico",
             meta: {
                 copyright: "Copyright 2020",
                 description: "Allows a person to view nation, state, and county level corona-related information for the united states.",
                 "og:title": "United States Corona Dashboard",
-                "og:image": process.env.NODE_ENV === "production" ? "/og-image.png" : "./public/og-image.png",
+                "og:image": "./public/og-image.png",
                 title: "United States Corona Dashboard.",
                 viewport: "width=device-width, initial-scale=1.0",
             },
