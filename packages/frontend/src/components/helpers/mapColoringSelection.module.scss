@@ -1,0 +1,33 @@
+@import "../../utils/variables";
+
+.map-color-container {
+    display: flex;
+    justify-content: flex-end;
+    z-index: 1;
+    margin-top: 10px;
+}
+
+.options-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.single-option {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    cursor: pointer;
+
+    &:hover {
+        background: rgba($selected-background, 0.75);
+    }
+}
+
+.title {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.active {
+    background: $selected-background;
+}

@@ -8,10 +8,12 @@ import { ADD_DATA, IStoreState, UPDATE_GEOGRAPHY } from "../../store";
 import { IDataEntry, IGeography } from "../../typings";
 import { getDataKeyFromGeography, nationTopology, stateTopology } from "../../utils";
 import { USMap } from "./usMap";
+import { IMapColoring } from "../../typings/mapType";
 
 interface IStateProps {
     cachedData: { [key: string]: ICoronaBreakdown };
     geography: IGeography;
+    mapColoring: IMapColoring;
 }
 
 interface IDispatchProps {
@@ -31,7 +33,7 @@ async function getDataForState(stateName: string, addData: (dataEntry: IDataEntr
 }
 
 function UnconnectedVirusDataRenderer(props: IProps) {
-    const { cachedData, geography, updateGeography } = props;
+    const { cachedData, geography, mapColoring, updateGeography } = props;
 
     React.useEffect(() => {
         const { addData } = props;
@@ -78,14 +80,28 @@ function UnconnectedVirusDataRenderer(props: IProps) {
                 show={IGeography.isNationGeography(geography)}
                 transitionProps={cachedData[DEFAULT_DATA_KEY]}
             >
-                {dataCopy => <USMap id="nation" mapTopology={nationTopology()} data={dataCopy} {...sharedProps} />}
+                {dataCopy => (
+                    <USMap
+                        key={mapColoring.label}
+                        id="nation"
+                        mapTopology={nationTopology()}
+                        data={dataCopy}
+                        {...sharedProps}
+                    />
+                )}
             </Transitioner>
             <Transitioner<ICoronaBreakdown>
                 show={IGeography.isStateGeography(geography) || IGeography.isCountyGeography(geography)}
                 transitionProps={cachedData[getDataKeyFromGeography(geography)]}
             >
                 {dataCopy => (
-                    <USMap id="state" mapTopology={stateTopology(geography)} data={dataCopy} {...sharedProps} />
+                    <USMap
+                        key={mapColoring.label}
+                        id="state"
+                        mapTopology={stateTopology(geography)}
+                        data={dataCopy}
+                        {...sharedProps}
+                    />
                 )}
             </Transitioner>
         </>
@@ -96,6 +112,7 @@ function mapStateToProps(state: IStoreState): IStateProps {
     return {
         cachedData: state.application.cachedData,
         geography: state.interface.geography,
+        mapColoring: state.interface.mapColoring,
     };
 }
 

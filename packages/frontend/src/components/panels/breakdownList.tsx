@@ -7,11 +7,13 @@ import { bindActionCreators, Dispatch } from "redux";
 import { getDataBreakdown, IStoreState, maybeGetDataForGeography, UPDATE_GEOGRAPHY } from "../../store";
 import { IDataBreakdown, IGeography } from "../../typings";
 import styles from "./breakdownList.module.scss";
+import { IMapColoring } from "../../typings/mapType";
 
 interface IStateProps {
     geography: IGeography;
     data: ICoronaBreakdown | undefined;
     dataBreakdown: IDataBreakdown[];
+    mapColoring: IMapColoring;
 }
 
 interface IDispatchProps {
@@ -22,7 +24,7 @@ interface IDispatchProps {
 type IProps = IStateProps & IDispatchProps;
 
 function renderDataBreakdown(dataBreakdown: IDataBreakdown[], dataBreakdownProps: IProps) {
-    const { geography, updateGeography } = dataBreakdownProps;
+    const { geography, mapColoring, updateGeography } = dataBreakdownProps;
 
     const handleClick = (dataPoint: ICoronaDataPoint) => () => {
         if (IGeography.isNationGeography(geography) && geography.fipsCode !== dataPoint.fipsCode) {
@@ -65,7 +67,9 @@ function renderDataBreakdown(dataBreakdown: IDataBreakdown[], dataBreakdownProps
                     onClick={handleClick(breakdown.dataPoint)}
                 >
                     <span>{breakdown.name}</span>
-                    <span className={styles.totalCasesColumn}>{breakdown.dataPoint.totalCases.toLocaleString()}</span>
+                    <span className={styles.totalCasesColumn}>
+                        {mapColoring.getDataPoint(breakdown.dataPoint).toLocaleString()}
+                    </span>
                 </div>
             ))}
         </div>
@@ -73,13 +77,13 @@ function renderDataBreakdown(dataBreakdown: IDataBreakdown[], dataBreakdownProps
 }
 
 interface ISortMethod {
-    field: "cases" | "name";
+    field: "number" | "name";
     ascOrDesc: "asc" | "desc";
-    sort: (a: IDataBreakdown, b: IDataBreakdown) => number;
+    sort: (a: IDataBreakdown, b: IDataBreakdown, getNumber: (dataPoint: ICoronaDataPoint) => number) => number;
 }
 
 interface ISortMethods {
-    cases: {
+    number: {
         asc: ISortMethod;
         desc: ISortMethod;
     };
@@ -90,16 +94,18 @@ interface ISortMethods {
 }
 
 const SORT_METHODS: ISortMethods = {
-    cases: {
+    number: {
         asc: {
-            field: "cases",
+            field: "number",
             ascOrDesc: "asc",
-            sort: (a: IDataBreakdown, b: IDataBreakdown) => (a.dataPoint.totalCases > b.dataPoint.totalCases ? 1 : -1),
+            sort: (a: IDataBreakdown, b: IDataBreakdown, getNumber: (dataPoint: ICoronaDataPoint) => number) =>
+                getNumber(a.dataPoint) > getNumber(b.dataPoint) ? 1 : -1,
         },
         desc: {
-            field: "cases",
+            field: "number",
             ascOrDesc: "desc",
-            sort: (a: IDataBreakdown, b: IDataBreakdown) => (a.dataPoint.totalCases > b.dataPoint.totalCases ? -1 : 1),
+            sort: (a: IDataBreakdown, b: IDataBreakdown, getNumber: (dataPoint: ICoronaDataPoint) => number) =>
+                getNumber(a.dataPoint) > getNumber(b.dataPoint) ? -1 : 1,
         },
     },
     name: {
@@ -116,12 +122,12 @@ const SORT_METHODS: ISortMethods = {
     },
 };
 
-function maybeRenderIconForSort(sortMethod: "cases" | "name", currentSortMethod: ISortMethod) {
+function maybeRenderIconForSort(sortMethod: "number" | "name", currentSortMethod: ISortMethod) {
     if (currentSortMethod.field !== sortMethod) {
         return null;
     }
 
-    if (currentSortMethod.field === "cases") {
+    if (currentSortMethod.field === "number") {
         return (
             <Icon className={styles.sortIcon} icon={currentSortMethod.ascOrDesc === "asc" ? "sort-asc" : "sort-desc"} />
         );
@@ -136,10 +142,10 @@ function maybeRenderIconForSort(sortMethod: "cases" | "name", currentSortMethod:
 }
 
 function UnconnectedBreakdownList(props: IProps) {
-    const { data, dataBreakdown } = props;
+    const { data, dataBreakdown, mapColoring } = props;
 
     const [filter, setFilter] = React.useState("");
-    const [sortMethod, setSortMethod] = React.useState<ISortMethod>(SORT_METHODS.cases.desc);
+    const [sortMethod, setSortMethod] = React.useState<ISortMethod>(SORT_METHODS.number.desc);
 
     if (data === undefined) {
         return <div className={styles.breakdownListContainer} />;
@@ -147,15 +153,15 @@ function UnconnectedBreakdownList(props: IProps) {
 
     const updateFilterValue = (event: React.ChangeEvent<HTMLInputElement>) => setFilter(event.currentTarget.value);
 
-    const updateSort = (typeOfSort: "cases" | "name") => () => {
+    const updateSort = (typeOfSort: "number" | "name") => () => {
         if (sortMethod.field === typeOfSort) {
             setSortMethod(
                 sortMethod.ascOrDesc === "asc" ? SORT_METHODS[typeOfSort].desc : SORT_METHODS[typeOfSort].asc,
             );
-        } else if (sortMethod.field === "cases") {
+        } else if (sortMethod.field === "number") {
             setSortMethod(SORT_METHODS.name.asc);
         } else {
-            setSortMethod(SORT_METHODS.cases.desc);
+            setSortMethod(SORT_METHODS.number.desc);
         }
     };
 
@@ -167,14 +173,15 @@ function UnconnectedBreakdownList(props: IProps) {
                     <div className={styles.sortContainer} onClick={updateSort("name")}>
                         Name{maybeRenderIconForSort("name", sortMethod)}
                     </div>
-                    <div className={styles.sortContainer} onClick={updateSort("cases")}>
-                        Total cases{maybeRenderIconForSort("cases", sortMethod)}
+                    <div className={styles.sortContainer} onClick={updateSort("number")}>
+                        {mapColoring.label}
+                        {maybeRenderIconForSort("number", sortMethod)}
                     </div>
                 </div>
             </div>
             {renderDataBreakdown(
                 dataBreakdown
-                    .sort(sortMethod.sort)
+                    .sort((a, b) => sortMethod.sort(a, b, mapColoring.getDataPoint))
                     .filter(breakdown => breakdown.name.toLowerCase().includes(filter.toLowerCase())),
                 props,
             )}
@@ -187,6 +194,7 @@ function mapStateToProps(state: IStoreState): IStateProps {
         geography: state.interface.geography,
         data: maybeGetDataForGeography(state),
         dataBreakdown: getDataBreakdown(state),
+        mapColoring: state.interface.mapColoring,
     };
 }
 

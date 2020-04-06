@@ -1,16 +1,16 @@
 import { ICoronaBreakdown } from "@corona/api";
 import { scaleLinear } from "d3-scale";
+import { IMapColoring } from "../typings/mapType";
 import colors from "./variables.scss";
-import { getNumber } from "./getNumber";
 
-export function getLinearColorScale(data: ICoronaBreakdown) {
+export function getLinearColorScale(data: ICoronaBreakdown, mapColoring: IMapColoring) {
     const average = (numbers: number[]) => numbers.reduce((previous, next) => previous + next, 0) / numbers.length;
 
     const isValidFips = (fips: string) => fips.length === 2 || fips.length === 5;
 
     const numbers = Object.values(data.breakdown)
         .filter(dataPoint => isValidFips(dataPoint.fipsCode))
-        .map(dataPoint => getNumber(dataPoint.totalCases));
+        .map(mapColoring.getDataPoint);
     const range = [0, average(numbers), Math.max(...numbers)];
 
     return {

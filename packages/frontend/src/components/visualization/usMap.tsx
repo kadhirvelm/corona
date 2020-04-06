@@ -9,13 +9,15 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { IStoreState } from "../../store";
 import { IDeviceType, IMapOptions, IMapTopology } from "../../typings";
-import { getDimensionsForMap, getLinearColorScale, getNumber, getTotalDimensionSpacing } from "../../utils";
+import { IMapColoring } from "../../typings/mapType";
+import { getDimensionsForMap, getLinearColorScale, getTotalDimensionSpacing } from "../../utils";
 import { getTopology } from "../../utils/mapDataCache";
 import { MapHelpers } from "../helpers";
 import styles from "./usMap.module.scss";
 
 interface IStateProps {
     deviceType: IDeviceType | undefined;
+    mapColoring: IMapColoring;
 }
 
 interface IOwnProps {
@@ -83,7 +85,7 @@ function renderMap(
     path: GeoPath<any, GeoPermissibleObjects>,
     mapOptions: IMapOptions,
 ) {
-    const { data, highlightFips, onFeatureSelect, onMouseEnter, onMouseLeave } = props;
+    const { data, highlightFips, mapColoring, onFeatureSelect, onMouseEnter, onMouseLeave } = props;
     const { colorScale, dimensions } = mapOptions;
 
     svg.selectAll("path")
@@ -94,13 +96,13 @@ function renderMap(
             return getClassNamesForFeature(data, feature?.id, highlightFips);
         })
         .attr("fill", feature => {
-            const cases = getNumber(data?.breakdown[feature.id ?? ""]?.totalCases);
+            const number = mapColoring.getDataPoint(data?.breakdown[feature.id ?? ""]);
 
-            if (cases === undefined) {
+            if (number === undefined) {
                 return styles.defaultGray;
             }
 
-            return colorScale(cases);
+            return colorScale(number);
         })
         .on("click", onFeatureSelect)
         .on("mouseenter", onMouseEnter ?? noop)
@@ -138,14 +140,14 @@ function maybeRenderLoadingState(isLoading: boolean) {
 }
 
 function UnconnectedUSMap(props: IProps) {
-    const { data, deviceType, highlightFips, id } = props;
+    const { data, deviceType, highlightFips, mapColoring, id } = props;
 
     if (data === undefined) {
         return <Spinner className={styles.centerSpinner} />;
     }
 
     const [isLoading, setLoading] = React.useState(false);
-    const { range, colorScale } = getLinearColorScale(data);
+    const { range, colorScale } = getLinearColorScale(data, mapColoring);
 
     const dimensions = getDimensionsForMap(deviceType);
 
@@ -171,6 +173,7 @@ function UnconnectedUSMap(props: IProps) {
 function mapStateToProps(store: IStoreState): IStateProps {
     return {
         deviceType: store.interface.deviceType,
+        mapColoring: store.interface.mapColoring,
     };
 }
 
