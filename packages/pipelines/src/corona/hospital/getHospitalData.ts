@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
 import { IHospitalSummary } from "@corona/api";
 import lodash from "lodash";
-import { getArcgisFipsCode } from "../utils/getCoronaDataScraperFipsCode";
+import { getArcgisFipsCode } from "../../utils/getCoronaDataScraperFipsCode";
 
 interface IRawHospitalResponse {
     attributes: {
@@ -36,6 +36,30 @@ interface IHospitalDataPoint {
 export interface IFipsToHospitalSummary {
     [fipsCode: string]: IHospitalSummary;
 }
+
+// function addHospitalPoint(point: ICoronaDataPoint, hospitalData: IFipsToHospitalSummary): ICoronaDataPoint {
+//     return { ...point, hospitalSummary: hospitalData[point.fipsCode] };
+// }
+
+// function addHospitalData(withTimeSeries: IWithMetadata, hospitalData: IFipsToHospitalSummary): IWithMetadata {
+//     return {
+//         nation: withTimeSeries.nation,
+//         states: lodash.mapValues(
+//             withTimeSeries.states,
+//             (stateBreakdown): ISingleBreakdown => {
+//                 return {
+//                     stateTotal:
+//                         stateBreakdown.stateTotal !== undefined
+//                             ? addHospitalPoint(stateBreakdown.stateTotal, hospitalData)
+//                             : undefined,
+//                     countiesBreakdown: lodash.mapValues(stateBreakdown.countiesBreakdown, countyBreakdown =>
+//                         addHospitalPoint(countyBreakdown, hospitalData),
+//                     ),
+//                 };
+//             },
+//         ),
+//     };
+// }
 
 function cleanUpDataPoint(rawResponsePoint: IRawHospitalResponse): IHospitalDataPoint {
     const { attributes } = rawResponsePoint;
@@ -94,6 +118,7 @@ function getSummaries(rawResponse: IRawHospitalResponse[]) {
     return summary;
 }
 
+// NOTE: the hospital data is being rate limited to 2000...strange, will need to revisit.
 export async function getHospitalData(): Promise<IFipsToHospitalSummary> {
     const rawResponse = await fetch(
         "https://services7.arcgis.com/LXCny1HyhQCUSueu/arcgis/rest/services/Definitive_Healthcare_USA_Hospital_Beds/FeatureServer/0/query?where=1%3D1&outFields=HOSPITAL_NAME,HOSPITAL_TYPE,HQ_ADDRESS,HQ_ADDRESS1,HQ_CITY,HQ_STATE,HQ_ZIP_CODE,COUNTY_NAME,STATE_NAME,STATE_FIPS,CNTY_FIPS,FIPS,NUM_LICENSED_BEDS,NUM_STAFFED_BEDS,NUM_ICU_BEDS,BED_UTILIZATION,Potential_Increase_In_Bed_Capac&returnGeometry=false&outSR=4326&f=json",

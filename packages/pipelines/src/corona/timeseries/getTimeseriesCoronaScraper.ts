@@ -1,7 +1,7 @@
 import lodash from "lodash";
 import fetch from "node-fetch";
-import { getCoronaDataScraperFipsCode } from "../utils/getCoronaDataScraperFipsCode";
-import { ITimeseriesBreakdown } from "./shared";
+import { getCoronaDataScraperFipsCode } from "../../utils/getCoronaDataScraperFipsCode";
+import { ITimeseriesBreakdown } from "../shared";
 
 interface ICoronaDataScraperTimeseriesRaw {
     [key: string]: {

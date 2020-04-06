@@ -41,6 +41,8 @@ function maybeRenderPopulationPercent(totalCases?: number | "N/A", population?: 
 function UnconnectedBasicInfo(props: IProps) {
     const { dataPointForBasicInfo } = props;
 
+    console.log(dataPointForBasicInfo?.hospitalSummary);
+
     return (
         <div className={styles.basicInfo}>
             {renderSingleLabel("Total", dataPointForBasicInfo?.totalCases.toLocaleString())}

@@ -1,9 +1,9 @@
 import { ICoronaDataPoint } from "@corona/api";
 import fetch from "node-fetch";
-import { cleanCountyName } from "../utils/cleanCountyName";
-import { getCoronaDataScraperFipsCode } from "../utils/getCoronaDataScraperFipsCode";
-import { logCoronaScraperAnomalies } from "../utils/logAnomalies";
-import { getTotalBreakdowns, ICountiesKeyed, IStatesKeyed, ITotalBreakdown } from "./shared";
+import { cleanCountyName } from "../../utils/cleanCountyName";
+import { getCoronaDataScraperFipsCode } from "../../utils/getCoronaDataScraperFipsCode";
+import { logCoronaScraperAnomalies } from "../../utils/logAnomalies";
+import { getTotalBreakdowns, ICountiesKeyed, IStatesKeyed, ITotalBreakdown } from "../shared";
 
 interface ICoronaDataScraperData {
     city?: string;
