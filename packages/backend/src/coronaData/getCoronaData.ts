@@ -1,7 +1,6 @@
 import { ICoronaBreakdown, STATE } from "@corona/api";
 import { getCoronaData, ICoronaData } from "@corona/pipeline";
 import LRU from "lru-cache";
-import { ITimeseriesBreakdown } from "@corona/pipeline/dist/corona/shared";
 
 const DATA_KEY = "data";
 
