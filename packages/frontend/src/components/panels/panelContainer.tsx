@@ -6,10 +6,12 @@ import { BreakdownList } from "./breakdownList";
 import { Stats } from "./stats";
 import styles from "./panelContainer.module.scss";
 import { IStoreState } from "../../store";
-import { IGeography } from "../../typings";
+import { IGeography, IDevice, IDeviceType } from "../../typings";
 import { Projections } from "./projections";
+import { Exploration } from "./exploration";
 
 interface IStateProps {
+    deviceType: IDeviceType | undefined;
     geography: IGeography;
 }
 
@@ -18,7 +20,7 @@ type IProps = IStateProps;
 type IValidTabs = "stats" | "projections" | "list";
 
 function UnconnectedPanelContainer(props: IProps) {
-    const { geography } = props;
+    const { deviceType, geography } = props;
 
     const [tabId, setTabId] = React.useState<IValidTabs>("list");
 
@@ -65,6 +67,12 @@ function UnconnectedPanelContainer(props: IProps) {
                     title={`${typeOfStats()} Projections`}
                     panel={<Projections />}
                 />
+                <Tab
+                    id="exploration"
+                    disabled={!IDevice.isBrowser(deviceType)}
+                    title="Exploration"
+                    panel={<Exploration />}
+                />
                 <Tab id="list" title={`${typeOfList()} List`} panel={<BreakdownList />} />
             </Tabs>
         </div>
@@ -73,6 +81,7 @@ function UnconnectedPanelContainer(props: IProps) {
 
 function mapStateToProps(state: IStoreState): IStateProps {
     return {
+        deviceType: state.interface.deviceType,
         geography: state.interface.geography,
     };
 }
