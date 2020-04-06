@@ -34,10 +34,3 @@ export async function getStateCoronaData(state: STATE): Promise<ICoronaBreakdown
         resolve(data.states[state]);
     });
 }
-
-export async function getTimeseriesData(): Promise<ITimeseriesBreakdown | undefined> {
-    return new Promise(async resolve => {
-        const data = await getValueFromCache();
-        resolve(data.timeseries);
-    });
-}
