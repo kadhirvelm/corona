@@ -10,7 +10,7 @@ $default-gray: #CCD1D1;
 
 :global(.browser) {
     .state {
-        stroke-width: 0.75px;
+        stroke-width: 0.65px;
     }
 }
 
@@ -34,8 +34,7 @@ $default-gray: #CCD1D1;
 }
 
 .highlight-feature {
-    fill: $selected-background;
-    stroke: #1F618D;
+    fill: #F1C40F;
 }
 
 .center-spinner {
