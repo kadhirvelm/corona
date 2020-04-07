@@ -37,9 +37,9 @@ export const MAP_COLORING_OPTIONS: IMapColoring[] = [
         getDataPoint: data => getNumberWithUndefined(data?.deaths),
         getLabel: num => (num === undefined ? "N/A" : num.toLocaleString()),
         colors: {
-            start: "#EBEDEF",
-            middle: "#85929E",
-            end: "#283747",
+            start: "#F9EBEA",
+            middle: "#CD6155",
+            end: "#641E16",
         },
     },
 ];
