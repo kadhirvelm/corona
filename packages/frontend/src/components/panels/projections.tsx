@@ -59,7 +59,7 @@ function renderShortageMetric(totalNumber: number | undefined, measureName: ISin
     return (
         <div className={styles.bottomText}>
             <div className={styles.spacingForDate}>
-                will peak on on{" "}
+                will peak on{" "}
                 <div className={styles.mainTextHighlight}>{getDateString(PARSE_TIME(measureName.peak ?? ""))}</div>
             </div>
             <div className={styles.numberSpacing}>
@@ -73,7 +73,7 @@ function renderNormalBottomTextProjection(totalNumber: number | undefined, proje
     return (
         <div className={styles.bottomText}>
             <div className={styles.spacingForDate}>
-                will peak on on{" "}
+                will peak on{" "}
                 <div className={styles.mainTextHighlight}>{getDateString(PARSE_TIME(projection.peak ?? ""))}</div>
             </div>
             <div className={styles.numberSpacing}>{maybeRenderNumber(totalNumber)}</div>
