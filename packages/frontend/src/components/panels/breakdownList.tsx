@@ -68,7 +68,7 @@ function renderDataBreakdown(dataBreakdown: IDataBreakdown[], dataBreakdownProps
                 >
                     <span>{breakdown.name}</span>
                     <span className={styles.totalCasesColumn}>
-                        {mapColoring.getDataPoint(breakdown.dataPoint).toLocaleString()}
+                        {mapColoring.getLabel(mapColoring.getDataPoint(breakdown.dataPoint))}
                     </span>
                 </div>
             ))}
@@ -79,7 +79,11 @@ function renderDataBreakdown(dataBreakdown: IDataBreakdown[], dataBreakdownProps
 interface ISortMethod {
     field: "number" | "name";
     ascOrDesc: "asc" | "desc";
-    sort: (a: IDataBreakdown, b: IDataBreakdown, getNumber: (dataPoint: ICoronaDataPoint) => number) => number;
+    sort: (
+        a: IDataBreakdown,
+        b: IDataBreakdown,
+        getNumber: (dataPoint: ICoronaDataPoint) => number | undefined,
+    ) => number;
 }
 
 interface ISortMethods {
@@ -98,14 +102,20 @@ const SORT_METHODS: ISortMethods = {
         asc: {
             field: "number",
             ascOrDesc: "asc",
-            sort: (a: IDataBreakdown, b: IDataBreakdown, getNumber: (dataPoint: ICoronaDataPoint) => number) =>
-                getNumber(a.dataPoint) > getNumber(b.dataPoint) ? 1 : -1,
+            sort: (
+                a: IDataBreakdown,
+                b: IDataBreakdown,
+                getNumber: (dataPoint: ICoronaDataPoint) => number | undefined,
+            ) => ((getNumber(a.dataPoint) ?? -1) > (getNumber(b.dataPoint) ?? -1) ? 1 : -1),
         },
         desc: {
             field: "number",
             ascOrDesc: "desc",
-            sort: (a: IDataBreakdown, b: IDataBreakdown, getNumber: (dataPoint: ICoronaDataPoint) => number) =>
-                getNumber(a.dataPoint) > getNumber(b.dataPoint) ? -1 : 1,
+            sort: (
+                a: IDataBreakdown,
+                b: IDataBreakdown,
+                getNumber: (dataPoint: ICoronaDataPoint) => number | undefined,
+            ) => ((getNumber(a.dataPoint) ?? -1) > (getNumber(b.dataPoint) ?? -1) ? -1 : 1),
         },
     },
     name: {

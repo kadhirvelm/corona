@@ -49,8 +49,20 @@ function maybeRenderTestingInformation(testingInformation: ICoronaTestingInforma
         <div className={styles.testingInformation}>
             <span className={styles.title}>State level testing</span>
             {renderSingleLabel("Total tested", testingInformation.totalTests.toLocaleString())}
-            {renderSingleLabel("Negative", testingInformation.negative.toLocaleString())}
-            {renderSingleLabel("Positive", testingInformation.positive.toLocaleString())}
+            {renderSingleLabel(
+                "Negative",
+                `${testingInformation.negative.toLocaleString()} (${(
+                    (testingInformation.negative / testingInformation.totalTests) *
+                    100
+                ).toFixed(0)}%)`,
+            )}
+            {renderSingleLabel(
+                "Positive",
+                `${testingInformation.positive.toLocaleString()} (${(
+                    (testingInformation.positive / testingInformation.totalTests) *
+                    100
+                ).toFixed(0)}%)`,
+            )}
             {renderSingleLabel("Pending", testingInformation.pending.toLocaleString())}
             {renderSingleLabel("Hospitalized", testingInformation.hospitalized.toLocaleString())}
             {renderSingleLabel("In ICUs", testingInformation.inIcu.toLocaleString())}
