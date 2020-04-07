@@ -1,48 +1,21 @@
-import { debounce } from "lodash-es";
-import * as React from "react";
-import { v4 } from "uuid";
 import classNames from "classnames";
+import * as React from "react";
 import { PanelContainer, VirusDataRenderer } from "../components";
-import styles from "./browser.module.scss";
+import { MapColoringSelection } from "../components/helpers/mapColoringSelection";
 import { Information } from "../components/information/information";
+import styles from "./browser.module.scss";
 
-interface IState {
-    resizeId: string;
-}
-
-export class Browser extends React.PureComponent<{}, IState> {
-    public state: IState = {
-        resizeId: v4(),
-    };
-
-    private debounceResize: () => void;
-
-    public constructor(props: {}, context: any) {
-        super(props, context);
-        this.debounceResize = debounce(this.handleResize, 500);
-    }
-
-    public componentDidMount() {
-        window.addEventListener("resize", this.debounceResize);
-    }
-
-    public componentWillUnmount() {
-        window.removeEventListener("resize", this.debounceResize);
-    }
-
+export class Browser extends React.PureComponent {
     public render() {
-        const { resizeId } = this.state;
-
         return (
-            <div className={classNames(styles.browserContainer, "browser")} key={resizeId}>
+            <div className={classNames(styles.browserContainer, "browser")}>
                 <div className={styles.panelContainer}>
                     <PanelContainer />
                 </div>
                 <VirusDataRenderer />
-                <Information className={styles.infoContainer} text="About" />
+                <MapColoringSelection />
+                <Information className={styles.infoContainer} />
             </div>
         );
     }
-
-    private handleResize = () => this.setState({ resizeId: v4() });
 }

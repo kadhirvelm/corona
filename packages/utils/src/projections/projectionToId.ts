@@ -10,6 +10,7 @@ const PROJECTION_TO_ID = {
     Connecticut: 529,
     Delaware: 530,
     "District of Columbia": 531,
+    "Washington, D.C.": 531,
     Florida: 532,
     Georgia: 533,
     Hawaii: 534,

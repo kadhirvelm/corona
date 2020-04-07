@@ -11,8 +11,10 @@ declare namespace ProjectionsModuleScssModule {
         icon: string;
         interventionsContainer: string;
         interventionsTitle: string;
+        mainTextHighlight: string;
         middle: string;
         nonIdealState: string;
+        numberSpacing: string;
         projectionContainer: string;
         projectionsDataContainer: string;
         red: string;

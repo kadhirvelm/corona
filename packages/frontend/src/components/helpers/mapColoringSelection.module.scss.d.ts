@@ -6,7 +6,6 @@ declare namespace MapColoringSelectionModuleScssModule {
         fadeIn: string;
         mapColorContainer: string;
         middle: string;
-        optionsContainer: string;
         singleOption: string;
         start: string;
         title: string;

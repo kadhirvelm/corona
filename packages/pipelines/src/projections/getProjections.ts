@@ -31,10 +31,10 @@ const TRANSLATE_KEY = {
     deaths: "Deaths per day",
     total_death: "Total deaths",
     covid_all_bed: "Hospital beds needed",
-    covid_ICU_bed: "ICU beds needed",
+    covid_ICU_bed: "Intensive care units needed",
     invasive_ventilation: "Invasive ventilators needed",
-    bedover: "Bed shortage",
-    icuover: "Intensive care unit shortage",
+    bedover: "Hospital beds shortage",
+    icuover: "Intensive care units shortage",
     peak_resource_usage: "Overall resource usage",
 };
 

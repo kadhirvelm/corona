@@ -30,12 +30,12 @@ function renderSingleLabel(label: string, value?: string) {
     );
 }
 
-function maybeRenderPopulationPercent(totalCases?: number | "N/A", population?: number | "N/A") {
-    if (totalCases === undefined || totalCases === "N/A" || population === undefined || population === "N/A") {
+function maybeRenderPopulationPercent(label: string, num?: number | "N/A", population?: number | "N/A") {
+    if (num === undefined || num === "N/A" || population === undefined || population === "N/A") {
         return "N/A";
     }
 
-    return renderSingleLabel("Infection rate", `${Math.abs((totalCases / population) * 100).toFixed(3)}%`);
+    return renderSingleLabel(label, `${Math.abs((num / population) * 100).toFixed(3)}%`);
 }
 
 function maybeRenderTestingInformation(testingInformation: ICoronaTestingInformation | undefined) {
@@ -49,8 +49,20 @@ function maybeRenderTestingInformation(testingInformation: ICoronaTestingInforma
         <div className={styles.testingInformation}>
             <span className={styles.title}>State level testing</span>
             {renderSingleLabel("Total tested", testingInformation.totalTests.toLocaleString())}
-            {renderSingleLabel("Negative", testingInformation.negative.toLocaleString())}
-            {renderSingleLabel("Positive", testingInformation.positive.toLocaleString())}
+            {renderSingleLabel(
+                "Negative",
+                `${testingInformation.negative.toLocaleString()} (${(
+                    (testingInformation.negative / testingInformation.totalTests) *
+                    100
+                ).toFixed(0)}%)`,
+            )}
+            {renderSingleLabel(
+                "Positive",
+                `${testingInformation.positive.toLocaleString()} (${(
+                    (testingInformation.positive / testingInformation.totalTests) *
+                    100
+                ).toFixed(0)}%)`,
+            )}
             {renderSingleLabel("Pending", testingInformation.pending.toLocaleString())}
             {renderSingleLabel("Hospitalized", testingInformation.hospitalized.toLocaleString())}
             {renderSingleLabel("In ICUs", testingInformation.inIcu.toLocaleString())}
@@ -69,11 +81,12 @@ function maybeRenderGeneralInformation(dataPoint: ICoronaDataPoint | undefined) 
         <div className={styles.generalInfo}>
             <span className={styles.title}>General</span>
             {renderSingleLabel("Total", dataPoint.totalCases.toLocaleString())}
+            {maybeRenderPopulationPercent("Infection rate", dataPoint.totalCases, dataPoint.population)}
             {renderSingleLabel("Recovered", dataPoint.recovered?.toLocaleString())}
             {renderSingleLabel("Active", dataPoint.activeCases?.toLocaleString())}
             {renderSingleLabel("Deaths", dataPoint.deaths?.toLocaleString())}
+            {maybeRenderPopulationPercent("Mortality rate", dataPoint.deaths, dataPoint.population)}
             {renderSingleLabel("Population", dataPoint.population?.toLocaleString())}
-            {maybeRenderPopulationPercent(dataPoint.totalCases, dataPoint.population)}
             {renderLastUpdated(dataPoint.lastUpdated)}
         </div>
     );

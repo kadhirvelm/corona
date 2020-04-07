@@ -33,24 +33,52 @@ async function getProjectionData(
     addProjectionData({ projection: projectionName, data: projectionData });
 }
 
-function maybeRenderCheck(totalNumber: number | undefined, measureName: string) {
-    if (totalNumber === undefined || !measureName.endsWith("shortage")) {
-        return null;
-    }
-
-    return totalNumber <= 0 ? (
-        <Icon className={classNames(styles.icon, styles.green)} icon="thumbs-up" />
-    ) : (
-        <Icon className={classNames(styles.icon, styles.red)} icon="thumbs-down" />
-    );
-}
-
 function maybeRenderNumber(totalNumber: number | undefined) {
     if (totalNumber === undefined) {
         return null;
     }
 
-    return `at ${totalNumber.toLocaleString()}`;
+    return (
+        <div className={styles.numberSpacing}>
+            at <div className={styles.mainTextHighlight}>{totalNumber.toLocaleString()}</div>
+        </div>
+    );
+}
+
+function renderShortageMetric(totalNumber: number | undefined, measureName: ISingleProjectionMeasure) {
+    if (totalNumber === undefined) {
+        return <div className={styles.bottomText}>has no projected data at this time.</div>;
+    }
+
+    if (totalNumber === 0) {
+        return (
+            <div className={styles.bottomText}>is not projected to happen, there are enough units in the state.</div>
+        );
+    }
+
+    return (
+        <div className={styles.bottomText}>
+            <div className={styles.spacingForDate}>
+                will peak on on{" "}
+                <div className={styles.mainTextHighlight}>{getDateString(PARSE_TIME(measureName.peak ?? ""))}</div>
+            </div>
+            <div className={styles.numberSpacing}>
+                with <div className={styles.mainTextHighlight}>{totalNumber.toLocaleString()}</div> extra units needed.
+            </div>
+        </div>
+    );
+}
+
+function renderNormalBottomTextProjection(totalNumber: number | undefined, projection: ISingleProjectionMeasure) {
+    return (
+        <div className={styles.bottomText}>
+            <div className={styles.spacingForDate}>
+                will peak on on{" "}
+                <div className={styles.mainTextHighlight}>{getDateString(PARSE_TIME(projection.peak ?? ""))}</div>
+            </div>
+            <div className={styles.numberSpacing}>{maybeRenderNumber(totalNumber)}</div>
+        </div>
+    );
 }
 
 function renderProjections(projections: { [measureName: string]: ISingleProjectionMeasure }) {
@@ -70,15 +98,9 @@ function renderProjections(projections: { [measureName: string]: ISingleProjecti
                     return (
                         <div className={styles.singleProjectionContainer}>
                             <div className={styles.upperText}>{measureName}</div>
-                            <div className={styles.bottomText}>
-                                <span className={styles.spacingForDate}>
-                                    will peak on {getDateString(PARSE_TIME(projections[measureName].peak ?? ""))}
-                                </span>
-                                <span>
-                                    {maybeRenderNumber(totalNumber)}
-                                    {maybeRenderCheck(totalNumber, measureName)}
-                                </span>
-                            </div>
+                            {measureName.endsWith("shortage")
+                                ? renderShortageMetric(totalNumber, projections[measureName])
+                                : renderNormalBottomTextProjection(totalNumber, projections[measureName])}
                         </div>
                     );
                 })}

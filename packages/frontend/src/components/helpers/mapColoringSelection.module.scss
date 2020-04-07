@@ -1,33 +1,55 @@
 @import "../../utils/variables";
 
-.map-color-container {
-    display: flex;
-    justify-content: flex-end;
-    z-index: 1;
-    margin-top: 10px;
+:global(.browser) {
+    .map-color-container {
+        bottom: 20px;
+        left: 50%;
+
+        > :not(:last-child) {
+            margin-right: 5px;
+        }
+    }
 }
 
-.options-container {
+:global(.mobile) {
+    .map-color-container {
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100%;
+        overflow-x: auto;
+
+        > :not(:last-child) {
+            margin-right: 5px;
+        }
+    }
+}
+
+.map-color-container {
+    position: absolute;
     display: flex;
-    flex-direction: column;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
 }
 
 .single-option {
     display: flex;
-    flex-direction: column;
-    padding: 10px;
+    align-items: center;
+    padding: 3px 5px;
     cursor: pointer;
+    border-radius: 3px;
 
     &:hover {
-        background: rgba($selected-background, 0.75);
+        background: rgba(#F4D03F, 0.75);
     }
 }
 
 .title {
     font-weight: 600;
-    margin-bottom: 5px;
 }
 
 .active {
-    background: $selected-background;
+    background: #F1C40F;
 }

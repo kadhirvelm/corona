@@ -4,6 +4,7 @@ import classNames from "classnames";
 import * as React from "react";
 import { connect } from "react-redux";
 import { bindActionCreators, Dispatch } from "redux";
+import { keyBy } from "lodash-es";
 import { getDataBreakdown, IStoreState, maybeGetDataForGeography, UPDATE_GEOGRAPHY } from "../../store";
 import { IDataBreakdown, IGeography } from "../../typings";
 import styles from "./breakdownList.module.scss";
@@ -23,7 +24,11 @@ interface IDispatchProps {
 
 type IProps = IStateProps & IDispatchProps;
 
-function renderDataBreakdown(dataBreakdown: IDataBreakdown[], dataBreakdownProps: IProps) {
+function renderDataBreakdown(
+    filteredDataBreakdown: IDataBreakdown[],
+    positions: ISortedPositions,
+    dataBreakdownProps: IProps,
+) {
     const { geography, mapColoring, updateGeography } = dataBreakdownProps;
 
     const handleClick = (dataPoint: ICoronaDataPoint) => () => {
@@ -59,16 +64,18 @@ function renderDataBreakdown(dataBreakdown: IDataBreakdown[], dataBreakdownProps
 
     return (
         <div className={classNames(styles.caseBreakdownContainer)}>
-            {dataBreakdown.map(breakdown => (
+            {filteredDataBreakdown.map(breakdown => (
                 <div
                     className={classNames(styles.singleBreakdown, {
                         [styles.isOpen]: geography.fipsCode === breakdown.dataPoint.fipsCode,
                     })}
                     onClick={handleClick(breakdown.dataPoint)}
                 >
-                    <span>{breakdown.name}</span>
+                    <span>
+                        {positions[breakdown.name].position + 1}) {breakdown.name}
+                    </span>
                     <span className={styles.totalCasesColumn}>
-                        {mapColoring.getDataPoint(breakdown.dataPoint).toLocaleString()}
+                        {mapColoring.getLabel(mapColoring.getDataPoint(breakdown.dataPoint))}
                     </span>
                 </div>
             ))}
@@ -79,7 +86,11 @@ function renderDataBreakdown(dataBreakdown: IDataBreakdown[], dataBreakdownProps
 interface ISortMethod {
     field: "number" | "name";
     ascOrDesc: "asc" | "desc";
-    sort: (a: IDataBreakdown, b: IDataBreakdown, getNumber: (dataPoint: ICoronaDataPoint) => number) => number;
+    sort: (
+        a: IDataBreakdown,
+        b: IDataBreakdown,
+        getNumber: (dataPoint: ICoronaDataPoint) => number | undefined,
+    ) => number;
 }
 
 interface ISortMethods {
@@ -98,14 +109,20 @@ const SORT_METHODS: ISortMethods = {
         asc: {
             field: "number",
             ascOrDesc: "asc",
-            sort: (a: IDataBreakdown, b: IDataBreakdown, getNumber: (dataPoint: ICoronaDataPoint) => number) =>
-                getNumber(a.dataPoint) > getNumber(b.dataPoint) ? 1 : -1,
+            sort: (
+                a: IDataBreakdown,
+                b: IDataBreakdown,
+                getNumber: (dataPoint: ICoronaDataPoint) => number | undefined,
+            ) => ((getNumber(a.dataPoint) ?? -1) > (getNumber(b.dataPoint) ?? -1) ? 1 : -1),
         },
         desc: {
             field: "number",
             ascOrDesc: "desc",
-            sort: (a: IDataBreakdown, b: IDataBreakdown, getNumber: (dataPoint: ICoronaDataPoint) => number) =>
-                getNumber(a.dataPoint) > getNumber(b.dataPoint) ? -1 : 1,
+            sort: (
+                a: IDataBreakdown,
+                b: IDataBreakdown,
+                getNumber: (dataPoint: ICoronaDataPoint) => number | undefined,
+            ) => ((getNumber(a.dataPoint) ?? -1) > (getNumber(b.dataPoint) ?? -1) ? -1 : 1),
         },
     },
     name: {
@@ -121,6 +138,10 @@ const SORT_METHODS: ISortMethods = {
         },
     },
 };
+
+interface ISortedPositions {
+    [name: string]: { name: string; position: number };
+}
 
 function maybeRenderIconForSort(sortMethod: "number" | "name", currentSortMethod: ISortMethod) {
     if (currentSortMethod.field !== sortMethod) {
@@ -146,6 +167,22 @@ function UnconnectedBreakdownList(props: IProps) {
 
     const [filter, setFilter] = React.useState("");
     const [sortMethod, setSortMethod] = React.useState<ISortMethod>(SORT_METHODS.number.desc);
+
+    const [sortedBreakdown, setSortedBreakdown] = React.useState<{
+        sortedData: IDataBreakdown[];
+        positions: ISortedPositions;
+    }>({ sortedData: [], positions: {} });
+    React.useEffect(() => {
+        const sortedData = dataBreakdown.sort((a, b) => sortMethod.sort(a, b, mapColoring.getDataPoint));
+
+        setSortedBreakdown({
+            sortedData,
+            positions: keyBy(
+                sortedData.map((dataPoint, index) => ({ name: dataPoint.name, position: index })),
+                "name",
+            ),
+        });
+    }, [dataBreakdown, mapColoring]);
 
     if (data === undefined) {
         return <div className={styles.breakdownListContainer} />;
@@ -180,9 +217,10 @@ function UnconnectedBreakdownList(props: IProps) {
                 </div>
             </div>
             {renderDataBreakdown(
-                dataBreakdown
-                    .sort((a, b) => sortMethod.sort(a, b, mapColoring.getDataPoint))
-                    .filter(breakdown => breakdown.name.toLowerCase().includes(filter.toLowerCase())),
+                sortedBreakdown.sortedData.filter(breakdown =>
+                    breakdown.name.toLowerCase().includes(filter.toLowerCase()),
+                ),
+                sortedBreakdown.positions,
                 props,
             )}
         </div>

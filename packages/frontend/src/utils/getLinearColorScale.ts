@@ -3,6 +3,14 @@ import { scaleLinear } from "d3-scale";
 import { IMapColoring } from "../typings/mapType";
 import colors from "./variables.scss";
 
+export function getColors(mapColoring: IMapColoring) {
+    return {
+        start: mapColoring.colors?.start ?? colors.start,
+        middle: mapColoring.colors?.middle ?? colors.middle,
+        end: mapColoring.colors?.end ?? colors.end,
+    };
+}
+
 export function getLinearColorScale(data: ICoronaBreakdown, mapColoring: IMapColoring) {
     const average = (numbers: number[]) => numbers.reduce((previous, next) => previous + next, 0) / numbers.length;
 
@@ -10,13 +18,24 @@ export function getLinearColorScale(data: ICoronaBreakdown, mapColoring: IMapCol
 
     const numbers = Object.values(data.breakdown)
         .filter(dataPoint => isValidFips(dataPoint.fipsCode))
-        .map(mapColoring.getDataPoint);
+        .map(num => mapColoring.getDataPoint(num) ?? 0);
     const range = [0, average(numbers), Math.max(...numbers)];
+
+    const { start, middle, end } = getColors(mapColoring);
+
+    if (range[0] === range[1]) {
+        return {
+            range,
+            colorScale: scaleLinear()
+                .domain(range)
+                .range([start, start, start] as any),
+        };
+    }
 
     return {
         range,
         colorScale: scaleLinear()
             .domain(range)
-            .range([colors.start, colors.middle, colors.end] as any),
+            .range([start, middle, end] as any),
     };
 }

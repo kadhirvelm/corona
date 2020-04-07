@@ -83,6 +83,7 @@ export enum PROJECTION {
     VERMONT = "Vermont",
     VIRGINIA = "Virginia",
     WASHINGTON = "Washington",
+    WASHINGTON_DC = "Washington, D.C.",
     WEST_VIRGINIA = "West Virginia",
     WISCONSIN = "Wisconsin",
     WYOMING = "Wyoming",
