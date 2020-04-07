@@ -25,10 +25,10 @@ function UnconnectedPanelContainer(props: IProps) {
     const [tabId, setTabId] = React.useState<IValidTabs>("list");
 
     React.useEffect(() => {
-        if (IGeography.isNationGeography(geography)) {
-            setTabId("list");
-        } else {
+        if (IGeography.isCountyGeography(geography)) {
             setTabId("stats");
+        } else {
+            setTabId("list");
         }
     }, [geography]);
 
@@ -60,6 +60,7 @@ function UnconnectedPanelContainer(props: IProps) {
                 renderActiveTabPanelOnly
                 selectedTabId={tabId}
             >
+                <Tab id="list" title={`${typeOfList()} List`} panel={<BreakdownList />} />
                 <Tab id="stats" title={`${typeOfStats()} Stats`} panel={<Stats />} />
                 <Tab
                     id="projections"
@@ -67,13 +68,7 @@ function UnconnectedPanelContainer(props: IProps) {
                     title={`${typeOfStats()} Projections`}
                     panel={<Projections />}
                 />
-                <Tab
-                    id="exploration"
-                    disabled={!IDevice.isBrowser(deviceType)}
-                    title="Exploration"
-                    panel={<Exploration />}
-                />
-                <Tab id="list" title={`${typeOfList()} List`} panel={<BreakdownList />} />
+                {IDevice.isBrowser(deviceType) && <Tab id="exploration" title="Exploration" panel={<Exploration />} />}
             </Tabs>
         </div>
     );
