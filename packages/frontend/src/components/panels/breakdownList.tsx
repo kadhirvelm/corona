@@ -182,7 +182,7 @@ function UnconnectedBreakdownList(props: IProps) {
                 "name",
             ),
         });
-    }, [dataBreakdown, mapColoring]);
+    }, [dataBreakdown, sortMethod, mapColoring]);
 
     if (data === undefined) {
         return <div className={styles.breakdownListContainer} />;
