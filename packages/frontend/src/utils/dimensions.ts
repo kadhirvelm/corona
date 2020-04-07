@@ -10,13 +10,21 @@ export function getTotalDimensionSpacing(dimensions: IDimensions): { widthSpacin
 export function getDimensionsForMap(deviceType: IDeviceType | undefined) {
     return IDevice.visitor<IDimensions>(deviceType, {
         browser: () => ({
-            height: window.innerHeight - 10,
-            width: window.innerWidth - 5,
+            height: document.body.clientHeight - 10,
+            width: document.body.clientWidth - 5,
             margin: { left: 350, top: 75 },
         }),
-        mobile: () => ({ height: window.innerHeight * 0.5, width: window.innerWidth, margin: { right: 20 } }),
-        tablet: () => ({ height: window.innerHeight * 0.5, width: window.innerWidth, margin: { right: 20 } }),
-        unknown: () => ({ height: window.innerHeight - 5, width: window.innerWidth }),
+        mobile: () => ({
+            height: document.body.clientHeight * 0.5,
+            width: document.body.clientWidth,
+            margin: { right: 20 },
+        }),
+        tablet: () => ({
+            height: document.body.clientHeight * 0.5,
+            width: document.body.clientWidth,
+            margin: { right: 20 },
+        }),
+        unknown: () => ({ height: document.body.clientHeight - 5, width: document.body.clientWidth }),
     });
 }
 
@@ -29,12 +37,12 @@ export function getDimensionsForTimeseries(deviceType: IDeviceType | undefined) 
         }),
         mobile: () => ({
             height: 400,
-            width: window.innerWidth * 0.8,
+            width: document.body.clientWidth * 0.8,
             margin: { top: 20, right: 100, bottom: 120, left: 100 },
         }),
         tablet: () => ({
             height: 150,
-            width: window.innerWidth * 0.8,
+            width: document.body.clientWidth * 0.8,
             margin: { top: 20, right: 100, bottom: 100, left: 100 },
         }),
         unknown: () => ({

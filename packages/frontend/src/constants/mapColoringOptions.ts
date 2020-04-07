@@ -3,8 +3,8 @@ import { getNumberWithUndefined } from "../utils";
 
 export const MAP_COLORING_OPTIONS: IMapColoring[] = [
     {
-        description: "The absolute number of corona cases.",
-        label: "Total cases",
+        description: "The absolute number of coronavirus cases.",
+        label: "Cases",
         getDataPoint: data => getNumberWithUndefined(data?.totalCases),
         getLabel: num => (num === undefined ? "N/A" : num.toLocaleString()),
         colors: {
@@ -14,7 +14,7 @@ export const MAP_COLORING_OPTIONS: IMapColoring[] = [
         },
     },
     {
-        description: "The percentage of the population that has corona.",
+        description: "The percentage of the population that has coronavirus.",
         label: "Infection rate",
         getDataPoint: data => {
             const totalCases = getNumberWithUndefined(data?.totalCases);
@@ -32,14 +32,32 @@ export const MAP_COLORING_OPTIONS: IMapColoring[] = [
         },
     },
     {
-        description: "The absolute number of deaths due to corona.",
-        label: "Total deaths",
+        description: "The absolute number of deaths due to coronavirus.",
+        label: "Deaths",
         getDataPoint: data => getNumberWithUndefined(data?.deaths),
         getLabel: num => (num === undefined ? "N/A" : num.toLocaleString()),
         colors: {
             start: "#F9EBEA",
             middle: "#CD6155",
             end: "#641E16",
+        },
+    },
+    {
+        description: "The percentage of the population that has died due to coronavirus.",
+        label: "Mortality rate",
+        getDataPoint: data => {
+            const deaths = getNumberWithUndefined(data?.deaths);
+            const population = getNumberWithUndefined(data?.population);
+            if (deaths === undefined || population === undefined) {
+                return undefined;
+            }
+            return (deaths / population) * 100;
+        },
+        getLabel: num => (num === undefined ? "N/A" : `${num.toFixed(3)}%`),
+        colors: {
+            start: "#F5EEF8",
+            middle: "#AF7AC5",
+            end: "#512E5F",
         },
     },
 ];
