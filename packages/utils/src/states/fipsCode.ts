@@ -1,4 +1,4 @@
-const STATE_TO_FIPS = {
+export const STATE_TO_FIPS = {
     Alabama: "01",
     Alaska: "02",
     "American Samoa": "60",
