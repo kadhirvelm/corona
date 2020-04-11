@@ -1,5 +1,6 @@
 import fetch from "node-fetch";
 import lodash from "lodash";
+import { PIPELINE_LOGGER } from "@corona/logger";
 import { getArcgisFipsCode } from "../../utils/getCoronaDataScraperFipsCode";
 
 interface IRawHospitalResponse {
@@ -126,10 +127,19 @@ function getSummaries(rawResponse: IRawHospitalResponse[]) {
 
 // NOTE: the hospital data is being rate limited to 2000...strange, will need to revisit.
 export async function getHospitalData(): Promise<IFipsToHospitalSummary> {
-    const rawResponse = await fetch(
-        "https://services7.arcgis.com/LXCny1HyhQCUSueu/arcgis/rest/services/Definitive_Healthcare_USA_Hospital_Beds/FeatureServer/0/query?where=1%3D1&outFields=HOSPITAL_NAME,HOSPITAL_TYPE,HQ_ADDRESS,HQ_ADDRESS1,HQ_CITY,HQ_STATE,HQ_ZIP_CODE,COUNTY_NAME,STATE_NAME,STATE_FIPS,CNTY_FIPS,FIPS,NUM_LICENSED_BEDS,NUM_STAFFED_BEDS,NUM_ICU_BEDS,BED_UTILIZATION,Potential_Increase_In_Bed_Capac&returnGeometry=false&outSR=4326&f=json",
-    );
-    const response = (await rawResponse.json()).features as IRawHospitalResponse[];
+    try {
+        const rawResponse = await fetch(
+            "https://services7.arcgis.com/LXCny1HyhQCUSueu/arcgis/rest/services/Definitive_Healthcare_USA_Hospital_Beds/FeatureServer/0/query?where=1%3D1&outFields=HOSPITAL_NAME,HOSPITAL_TYPE,HQ_ADDRESS,HQ_ADDRESS1,HQ_CITY,HQ_STATE,HQ_ZIP_CODE,COUNTY_NAME,STATE_NAME,STATE_FIPS,CNTY_FIPS,FIPS,NUM_LICENSED_BEDS,NUM_STAFFED_BEDS,NUM_ICU_BEDS,BED_UTILIZATION,Potential_Increase_In_Bed_Capac&returnGeometry=false&outSR=4326&f=json",
+        );
+        const response = (await rawResponse.json()).features as IRawHospitalResponse[];
 
-    return getSummaries(response);
+        return getSummaries(response);
+    } catch (e) {
+        PIPELINE_LOGGER.log({
+            level: "error",
+            message: `Something went wrong when trying to get the hospital information: ${JSON.stringify(e)} `,
+        });
+
+        return {};
+    }
 }

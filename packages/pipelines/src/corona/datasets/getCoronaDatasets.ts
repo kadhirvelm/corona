@@ -113,11 +113,28 @@ export async function getMergedCoronaDatasets(): Promise<{
     nation: ICoronaDataPoint;
     verifiedDataPoints: ITotalBreakdown;
 }> {
-    const [arcGis, coronaDataScraper] = await Promise.all([getCoronaDataArc(), getCoronaDataCoronaScraper()]);
+    try {
+        const [arcGis, coronaDataScraper] = await Promise.all([getCoronaDataArc(), getCoronaDataCoronaScraper()]);
 
-    PIPELINE_LOGGER.log({ level: "info", message: "Fetched data from arcgis and coronadatascraper." });
+        PIPELINE_LOGGER.log({ level: "info", message: "Fetched data from arcgis and coronadatascraper." });
 
-    const mergedDataPoints = mergeCoronaDatasets(arcGis, coronaDataScraper.states);
+        const mergedDataPoints = mergeCoronaDatasets(arcGis, coronaDataScraper.states);
 
-    return { nation: coronaDataScraper.nation, verifiedDataPoints: verifyDatapoints(mergedDataPoints) };
+        return { nation: coronaDataScraper.nation, verifiedDataPoints: verifyDatapoints(mergedDataPoints) };
+    } catch (e) {
+        PIPELINE_LOGGER.log({
+            level: "error",
+            message: `Something went wrong when trying to merge all the corona information together: ${JSON.stringify(
+                e,
+            )} `,
+        });
+
+        return {
+            nation: {
+                fipsCode: "999",
+                totalCases: "N/A",
+            },
+            verifiedDataPoints: {},
+        };
+    }
 }

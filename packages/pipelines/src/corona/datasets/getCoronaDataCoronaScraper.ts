@@ -1,5 +1,6 @@
 import { ICoronaDataPoint } from "@corona/api";
 import fetch from "node-fetch";
+import { PIPELINE_LOGGER } from "@corona/logger";
 import { cleanCountyName } from "../../utils/cleanCountyName";
 import { getCoronaDataScraperFipsCode } from "../../utils/getCoronaDataScraperFipsCode";
 import { logCoronaScraperAnomalies } from "../../utils/logAnomalies";
@@ -92,15 +93,32 @@ function separateIntoNationStatesAndCounties(data: ICoronaDataScraperData[]) {
 }
 
 export async function getCoronaDataCoronaScraper(): Promise<ICoronaDataScraperBreakdown> {
-    const rawData = await fetch("https://coronadatascraper.com/data.json");
-    const json = (await rawData.json()) as ICoronaDataScraperData[];
+    try {
+        const rawData = await fetch("https://coronadatascraper.com/data.json");
+        const json = (await rawData.json()) as ICoronaDataScraperData[];
 
-    const { nation, states, counties } = separateIntoNationStatesAndCounties(json);
+        const { nation, states, counties } = separateIntoNationStatesAndCounties(json);
 
-    logCoronaScraperAnomalies(nation, states, counties);
+        logCoronaScraperAnomalies(nation, states, counties);
 
-    return {
-        nation: nation[0],
-        states: getTotalBreakdowns(states, counties),
-    };
+        return {
+            nation: nation[0],
+            states: getTotalBreakdowns(states, counties),
+        };
+    } catch (e) {
+        PIPELINE_LOGGER.log({
+            level: "error",
+            message: `Something went wrong when trying to get the corona data scraper information: ${JSON.stringify(
+                e,
+            )} `,
+        });
+
+        return {
+            nation: {
+                fipsCode: "999",
+                totalCases: "N/A",
+            },
+            states: {},
+        };
+    }
 }

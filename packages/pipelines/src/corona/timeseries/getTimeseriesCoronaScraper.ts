@@ -1,5 +1,6 @@
 import lodash from "lodash";
 import fetch from "node-fetch";
+import { PIPELINE_LOGGER } from "@corona/logger";
 import { getCoronaDataScraperFipsCode } from "../../utils/getCoronaDataScraperFipsCode";
 import { ITimeseriesBreakdown } from "../shared";
 
@@ -50,10 +51,19 @@ function filterToUS(data: ICoronaDataScraperTimeseriesRaw): ITimeseriesBreakdown
 }
 
 export async function getTimeseriesCoronaScraper(): Promise<ITimeseriesBreakdown> {
-    const rawData = await fetch("https://coronadatascraper.com/timeseries-byLocation.json");
-    const json = (await rawData.json()) as ICoronaDataScraperTimeseriesRaw;
+    try {
+        const rawData = await fetch("https://coronadatascraper.com/timeseries-byLocation.json");
+        const json = (await rawData.json()) as ICoronaDataScraperTimeseriesRaw;
 
-    const filteredToJustUs = filterToUS(json);
+        const filteredToJustUs = filterToUS(json);
 
-    return filteredToJustUs;
+        return filteredToJustUs;
+    } catch (e) {
+        PIPELINE_LOGGER.log({
+            level: "error",
+            message: `Something went wrong when trying to fetch corona data scraper timeseries: ${JSON.stringify(e)} `,
+        });
+
+        return {};
+    }
 }

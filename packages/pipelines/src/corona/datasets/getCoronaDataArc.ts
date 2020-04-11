@@ -1,5 +1,6 @@
 import { ICoronaDataPoint } from "@corona/api";
 import fetch from "node-fetch";
+import { PIPELINE_LOGGER } from "@corona/logger";
 import { getArcgisFipsCode } from "../../utils/getCoronaDataScraperFipsCode";
 import { getTotalBreakdowns, ICountiesKeyed, IStatesKeyed, ITotalBreakdown } from "../shared";
 import { logArcgisAnomalies } from "../../utils/logAnomalies";
@@ -71,14 +72,23 @@ function separateCountiesAndStates(data: IRawArcCoronaData[]) {
 }
 
 export async function getCoronaDataArc(): Promise<ITotalBreakdown> {
-    const rawData = await fetch(
-        "https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/ncov_cases_US/FeatureServer/0/query?where=1%3D1&outFields=Province_State,Country_Region,Last_Update,Lat,Long_,Confirmed,Recovered,Deaths,Active,FIPS,Incident_Rate,People_Tested,Combined_Key,Admin2&returnGeometry=false&outSR=4326&f=json",
-    );
-    const json = (await rawData.json()).features as IRawArcCoronaData[];
+    try {
+        const rawData = await fetch(
+            "https://services1.arcgis.com/0MSEUqKaxRlEPj5g/arcgis/rest/services/ncov_cases_US/FeatureServer/0/query?where=1%3D1&outFields=Province_State,Country_Region,Last_Update,Lat,Long_,Confirmed,Recovered,Deaths,Active,FIPS,Incident_Rate,People_Tested,Combined_Key,Admin2&returnGeometry=false&outSR=4326&f=json",
+        );
+        const json = (await rawData.json()).features as IRawArcCoronaData[];
 
-    const { states, counties } = separateCountiesAndStates(json);
+        const { states, counties } = separateCountiesAndStates(json);
 
-    logArcgisAnomalies(states, counties);
+        logArcgisAnomalies(states, counties);
 
-    return getTotalBreakdowns(states, counties);
+        return getTotalBreakdowns(states, counties);
+    } catch (e) {
+        PIPELINE_LOGGER.log({
+            level: "error",
+            message: `Something went wrong when trying to get the arc gis information: ${JSON.stringify(e)} `,
+        });
+
+        return {};
+    }
 }

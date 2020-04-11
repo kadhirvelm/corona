@@ -2,7 +2,12 @@ import { PIPELINE_LOGGER } from "@corona/logger";
 import { stateAndCountyToFips, stateToFips } from "@corona/utils";
 import { cleanCountyName } from "./cleanCountyName";
 
-const IGNORED_COUNTIES = ["DukesandNantucket", "KansasCity", "NewYorkCity"];
+const IGNORED_COUNTIES = [
+    "DukesandNantucket",
+    "KansasCity",
+    "NewYorkCity",
+    "(Firstnumbershowslaboratory-confirmedcases;secondshowsprobablecasesProbablecasesaredefinedasclosecontactsoflab-confirmedcaseswithsymptomsconsistentwithCOVID-19)",
+];
 
 function getFinalFipsCode(state: string, county: string): { cleanedCountyName: string | undefined; fipsCode: string } {
     const cleanedCountyName = cleanCountyName(county);

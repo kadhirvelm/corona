@@ -9,6 +9,7 @@ import { getDataBreakdown, IStoreState, maybeGetDataForGeography, UPDATE_GEOGRAP
 import { IDataBreakdown, IGeography } from "../../typings";
 import styles from "./breakdownList.module.scss";
 import { IMapColoring } from "../../typings/mapType";
+import { cutStringOff } from "../../utils/cutStringOff";
 
 interface IStateProps {
     geography: IGeography;
@@ -72,7 +73,7 @@ function renderDataBreakdown(
                     onClick={handleClick(breakdown.dataPoint)}
                 >
                     <span>
-                        {positions[breakdown.name].position + 1}) {breakdown.name}
+                        {positions[breakdown.name].position + 1}) {cutStringOff(breakdown.name, 50)}
                     </span>
                     <span className={styles.totalCasesColumn}>
                         {mapColoring.getLabel(mapColoring.getDataPoint(breakdown.dataPoint))}

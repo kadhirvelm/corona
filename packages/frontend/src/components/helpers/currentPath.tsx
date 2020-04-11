@@ -7,6 +7,7 @@ import { IGeography, IDeviceType, IDevice } from "../../typings";
 import { IStoreState, UPDATE_GEOGRAPHY } from "../../store";
 import styles from "./currentPath.module.scss";
 import { goToUserCounty } from "../../utils";
+import { cutStringOff } from "../../utils/cutStringOff";
 
 interface IStateProps {
     geography: IGeography;
@@ -19,7 +20,7 @@ interface IDispatchProps {
 
 type IProps = IStateProps & IDispatchProps;
 
-function renderBreadcrumb(text: string, onClick?: () => void, hasNext?: boolean) {
+function renderBreadcrumb(text: string | React.ReactNode, onClick?: () => void, hasNext?: boolean) {
     return (
         <div
             className={classNames(styles.breadcrumb, { [styles.selectableBreadcrumb]: onClick !== undefined })}
@@ -78,21 +79,13 @@ function UnconnectedCurrentPath(props: IProps) {
         );
     }
 
-    const getName = (name: string) => {
-        if (name.length > 30) {
-            return `${name.slice(0, 30)}…`;
-        }
-
-        return name;
-    };
-
     return (
         <div className={sharedClassName}>
             <div className={styles.breadcrumbTopContainer}>
                 {nationalBreadcrumb}
                 {renderBreadcrumb(geography.stateGeography.name, () => updateGeography(geography.stateGeography), true)}
             </div>
-            <div className={styles.breadcrumbBottomContainer}>{renderBreadcrumb(getName(geography.name))}</div>
+            <div className={styles.breadcrumbBottomContainer}>{renderBreadcrumb(cutStringOff(geography.name, 30))}</div>
         </div>
     );
 }

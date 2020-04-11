@@ -8,6 +8,7 @@ This projects gets its data from:
 3. https://covid19.healthdata.org/projections
 4. https://github.com/nytimes/covid-19-data
 5. https://covidtracking.com/data
+6. https://usafacts.org/visualizations/coronavirus-covid-19-spread-map/
 
 Questions? Concerns? Requests?
 Email us at: covid19.map.2020@gmail.com
