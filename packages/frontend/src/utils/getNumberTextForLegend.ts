@@ -1,5 +1,6 @@
 export function getNumberTextForLegend(num: number): string {
-    if (num === 0) {
+    // eslint-disable-next-line no-restricted-globals
+    if (num === 0 || isNaN(num)) {
         return "0";
     }
 

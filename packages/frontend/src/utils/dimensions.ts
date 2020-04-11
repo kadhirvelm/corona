@@ -12,7 +12,7 @@ export function getDimensionsForMap(deviceType: IDeviceType | undefined) {
         browser: () => ({
             height: document.body.clientHeight - 10,
             width: document.body.clientWidth - 5,
-            margin: { left: 350, top: 75 },
+            margin: { left: 450, top: 75 },
         }),
         mobile: () => ({
             height: document.body.clientHeight * 0.5,

@@ -19,7 +19,8 @@ export function getLinearColorScale(data: ICoronaBreakdown, mapColoring: IMapCol
     const numbers = Object.values(data.breakdown)
         .filter(dataPoint => isValidFips(dataPoint.fipsCode))
         .map(num => mapColoring.getDataPoint(num) ?? 0);
-    const range = [0, average(numbers), Math.max(...numbers)];
+
+    const range = numbers.length > 0 ? [0, average(numbers), Math.max(...numbers)] : [0, 0, 0];
 
     const { start, middle, end } = getColors(mapColoring);
 

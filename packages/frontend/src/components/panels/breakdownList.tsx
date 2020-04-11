@@ -9,6 +9,7 @@ import { getDataBreakdown, IStoreState, maybeGetDataForGeography, UPDATE_GEOGRAP
 import { IDataBreakdown, IGeography } from "../../typings";
 import styles from "./breakdownList.module.scss";
 import { IMapColoring } from "../../typings/mapType";
+import { cutStringOff } from "../../utils/cutStringOff";
 
 interface IStateProps {
     geography: IGeography;
@@ -39,6 +40,7 @@ function renderDataBreakdown(
                     name: dataPoint.state ?? "Unknown state",
                 }),
             );
+            return;
         }
 
         if (IGeography.isStateGeography(geography) && geography.fipsCode !== dataPoint.fipsCode) {
@@ -49,14 +51,29 @@ function renderDataBreakdown(
                     name: dataPoint.county ?? "Unknown county",
                 }),
             );
+            return;
         }
 
-        if (IGeography.isCountyGeography(geography) && geography.fipsCode !== dataPoint.fipsCode) {
+        if (
+            IGeography.isCountyGeography(geography) &&
+            geography.fipsCode !== dataPoint.fipsCode &&
+            geography.stateGeography.fipsCode !== dataPoint.fipsCode
+        ) {
             updateGeography(
                 IGeography.countyGeography({
                     countyStateGeography: geography.stateGeography,
                     fipsCode: dataPoint.fipsCode,
                     name: dataPoint.county ?? "Unknown county",
+                }),
+            );
+            return;
+        }
+
+        if (IGeography.isCountyGeography(geography) && geography.stateGeography.fipsCode === dataPoint.fipsCode) {
+            updateGeography(
+                IGeography.stateGeography({
+                    fipsCode: dataPoint.fipsCode,
+                    name: dataPoint.state ?? "N/A",
                 }),
             );
         }
@@ -72,7 +89,7 @@ function renderDataBreakdown(
                     onClick={handleClick(breakdown.dataPoint)}
                 >
                     <span>
-                        {positions[breakdown.name].position + 1}) {breakdown.name}
+                        {positions[breakdown.name].position + 1}) {cutStringOff(breakdown.name, 50)}
                     </span>
                     <span className={styles.totalCasesColumn}>
                         {mapColoring.getLabel(mapColoring.getDataPoint(breakdown.dataPoint))}

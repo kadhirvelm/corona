@@ -1,4 +1,5 @@
 import fetch from "node-fetch";
+import { PIPELINE_LOGGER } from "@corona/logger";
 import { ITimeseriesBreakdown } from "../shared";
 
 interface ICleanedNYTimesPoint {
@@ -66,11 +67,20 @@ async function getCoronaNYTimesStates() {
     }));
 }
 
-export async function getTimeseriesNYTimes() {
-    const [states, counties] = await Promise.all([getCoronaNYTimesStates(), getCoronaNYTimesCounties()]);
+export async function getTimeseriesNYTimes(): Promise<ITimeseriesBreakdown> {
+    try {
+        const [states, counties] = await Promise.all([getCoronaNYTimesStates(), getCoronaNYTimesCounties()]);
 
-    return {
-        ...states,
-        ...counties,
-    };
+        return {
+            ...states,
+            ...counties,
+        };
+    } catch (e) {
+        PIPELINE_LOGGER.log({
+            level: "error",
+            message: `Something went wrong when trying to get the NYTimes timeseries data: ${JSON.stringify(e)} `,
+        });
+
+        return {};
+    }
 }

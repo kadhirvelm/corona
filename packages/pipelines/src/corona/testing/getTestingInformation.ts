@@ -1,5 +1,6 @@
 import fetch from "node-fetch";
 import { ICoronaTestingInformation } from "@corona/api";
+import { PIPELINE_LOGGER } from "@corona/logger";
 
 interface IRawTestingInformation {
     positive: number;
@@ -34,8 +35,19 @@ function cleanDataPoint(rawRespose: IRawTestingInformation): { [fips: string]: I
 }
 
 export async function getTestingInformation(): Promise<{ [fips: string]: ICoronaTestingInformation }> {
-    const rawResponse = await fetch("https://covidtracking.com/api/v1/states/current.json");
-    const response = (await rawResponse.json()) as IRawTestingInformation[];
+    try {
+        const rawResponse = await fetch("https://covidtracking.com/api/v1/states/current.json");
+        const response = (await rawResponse.json()) as IRawTestingInformation[];
 
-    return response.map(cleanDataPoint).reduce((previous, next) => ({ ...previous, ...next }));
+        return response.map(cleanDataPoint).reduce((previous, next) => ({ ...previous, ...next }));
+    } catch (e) {
+        PIPELINE_LOGGER.log({
+            level: "error",
+            message: `Something went wrong when trying to get the testing information from covid tracker: ${JSON.stringify(
+                e,
+            )} `,
+        });
+
+        return {};
+    }
 }

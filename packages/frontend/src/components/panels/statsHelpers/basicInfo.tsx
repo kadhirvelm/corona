@@ -80,7 +80,7 @@ function maybeRenderGeneralInformation(dataPoint: ICoronaDataPoint | undefined) 
     return (
         <div className={styles.generalInfo}>
             <span className={styles.title}>General</span>
-            {renderSingleLabel("Total", dataPoint.totalCases.toLocaleString())}
+            {renderSingleLabel("Total cases", dataPoint.totalCases.toLocaleString())}
             {maybeRenderPopulationPercent("Infection rate", dataPoint.totalCases, dataPoint.population)}
             {renderSingleLabel("Recovered", dataPoint.recovered?.toLocaleString())}
             {renderSingleLabel("Active", dataPoint.activeCases?.toLocaleString())}

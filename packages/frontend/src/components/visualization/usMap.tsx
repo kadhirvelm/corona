@@ -1,7 +1,8 @@
 import { Spinner } from "@blueprintjs/core";
 import { ICoronaBreakdown } from "@corona/api";
 import classNames from "classnames";
-import { geoAlbersUsa, geoPath, GeoPath, GeoPermissibleObjects } from "d3-geo";
+import { geoPath, GeoPath, GeoPermissibleObjects } from "d3-geo";
+import { geoAlbersUsaTerritories } from "d3-composite-projections";
 import { BaseType, select, Selection } from "d3-selection";
 import GeoJSON from "geojson";
 import { noop } from "lodash-es";
@@ -104,7 +105,15 @@ function renderMap(
 
             return colorScale(number);
         })
-        .on("click", onFeatureSelect)
+        .on("click", feature => {
+            const number = mapColoring.getDataPoint(data?.breakdown[feature.id ?? ""]);
+
+            if (number === undefined) {
+                return;
+            }
+
+            onFeatureSelect(feature);
+        })
         .on("mouseenter", onMouseEnter ?? noop)
         .on("mouseleave", onMouseLeave ?? noop)
         .attr("d", path)
@@ -122,7 +131,7 @@ async function setupMap(props: IProps, setLoading: (isLoading: boolean) => void,
 
     const svg = select(`#${id}`);
 
-    const projection = geoAlbersUsa().fitSize(
+    const projection = geoAlbersUsaTerritories().fitSize(
         [dimensions.width - widthSpacing, dimensions.height - heightSpacing],
         features[0],
     );

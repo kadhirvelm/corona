@@ -40,7 +40,7 @@ function cleanDataPoint(timeseries: { [date: string]: ICoronaDatapointTimeseries
             deaths: getNumber(entry[1].deaths),
             recovered: getNumber(entry[1].recovered),
         }))
-        .filter(dataPoint => dataPoint.cases > 0);
+        .filter(dataPoint => dataPoint.x != null && dataPoint.cases != null && dataPoint.cases > 0);
 }
 
 function addLegend(graph: Selection<SVGGElement, unknown, HTMLElement, any>, dimensions: IDimensions) {
