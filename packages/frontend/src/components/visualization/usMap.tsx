@@ -1,7 +1,8 @@
 import { Spinner } from "@blueprintjs/core";
 import { ICoronaBreakdown } from "@corona/api";
 import classNames from "classnames";
-import { geoAlbersUsa, geoPath, GeoPath, GeoPermissibleObjects } from "d3-geo";
+import { geoPath, GeoPath, GeoPermissibleObjects } from "d3-geo";
+import { geoAlbersUsaTerritories } from "d3-composite-projections";
 import { BaseType, select, Selection } from "d3-selection";
 import GeoJSON from "geojson";
 import { noop } from "lodash-es";
@@ -122,7 +123,7 @@ async function setupMap(props: IProps, setLoading: (isLoading: boolean) => void,
 
     const svg = select(`#${id}`);
 
-    const projection = geoAlbersUsa().fitSize(
+    const projection = geoAlbersUsaTerritories().fitSize(
         [dimensions.width - widthSpacing, dimensions.height - heightSpacing],
         features[0],
     );
