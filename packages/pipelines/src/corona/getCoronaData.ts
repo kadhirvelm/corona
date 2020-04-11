@@ -148,7 +148,6 @@ export async function getCoronaData(): Promise<ICoronaData> {
     ]);
 
     const withTimeSeries = addTimeSeriesData(dataPoints, timeseries);
-
     const stateData = getStateData(withTimeSeries.states, testInformation);
 
     return {

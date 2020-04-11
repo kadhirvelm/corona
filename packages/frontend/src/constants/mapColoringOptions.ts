@@ -9,7 +9,7 @@ export const MAP_COLORING_OPTIONS: IMapColoring[] = [
         getLabel: num => (num === undefined ? "N/A" : num.toLocaleString()),
         colors: {
             start: "#EAF2F8",
-            middle: "#A9CCE3",
+            middle: "#7FB3D5",
             end: "#154360",
         },
     },
@@ -27,7 +27,7 @@ export const MAP_COLORING_OPTIONS: IMapColoring[] = [
         getLabel: num => (num === undefined ? "N/A" : `${num.toFixed(3)}%`),
         colors: {
             start: "#FBEEE6",
-            middle: "#EDBB99",
+            middle: "#E59866",
             end: "#6E2C00",
         },
     },
@@ -38,7 +38,7 @@ export const MAP_COLORING_OPTIONS: IMapColoring[] = [
         getLabel: num => (num === undefined ? "N/A" : num.toLocaleString()),
         colors: {
             start: "#F9EBEA",
-            middle: "#E6B0AA",
+            middle: "#D98880",
             end: "#641E16",
         },
     },
@@ -56,7 +56,7 @@ export const MAP_COLORING_OPTIONS: IMapColoring[] = [
         getLabel: num => (num === undefined ? "N/A" : `${num.toFixed(3)}%`),
         colors: {
             start: "#F5EEF8",
-            middle: "#D7BDE2",
+            middle: "#C39BD3",
             end: "#512E5F",
         },
     },
