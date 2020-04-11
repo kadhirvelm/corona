@@ -4,6 +4,7 @@
     display: flex;
     flex: 1;
     flex-direction: column;
+    width: 100%;
     box-shadow: -1px 0 $box-shadow, 1px 0 $box-shadow, 0 1px $box-shadow, 0 -1px $box-shadow;
     background: $background;
 }

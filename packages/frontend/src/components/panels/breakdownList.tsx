@@ -40,6 +40,7 @@ function renderDataBreakdown(
                     name: dataPoint.state ?? "Unknown state",
                 }),
             );
+            return;
         }
 
         if (IGeography.isStateGeography(geography) && geography.fipsCode !== dataPoint.fipsCode) {
@@ -50,14 +51,29 @@ function renderDataBreakdown(
                     name: dataPoint.county ?? "Unknown county",
                 }),
             );
+            return;
         }
 
-        if (IGeography.isCountyGeography(geography) && geography.fipsCode !== dataPoint.fipsCode) {
+        if (
+            IGeography.isCountyGeography(geography) &&
+            geography.fipsCode !== dataPoint.fipsCode &&
+            geography.stateGeography.fipsCode !== dataPoint.fipsCode
+        ) {
             updateGeography(
                 IGeography.countyGeography({
                     countyStateGeography: geography.stateGeography,
                     fipsCode: dataPoint.fipsCode,
                     name: dataPoint.county ?? "Unknown county",
+                }),
+            );
+            return;
+        }
+
+        if (IGeography.isCountyGeography(geography) && geography.stateGeography.fipsCode === dataPoint.fipsCode) {
+            updateGeography(
+                IGeography.stateGeography({
+                    fipsCode: dataPoint.fipsCode,
+                    name: dataPoint.state ?? "N/A",
                 }),
             );
         }

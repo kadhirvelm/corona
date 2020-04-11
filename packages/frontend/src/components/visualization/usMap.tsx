@@ -105,7 +105,15 @@ function renderMap(
 
             return colorScale(number);
         })
-        .on("click", onFeatureSelect)
+        .on("click", feature => {
+            const number = mapColoring.getDataPoint(data?.breakdown[feature.id ?? ""]);
+
+            if (number === undefined) {
+                return;
+            }
+
+            onFeatureSelect(feature);
+        })
         .on("mouseenter", onMouseEnter ?? noop)
         .on("mouseleave", onMouseLeave ?? noop)
         .attr("d", path)

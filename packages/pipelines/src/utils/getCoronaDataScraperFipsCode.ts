@@ -21,7 +21,7 @@ export function getCoronaDataScraperFipsCode(state?: string, county?: string, ci
     }
 
     if (city !== undefined) {
-        return city;
+        return `${state}_${cleanCountyName(city)}`;
     }
 
     if ((county === undefined || county === "") && (city === undefined || city === "")) {

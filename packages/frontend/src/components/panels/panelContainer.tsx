@@ -24,14 +24,6 @@ function UnconnectedPanelContainer(props: IProps) {
 
     const [tabId, setTabId] = React.useState<IValidTabs>("list");
 
-    React.useEffect(() => {
-        if (IGeography.isCountyGeography(geography)) {
-            setTabId("stats");
-        } else {
-            setTabId("list");
-        }
-    }, [geography]);
-
     const updateTab = (newTabId: IValidTabs) => setTabId(newTabId);
 
     const typeOfStats = () => {

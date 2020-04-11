@@ -88,25 +88,6 @@ function addTimeSeriesData(
     };
 }
 
-function getNationData(nation: ICoronaDataPoint, states: ITotalBreakdown): ICoronaBreakdown {
-    const allStateDatapointsMerged = Object.values(states)
-        .map(dataPoint => dataPoint.stateTotal)
-        .filter(dataPoint => dataPoint !== undefined) as ICoronaDataPoint[];
-
-    if (allStateDatapointsMerged.length < 52) {
-        const stateNames = allStateDatapointsMerged.map(point => point.state);
-        const missingStates = Object.values(STATE).filter(state => !stateNames.includes(state));
-
-        PIPELINE_LOGGER.log({ level: "error", message: `Missing some states: ${missingStates.join(", ")}` });
-    }
-
-    return {
-        description: "United States",
-        totalData: nation,
-        breakdown: lodash.keyBy(allStateDatapointsMerged, dataPoint => dataPoint?.fipsCode),
-    };
-}
-
 function addTestingInformation(
     stateTotal: ICoronaDataPoint | undefined,
     testingInformation: { [fips: string]: ICoronaTestingInformation },
@@ -140,6 +121,25 @@ function getStateData(
         .reduce((previous, next) => ({ ...previous, ...next }), {}) as IStateCoronaData;
 }
 
+function getNationData(nation: ICoronaDataPoint, states: IStateCoronaData): ICoronaBreakdown {
+    const allStateDatapointsMerged = Object.values(states)
+        .map(dataPoint => dataPoint.totalData)
+        .filter(dataPoint => dataPoint !== undefined) as ICoronaDataPoint[];
+
+    if (allStateDatapointsMerged.length < 52) {
+        const stateNames = allStateDatapointsMerged.map(point => point.state);
+        const missingStates = Object.values(STATE).filter(state => !stateNames.includes(state));
+
+        PIPELINE_LOGGER.log({ level: "error", message: `Missing some states: ${missingStates.join(", ")}` });
+    }
+
+    return {
+        description: "United States",
+        totalData: nation,
+        breakdown: lodash.keyBy(allStateDatapointsMerged, dataPoint => dataPoint?.fipsCode),
+    };
+}
+
 export async function getCoronaData(): Promise<ICoronaData> {
     const [dataPoints, timeseries, testInformation] = await Promise.all([
         getMergedCoronaDatasets(),
@@ -149,9 +149,11 @@ export async function getCoronaData(): Promise<ICoronaData> {
 
     const withTimeSeries = addTimeSeriesData(dataPoints, timeseries);
 
+    const stateData = getStateData(withTimeSeries.states, testInformation);
+
     return {
-        nation: getNationData(withTimeSeries.nation, withTimeSeries.states),
-        states: getStateData(withTimeSeries.states, testInformation),
+        nation: getNationData(withTimeSeries.nation, stateData),
+        states: stateData,
         timeseries,
     };
 }
