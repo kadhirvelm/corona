@@ -7,6 +7,13 @@ const IGNORED_COUNTIES = [
     "KansasCity",
     "NewYorkCity",
     "(Firstnumbershowslaboratory-confirmedcases;secondshowsprobablecasesProbablecasesaredefinedasclosecontactsoflab-confirmedcaseswithsymptomsconsistentwithCOVID-19)",
+    "BearRiver",
+    "CentralUtah",
+    "FederalCorrectionalInstitution(FCI)",
+    "MichiganDepartmentofCorrections(MDOC)",
+    "SoutheastUtah",
+    "Tri",
+    "Weber-Morgan",
 ];
 
 function getFinalFipsCode(state: string, county: string): { cleanedCountyName: string | undefined; fipsCode: string } {

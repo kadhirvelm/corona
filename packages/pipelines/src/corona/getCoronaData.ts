@@ -96,12 +96,12 @@ function addTestingInformation(
         return undefined;
     }
 
-    const testingInfoState = testingInformation[stateTotal.fipsCode];
+    const testingInfoState: ICoronaTestingInformation | undefined = testingInformation[stateTotal.fipsCode];
 
     return {
         ...stateTotal,
-        deaths: combineDataPoint(stateTotal.deaths, testingInfoState.death),
-        totalCases: combineDataPoint(stateTotal.totalCases, testingInfoState.positive),
+        deaths: combineDataPoint(stateTotal.deaths, testingInfoState?.death),
+        totalCases: combineDataPoint(stateTotal.totalCases, testingInfoState?.positive),
         testingInformation: testingInformation[stateTotal.fipsCode],
     };
 }
