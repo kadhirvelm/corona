@@ -36,6 +36,12 @@ const TRANSLATE_KEY = {
     bedover: "Hospital beds shortage",
     icuover: "Intensive care units shortage",
     peak_resource_usage: "Overall resource usage",
+    infections: "Infections",
+    total_death_smoothed: "Total deaths, smoothed",
+    deaths_smoothed: "Deaths, smoothed",
+    composite_mobility: "Composite mobility",
+    positive_tests: "Positive tests",
+    tests: "Tests",
 };
 
 function translateMeasureName(name: string): string {
@@ -101,18 +107,20 @@ async function getHospitalizationProjection(
     projectionId: number,
 ): Promise<{ [measure: string]: ISingleProjectionMeasure }> {
     const rawResponse = await fetch(`https://covid19.healthdata.org/api/data/hospitalization?location=${projectionId}`);
-    const response = (await rawResponse.json()) as IProjectionPointRaw[];
+    const response = await rawResponse.json();
+    const responseParsed = response.values.map((v: any) => lodash.zipObject(response.keys, v)) as IProjectionPointRaw[];
 
-    const basicProjection = assembleBasicProjection(response);
+    const basicProjection = assembleBasicProjection(responseParsed);
 
     return addMaxProjectionTimes(basicProjection);
 }
 
 async function getInterventionData(projectionId: number): Promise<IIntervention[]> {
     const rawResponse = await fetch(`https://covid19.healthdata.org/api/data/intervention?location=${projectionId}`);
-    const response = (await rawResponse.json()) as IInterventionRaw[];
+    const response = await rawResponse.json();
+    const responseParsed = response.values.map((v: any) => lodash.zipObject(response.keys, v)) as IInterventionRaw[];
 
-    return response.map(
+    return responseParsed.map(
         (rawIntervention): IIntervention => ({
             // NOTE: the frontend is having a hard time rendering these dates with a time period of 00:00:00
             date: rawIntervention.date_reported.split(" ")[0],

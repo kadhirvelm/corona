@@ -22,6 +22,7 @@
     flex-direction: column;
     animation: fade-in 200ms ease-out;
     overflow-y: auto;
+    padding-bottom: 150px;
 }
 
 .projections-data-container {
@@ -37,10 +38,6 @@
 }
 
 :global(.mobile) {
-    .projection-container {
-        padding-bottom: 150px;
-    }
-
     .single-projection-container {
         min-height: 70px;
     }

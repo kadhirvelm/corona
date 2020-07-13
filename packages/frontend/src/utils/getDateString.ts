@@ -1,5 +1,6 @@
 export function getDateTimeString(date?: string | undefined | null) {
-    if (date == null) {
+    // eslint-disable-next-line no-restricted-globals
+    if (date == null || isNaN(Date.parse(date).valueOf())) {
         return "N/A";
     }
 
