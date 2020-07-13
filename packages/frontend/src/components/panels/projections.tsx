@@ -125,6 +125,14 @@ function maybeRenderIcon(measureDescription: string) {
         return <Icon className={styles.descriptionIcon} icon="airplane" />;
     }
 
+    if (measureDescription === "Limited large group gatherings") {
+        return <Icon className={styles.descriptionIcon} icon="people" />;
+    }
+
+    if (measureDescription === "Partial business closure") {
+        return <Icon className={styles.descriptionIcon} icon="briefcase" />;
+    }
+
     return null;
 }
 
